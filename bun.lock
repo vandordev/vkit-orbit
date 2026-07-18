@@ -20,6 +20,7 @@
         "@elysiajs/openapi": "^1.4.15",
         "@repo/config": "*",
         "@repo/database": "*",
+        "@repo/realtime": "*",
         "@repo/storage": "*",
         "elysia": "^1.4.21",
         "pino": "^9.7.0",
@@ -97,22 +98,6 @@
         "eslint": "^9.39.1",
         "typescript": "5.9.2",
         "vite": "8.1.5",
-      },
-    },
-    "apps/worker": {
-      "name": "@repo/worker",
-      "version": "0.1.0",
-      "dependencies": {
-        "@repo/application": "*",
-        "@repo/config": "*",
-        "@repo/queue": "*",
-        "@repo/storage": "*",
-        "pino": "^9.7.0",
-      },
-      "devDependencies": {
-        "@repo/eslint-config": "*",
-        "@repo/typescript-config": "*",
-        "typescript": "5.9.2",
       },
     },
     "packages/application": {
@@ -516,8 +501,6 @@
     "@repo/storage": ["@repo/storage@workspace:packages/storage"],
 
     "@repo/typescript-config": ["@repo/typescript-config@workspace:packages/typescript-config"],
-
-    "@repo/worker": ["@repo/worker@workspace:apps/worker"],
 
     "@riverqueue/driver-prisma": ["@riverqueue/driver-prisma@0.1.0", "", { "dependencies": { "riverqueue": "0.1.0" }, "peerDependencies": { "@prisma/client": ">=5.0.0" } }, "sha512-+2pv3fJ8qZGiYM/7u0xXREmTmu6/H/wy6bQDxO8gMtdwWs6Ggvh6YWeLsStSAzqJcHzFW1BRvtx5CWzeJOpUaw=="],
 
