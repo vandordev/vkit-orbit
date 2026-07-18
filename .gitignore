@@ -23,9 +23,15 @@ coverage
 
 # Build Outputs
 .next/
+.output/
+.vite/
 out/
 build
 dist
+.air/
+
+# TanStack generated route tree
+apps/web/src/routeTree.gen.ts
 
 
 # Opencode

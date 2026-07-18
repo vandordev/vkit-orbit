@@ -1,0 +1,10 @@
+root = "."
+tmp_dir = ".air"
+
+[build]
+cmd = "go build -o .air/worker ./apps/worker"
+bin = ".air/worker"
+include_ext = ["go"]
+exclude_dir = [".air", "vendor"]
+send_interrupt = true
+kill_delay = "500ms"

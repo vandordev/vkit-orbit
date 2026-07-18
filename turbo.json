@@ -4,7 +4,7 @@
 	"globalEnv": [
 		"NODE_ENV",
 		"LOG_LEVEL",
-		"NEXT_PUBLIC_APP_URL",
+		"VITE_REALTIME_URL",
 		"DATABASE_URL"
 	],
 	"tasks": {
@@ -13,18 +13,10 @@
 				"^build"
 			],
 			"outputs": [
-			".next/**",
-				"!.next/cache/**",
+				".output/**",
+				".vite/**",
 				"dist/**"
 			],
-			"env": [
-				"NEXT_PUBLIC_APP_URL"
-			]
-		},
-		"web#build": {
-			"env": [
-				"NEXT_PRIVATE_SKIP_PATCHING"
-			]
 		},
 		"lint": {
 			"dependsOn": [
