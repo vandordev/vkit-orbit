@@ -10,6 +10,8 @@ RUN bun install --frozen-lockfile --ignore-scripts
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=prune /app/out/full/ ./
+COPY config ./config
+RUN bun run --cwd packages/database db:generate
 RUN bun run --cwd apps/scheduler build
 FROM oven/bun:1.3.14-alpine AS runner
 WORKDIR /app
