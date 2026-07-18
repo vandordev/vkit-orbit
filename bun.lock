@@ -83,6 +83,7 @@
         "radix-ui": "^1.6.2",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
+        "socket.io-client": "^4.8.1",
         "tailwind-merge": "^3.0.2",
         "tailwindcss": "^4.1.18",
         "zod": "^4.4.3",

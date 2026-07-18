@@ -9,6 +9,7 @@ type Dependencies = {
   publishApiKey: string;
   authenticate(ticket: string): Promise<RealtimeSubject>;
   authorizeWorkspace(subjectId: string, workspaceId: string): Promise<boolean>;
+  corsOrigin?: string;
 };
 
 function readRequestBody(request: AsyncIterable<Uint8Array | string>): Promise<string> {
@@ -43,7 +44,12 @@ export function createRealtimeServer(dependencies: Dependencies) {
       response.writeHead(400).end();
     }
   });
-  const io = new Server(httpServer, { path: "/ws", addTrailingSlash: false });
+  const io = new Server(httpServer, {
+    path: "/ws",
+    addTrailingSlash: false,
+    cors: { origin: dependencies.corsOrigin ?? true, credentials: true },
+    allowRequest: (request, callback) => callback(null, !dependencies.corsOrigin || request.headers.origin === dependencies.corsOrigin),
+  });
 
   io.use(async (socket, next) => {
     try {

@@ -8,6 +8,7 @@ const runtime = createRealtimeServer({
   publishApiKey: config.REALTIME_PUBLISH_API_KEY,
   authenticate: createTicketAuthenticator(config.REALTIME_TICKET_SECRET),
   authorizeWorkspace: async () => false,
+  corsOrigin: config.REALTIME_CORS_ORIGIN,
 });
 
 await runtime.listen(config.port, "0.0.0.0");

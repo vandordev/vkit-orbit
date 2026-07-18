@@ -38,7 +38,7 @@ test("loads the base, api, and web configuration modules", () => {
     NODE_ENV: "test",
     DATABASE_URL: "postgresql://db",
     PORT: "4101",
-    NEXT_PUBLIC_APP_URL: "http://localhost:4100",
+    VITE_REALTIME_URL: "http://localhost:4102",
   });
 });
 

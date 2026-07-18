@@ -8,6 +8,7 @@ const realtimeServer = {
   REALTIME_PORT: z.coerce.number().int().positive().default(4102),
   REALTIME_TICKET_SECRET: z.string().min(1),
   REALTIME_PUBLISH_API_KEY: z.string().min(1),
+  REALTIME_CORS_ORIGIN: z.string().url().default("http://localhost:4100"),
 } as const;
 
 export function createRealtimeConfig(runtimeEnv: Record<string, string | undefined>) {
