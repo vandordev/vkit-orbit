@@ -1,12 +1,12 @@
 import { createSchedulerConfig } from "@repo/config";
 import { prisma } from "@repo/database";
-import { createRiverClient } from "@repo/queue";
+import { createRiverClient, enqueue } from "@repo/queue";
 
 import { registerSchedules } from "./schedules";
 
 const config = createSchedulerConfig(process.env);
 const river = createRiverClient(prisma);
-const stopSchedules = registerSchedules(river);
+const stopSchedules = registerSchedules({ enqueue: (contract, payload) => enqueue(river, contract, payload) }, config);
 
 function shutdown() {
 	stopSchedules();
@@ -15,5 +15,3 @@ function shutdown() {
 
 process.once("SIGINT", shutdown);
 process.once("SIGTERM", shutdown);
-
-void config;
