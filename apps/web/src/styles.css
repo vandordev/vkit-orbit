@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme inline {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-border: var(--border);
+	--color-ring: var(--ring);
+	--radius-md: var(--radius);
+}
+
+:root {
+	--background: oklch(0.985 0.003 285.8);
+	--foreground: oklch(0.18 0.01 285.8);
+	--primary: oklch(0.33 0.14 24);
+	--primary-foreground: oklch(0.985 0.003 285.8);
+	--muted: oklch(0.95 0.006 285.8);
+	--muted-foreground: oklch(0.48 0.015 285.8);
+	--border: oklch(0.89 0.008 285.8);
+	--ring: oklch(0.48 0.16 24);
+	--radius: 0.5rem;
+}
+
+@layer base {
+	* { box-sizing: border-box; }
+	html, body { min-height: 100%; }
+	body { margin: 0; }
+	:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+}
