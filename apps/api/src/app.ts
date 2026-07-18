@@ -1,4 +1,3 @@
-import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 
 import { env } from "./lib/env";
@@ -72,14 +71,6 @@ export const app = new Elysia()
       `[RESPONSE] ${request.method} ${new URL(request.url).pathname} ${set.status}`,
     );
   })
-  .use(
-    cors({
-      origin: env.CORS_ORIGIN,
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "X-API-Key", "x-request-id"],
-    }),
-  )
   .use(openapiPlugin)
   .onError(({ error, code, set, requestId }) => {
     if (error instanceof AppError) {

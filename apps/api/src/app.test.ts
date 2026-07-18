@@ -13,7 +13,7 @@ async function getApp() {
 	describe("external API boundary", () => {
 	test("serves the API status contract under /api", async () => {
 		const app = await getApp();
-		const response = await app.handle(new Request("http://localhost:4101/api/status"));
+		const response = await app.fetch(new Request("http://localhost:4100/api/status"));
 
 		expect(response.status).toBe(200);
 		expect(await response.json()).toEqual({ success: true, data: { status: "ok" } });
@@ -21,14 +21,14 @@ async function getApp() {
 
 	test("uses the API failure envelope", async () => {
 		const app = await getApp();
-		const response = await app.handle(new Request("http://localhost:4101/api/missing"));
+		const response = await app.fetch(new Request("http://localhost:4100/api/missing"));
 
 		expect(await response.json()).toMatchObject({ success: false, error: "NOT_FOUND" });
 	});
 
 	test("serves health", async () => {
 		const app = await getApp();
-		const response = await app.handle(new Request("http://localhost:4101/health"));
+		const response = await app.fetch(new Request("http://localhost:4100/health"));
 
 		expect(response.status).toBe(200);
 		expect((await response.json()).data.status).toBe("healthy");
@@ -36,7 +36,7 @@ async function getApp() {
 
 	test("does not expose retired gateway routes", async () => {
 		const app = await getApp();
-		const response = await app.handle(new Request("http://localhost:4101/api/messages"));
+		const response = await app.fetch(new Request("http://localhost:4100/api/messages"));
 
 		expect(response.status).toBe(404);
 	});
