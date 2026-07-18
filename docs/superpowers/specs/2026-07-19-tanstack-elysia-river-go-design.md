@@ -28,6 +28,9 @@ runtime patterns. Do not copy either repository wholesale.
 - Keep a dedicated Socket.IO TypeScript runtime for browser realtime updates.
 - Add a one-shot Go migration app for Prisma domain migrations and River schema
   migrations.
+- Include one opt-in, end-to-end `example.realtime-notification.v1` job so a
+  new project can trace API enqueueing, scheduler enqueueing, Go processing,
+  Elysia relay, Socket.IO delivery, and web invalidation without a product model.
 - Update configuration, local containers, Taskfile commands, tests, and
   documentation for the new runtime topology.
 
@@ -39,6 +42,8 @@ runtime patterns. Do not copy either repository wholesale.
 - Introducing authentication, a sample product domain, or a default multi-node
   Socket.IO adapter.
 - Treating realtime events as a client-side source of truth.
+- Enabling the example schedule by default or treating its example ticket input
+  as a product authentication system.
 
 ## Architecture
 
@@ -144,6 +149,19 @@ The Go worker is intentionally not a second implementation of application
 usecases. Jobs that need a domain mutation either use a narrowly defined API
 boundary or are designed as Go-specific work from the outset; product code must
 not silently encode the same business rule in both languages.
+
+### Opt-in worked example
+
+The boilerplate includes exactly one clearly named example contract:
+`example.realtime-notification.v1`. Its JSON args contain `resourceId` and
+`workspaceId`; it does not write a Prisma model. A manual Elysia example endpoint
+can enqueue it, and the Bun scheduler can enqueue it only when
+`ENABLE_EXAMPLE_SCHEDULE=true` (default false). The Go worker validates the
+matching struct and, after successful completion, POSTs its `resource.updated`
+event to Elysia. Elysia relays the validated event to Socket.IO. A web example
+page accepts a product-issued ticket and demonstrates query invalidation on that
+event or reconnect. This is executable documentation, not a default product
+feature.
 
 ## Realtime Boundary
 
