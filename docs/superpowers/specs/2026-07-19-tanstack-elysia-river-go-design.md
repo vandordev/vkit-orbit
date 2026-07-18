@@ -57,7 +57,7 @@ Browser
                                   |                          transactional   apps/worker
                                   |                          River enqueue       (Go/River)
                                   |
-                                  '-- post-commit internal publish --> apps/realtime
+                                  '-- authenticated publish --> apps/realtime
 
 apps/scheduler (Bun/TypeScript) -- River enqueue --> PostgreSQL/River tables
 apps/migrate (Go, one-shot) -- Prisma + River migrations --> PostgreSQL
@@ -69,7 +69,8 @@ apps/migrate (Go, one-shot) -- Prisma + River migrations --> PostgreSQL
   clients, and the `/api/*` server route handler that delegates to embedded
   Elysia. It owns no database or business logic.
 - `apps/api` owns Elysia routes, validation, response mapping, request IDs,
-  logging, health endpoints, and API-to-realtime publication.
+  logging, health endpoints, an authenticated worker-notification endpoint, and
+  forwarding validated notifications to realtime.
 - `packages/application` continues to own TypeScript business rules and
   transactional mutation usecases. It does not import Elysia, TanStack Start,
   or Go code.
@@ -146,11 +147,17 @@ not silently encode the same business rule in both languages.
 
 ## Realtime Boundary
 
-After a successful transaction commits, Elysia publishes a validated event to
-the Socket.IO runtime's authenticated internal endpoint. The realtime service
-emits only to contract-selected rooms after ticket verification and
-product-supplied room authorization. The default authorization hook denies room
-joins until a product supplies its rule.
+Elysia is the sole realtime gateway. It exposes an authenticated internal
+notification endpoint for the Go worker. After a River job succeeds, the worker
+POSTs a versioned event envelope to this endpoint; it never contacts Socket.IO
+directly. Elysia validates the worker credential and event contract, then
+forwards the event to the Socket.IO runtime's authenticated internal publish
+endpoint. Elysia may use this same forwarding path for events caused by a
+successful HTTP mutation, but only after its database transaction commits.
+
+The realtime service emits only to contract-selected rooms after ticket
+verification and product-supplied room authorization. The default authorization
+hook denies room joins until a product supplies its rule.
 
 Events are signals for clients to invalidate/refetch API-backed read models.
 They do not replicate authoritative state, and reconnect always triggers a
@@ -178,9 +185,10 @@ same runtime boundaries.
   response semantics; Elysia owns all business and request-level failures.
 - River owns retry, backoff, and failure state. All Go job handlers must be
   idempotent.
-- Realtime publication occurs post-commit so aborted transactions cannot produce
-  false events. Publication failure is logged and observable; clients can still
-  obtain authoritative data through HTTP.
+- Workers notify Elysia only after a River job succeeds. API-originated events
+  are forwarded only post-commit, so aborted transactions cannot produce false
+  events. Notification or publication failure is logged and observable; clients
+  can still obtain authoritative data through HTTP.
 
 ## Verification
 
@@ -193,7 +201,8 @@ same runtime boundaries.
 - Test Go River handlers for decoding, idempotency, retry-safe behavior, and
   registration.
 - Test migration orchestration against an empty PostgreSQL instance.
-- Test realtime publisher authentication, ticket validation, room authorization,
-  and reconnect-driven HTTP resynchronization.
+- Test the Elysia worker-notification endpoint for authentication and event
+  validation, then test forwarding, Socket.IO ticket/room authorization, and
+  reconnect-driven HTTP resynchronization.
 - Before integration, run focused tests followed by `task quality` and
   `task build`.
