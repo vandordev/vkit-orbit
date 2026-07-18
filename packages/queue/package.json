@@ -11,7 +11,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "pg-boss": "^12.26.0"
+    "@riverqueue/driver-prisma": "0.1.0",
+    "@repo/database": "*",
+    "riverqueue": "0.1.0",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",

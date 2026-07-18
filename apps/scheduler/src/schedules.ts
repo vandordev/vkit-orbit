@@ -1,6 +1,6 @@
-import type { QueueClient } from "@repo/queue";
+import type { RiverInsertClient } from "@repo/queue";
 
-export async function registerSchedules(queue: Pick<QueueClient, "schedule">): Promise<void> {
-  void queue;
-  // Product features register enqueue-only schedules here.
+export function registerSchedules(queue: RiverInsertClient): () => void {
+	void queue;
+	return () => {};
 }

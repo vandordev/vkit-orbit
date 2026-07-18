@@ -1,4 +1,2 @@
-export { createQueue } from "./client";
-export type { QueueClient } from "./client";
-export { jobNames } from "./jobs";
-export type { JobName } from "./jobs";
+export { createRiverClient, defineJob, enqueue, enqueueInTransaction } from "./river";
+export type { JobContract, RiverInsertClient } from "./river";

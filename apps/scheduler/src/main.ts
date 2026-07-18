@@ -1,18 +1,19 @@
 import { createSchedulerConfig } from "@repo/config";
-import { createQueue } from "@repo/queue";
+import { prisma } from "@repo/database";
+import { createRiverClient } from "@repo/queue";
 
 import { registerSchedules } from "./schedules";
 
 const config = createSchedulerConfig(process.env);
-const queue = createQueue(config.DATABASE_URL);
+const river = createRiverClient(prisma);
+const stopSchedules = registerSchedules(river);
 
-await queue.start();
-await registerSchedules(queue);
-
-async function shutdown() {
-  await queue.stop();
-  process.exit(0);
+function shutdown() {
+	stopSchedules();
+	void prisma.$disconnect().finally(() => process.exit(0));
 }
 
 process.once("SIGINT", shutdown);
 process.once("SIGTERM", shutdown);
+
+void config;
