@@ -45,17 +45,17 @@ runtime patterns. Do not copy either repository wholesale.
 ```text
 Browser
   |-- Socket.IO --> apps/realtime
-  |-- same-origin /api/* --> apps/web (TanStack Start proxy)
+  '-- same-origin /api/* --> apps/web (TanStack Start route handler)
                                   |
                                   v
-                             apps/api (Elysia) --> Prisma --> PostgreSQL
-                                  |                  |            |
-                                  |                  |            v
-                                  |                  |       River tables
-                                  |                  |            |
-                                  |                  v            v
-                                  |             transactional   apps/worker
-                                  |             River enqueue       (Go/River)
+                             apps/api (embedded Elysia) --> Prisma --> PostgreSQL
+                                  |                               |            |
+                                  |                               |            v
+                                  |                               |       River tables
+                                  |                               |            |
+                                  |                               v            v
+                                  |                          transactional   apps/worker
+                                  |                          River enqueue       (Go/River)
                                   |
                                   '-- post-commit internal publish --> apps/realtime
 
@@ -66,8 +66,8 @@ apps/migrate (Go, one-shot) -- Prisma + River migrations --> PostgreSQL
 ### Workspace ownership
 
 - `apps/web` owns TanStack Start routes, Tailwind/shadcn UI, browser data
-  clients, and the narrowly scoped `/api/*` reverse proxy. It owns no database
-  or business logic.
+  clients, and the `/api/*` server route handler that delegates to embedded
+  Elysia. It owns no database or business logic.
 - `apps/api` owns Elysia routes, validation, response mapping, request IDs,
   logging, health endpoints, and API-to-realtime publication.
 - `packages/application` continues to own TypeScript business rules and
@@ -102,23 +102,27 @@ type ApiFailure = {
 };
 ```
 
-TanStack Start is the sole public web origin. Its `/api/*` proxy forwards
-requests, response status, and response bodies to the independently deployable
-Elysia API. It does not define a second set of business routes or transform
-successful API responses. If the API is unreachable, it returns a controlled
-gateway failure. This keeps browser calls same-origin while allowing the API to
-scale and deploy independently.
+TanStack Start is the sole public web origin and embeds Elysia within its
+`/api/*` server route handler. The handler delegates each supported HTTP method
+directly to `app.fetch(request)`; it does not proxy across a network, define a
+second set of business routes, or transform successful API responses. `apps/api`
+exports the Elysia app factory and application type, but it is not a separate
+long-running HTTP process in the default topology.
+
+Eden uses an isomorphic client: server loaders call the embedded app directly
+without HTTP overhead, while browser components call the same-origin `/api/*`
+route through HTTP. This keeps one typed API boundary for both environments.
 
 Read flow:
 
 ```text
-Browser -> TanStack Start proxy -> Elysia query route -> Prisma -> PostgreSQL
+Browser -> TanStack Start Elysia route handler -> Prisma -> PostgreSQL
 ```
 
 Mutation flow:
 
 ```text
-Browser -> proxy -> Elysia validation -> TypeScript usecase -> Prisma transaction
+Browser -> embedded Elysia validation -> TypeScript usecase -> Prisma transaction
 ```
 
 ## River Queue Boundary
@@ -170,8 +174,8 @@ same runtime boundaries.
 
 - Elysia maps validation, known usecase, not-found, and unexpected failures to
   the standard failure envelope without exposing sensitive details.
-- The proxy preserves API response semantics and only produces a gateway error
-  for proxy-level failures.
+- The TanStack Start route handler delegates to Elysia without changing API
+  response semantics; Elysia owns all business and request-level failures.
 - River owns retry, backoff, and failure state. All Go job handlers must be
   idempotent.
 - Realtime publication occurs post-commit so aborted transactions cannot produce
@@ -182,8 +186,8 @@ same runtime boundaries.
 
 - Test Elysia routes and TypeScript usecases for validation, envelopes,
   transactions, and transactional enqueue behavior.
-- Test the TanStack Start proxy for forwarded method/path/status/body and API
-  unavailability behavior.
+- Test the TanStack Start route handler for supported-method delegation to
+  `app.fetch`, the Elysia response body/status, and same-origin browser access.
 - Test River TypeScript job contract validation and scheduler enqueue/uniqueness
   behavior.
 - Test Go River handlers for decoding, idempotency, retry-safe behavior, and
