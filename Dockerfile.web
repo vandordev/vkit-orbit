@@ -1,39 +1,28 @@
 # syntax=docker/dockerfile:1.11
-FROM oven/bun:1.1.45-alpine AS base
+FROM oven/bun:1.3.14-alpine AS base
 WORKDIR /app
-FROM base AS prepare
+FROM base AS prune
 COPY . .
-RUN --mount=type=cache,id=bun-web-prune,target=/root/.bun/install/cache \
-    bunx turbo@2.8.1 prune web --docker
+RUN bunx turbo@2.10.4 prune web --docker
 FROM base AS deps
-COPY --from=prepare /app/out/json/ ./
-RUN --mount=type=cache,id=bun-web-install,target=/root/.bun/install/cache \
-    bun install --frozen-lockfile --ignore-scripts
-FROM oven/bun:1.1.45-alpine AS builder
-WORKDIR /app
+COPY --from=prune /app/out/json/ ./
+RUN bun install --frozen-lockfile --ignore-scripts
+FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=prepare /app/out/full/ ./
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ARG NEXT_PUBLIC_APP_URL
-ARG DATABASE_URL
-ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
-ENV DATABASE_URL=$DATABASE_URL
-RUN cd packages/database && ../../node_modules/.bin/prisma generate
-COPY config /app/config
-RUN --mount=type=cache,id=next-web-build,target=/app/apps/web/.next/cache \
-    cd apps/web && NEXT_PRIVATE_SKIP_PATCHING=1 bun run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun run next build
-FROM oven/bun:1.1.45-alpine AS runner
+COPY --from=prune /app/out/full/ ./
+ARG DATABASE_URL=postgresql://boilerplate:boilerplate@db:5432/boilerplate
+ENV DATABASE_URL=$DATABASE_URL NODE_ENV=production
+RUN bun run --cwd packages/database db:generate
+RUN bun run --cwd apps/web build
+FROM oven/bun:1.3.14-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production
-ENV PORT=4100
-ENV HOSTNAME=0.0.0.0
-RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
-COPY --from=builder --chown=nextjs:nodejs /app/packages/config ./packages/config
-COPY --from=builder --chown=nextjs:nodejs /app/config /app/config
-USER nextjs
+ENV NODE_ENV=production PORT=4100 HOSTNAME=0.0.0.0
+RUN addgroup -S app && adduser -S app -G app
+COPY --from=builder --chown=app:app /app/node_modules ./node_modules
+COPY --from=builder --chown=app:app /app/.output ./.output
+COPY --from=builder --chown=app:app /app/packages/config ./packages/config
+COPY --from=builder --chown=app:app /app/config ./config
+COPY --from=builder --chown=app:app /app/package.json ./package.json
+USER app
 EXPOSE 4100
-CMD ["bun", "run", "packages/config/src/run.ts", "--modules", "base,web,api,storage", "--", "bun", "run", "apps/web/server.js"]
+CMD ["bun", "run", "packages/config/src/run.ts", "--modules", "base,web,api,storage", "--", "bun", ".output/server/index.mjs"]

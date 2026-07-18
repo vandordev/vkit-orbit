@@ -13,77 +13,80 @@ services:
       timeout: 5s
       retries: 10
 
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    environment:
+      DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
+    depends_on:
+      db:
+        condition: service_healthy
+
   web:
     build:
       context: .
       dockerfile: Dockerfile.web
       args:
-        DATABASE_URL: ${DATABASE_URL}
-        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:4100}
-    env_file:
-      - .env
+        DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
+    env_file: [.env]
     environment:
       NODE_ENV: production
       PORT: 4100
       HOSTNAME: 0.0.0.0
-      NEXT_PUBLIC_APP_URL: http://localhost:4100
       DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
-    ports:
-      - "4100:4100"
+      WORKER_NOTIFICATION_API_KEY: ${WORKER_NOTIFICATION_API_KEY:-local-worker-key}
+      REALTIME_INTERNAL_URL: http://realtime:4102
+      REALTIME_PUBLISH_API_KEY: ${REALTIME_PUBLISH_API_KEY:-local-realtime-key}
+      VITE_REALTIME_URL: ${VITE_REALTIME_URL:-http://localhost:4102}
+    ports: ["4100:4100"]
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          'node -e "fetch(''http://127.0.0.1:4100'').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"',
-        ]
+      test: ["CMD-SHELL", "bun -e \"fetch('http://127.0.0.1:4100/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   worker:
-    profiles: ["jobs"]
+    profiles: [jobs]
     build:
       context: .
       dockerfile: Dockerfile.worker
-    env_file:
-      - .env
+    env_file: [.env]
     environment:
-      NODE_ENV: production
       DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
+      WORKER_NOTIFICATION_URL: http://web:4100/api/internal/worker-events
+      WORKER_NOTIFICATION_API_KEY: ${WORKER_NOTIFICATION_API_KEY:-local-worker-key}
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   scheduler:
-    profiles: ["jobs"]
+    profiles: [jobs]
     build:
       context: .
       dockerfile: Dockerfile.scheduler
-    env_file:
-      - .env
+    env_file: [.env]
     environment:
-      NODE_ENV: production
       DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
     depends_on:
-      db:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   realtime:
-    profiles: ["realtime"]
+    profiles: [realtime]
     build:
       context: .
       dockerfile: Dockerfile.realtime
-    env_file:
-      - .env
+    env_file: [.env]
     environment:
-      NODE_ENV: production
       REALTIME_PORT: 4102
-      DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
-    ports:
-      - "4102:4102"
+      REALTIME_TICKET_SECRET: ${REALTIME_TICKET_SECRET:-local-ticket-secret}
+      REALTIME_PUBLISH_API_KEY: ${REALTIME_PUBLISH_API_KEY:-local-realtime-key}
+      REALTIME_CORS_ORIGIN: ${REALTIME_CORS_ORIGIN:-http://localhost:4100}
+    ports: ["4102:4102"]
 
 volumes:
   postgres-data:

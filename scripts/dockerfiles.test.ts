@@ -4,15 +4,14 @@ import { expect, test } from "bun:test";
 
 const root = join(import.meta.dir, "..");
 
-for (const [file, workspace] of [["Dockerfile.api", "@repo/api"], ["Dockerfile.worker", "@repo/worker"], ["Dockerfile.scheduler", "@repo/scheduler"]] as const) {
-  test(`${file} prunes and ships only production dependencies`, () => {
-    const dockerfile = readFileSync(join(root, file), "utf8");
-    expect(dockerfile).toContain(`turbo@2.8.1 prune ${workspace} --docker`);
-    expect(dockerfile).toContain("bun install --production --frozen-lockfile --ignore-scripts");
-    expect(dockerfile).not.toContain("COPY --from=builder /app/node_modules ./node_modules");
-  });
-}
+test("ships the five runtime Dockerfiles without a standalone API image", () => {
+	for (const file of ["Dockerfile.web", "Dockerfile.scheduler", "Dockerfile.realtime", "Dockerfile.worker", "Dockerfile.migrate"]) {
+		expect(readFileSync(join(root, file), "utf8")).toContain("FROM");
+	}
+	expect(() => readFileSync(join(root, "Dockerfile.api"), "utf8")).toThrow();
+});
 
-test("Dockerfile.web builds from a pruned graph", () => {
-  expect(readFileSync(join(root, "Dockerfile.web"), "utf8")).toContain("turbo@2.8.1 prune web --docker");
+test("uses Bun 1.3.14 and Go 1.25.7 runtime bases", () => {
+	expect(readFileSync(join(root, "Dockerfile.web"), "utf8")).toContain("oven/bun:1.3.14");
+	expect(readFileSync(join(root, "Dockerfile.worker"), "utf8")).toContain("golang:1.25.7");
 });

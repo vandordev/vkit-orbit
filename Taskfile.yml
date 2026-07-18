@@ -16,8 +16,10 @@ tasks:
     desc: Verify required tools and local runtime configuration
     cmds:
       - |
-        rtk test -f .env || { rtk echo "missing .env; run: cp .env.example .env" >&2; exit 1; }
-        for tool in go bun task docker; do rtk command -v "$tool" >/dev/null || { rtk echo "missing required tool: $tool" >&2; exit 1; }; done
+        rtk proxy test -f .env || { rtk proxy echo "missing .env; run: cp .env.example .env" >&2; exit 1; }
+        rtk go version >/dev/null
+        rtk bun --version >/dev/null
+        rtk task --version >/dev/null
         rtk docker compose version >/dev/null
         rtk go test ./apps/migrate -run TestRunAppliesPrismaBeforeRiver -count=1
 
@@ -141,3 +143,33 @@ tasks:
     desc: Check the embedded Elysia status endpoint
     cmds:
       - rtk curl --fail http://localhost:4100/api/status
+
+  compose:up:
+    desc: Build and run db, migrate, and web
+    cmds:
+      - rtk docker compose up --build
+
+  compose:up:detached:
+    desc: Build and run the default stack in the background
+    cmds:
+      - rtk docker compose up --build -d
+
+  compose:jobs:
+    desc: Build and run optional Go worker and Bun scheduler
+    cmds:
+      - rtk docker compose --profile jobs up --build
+
+  compose:realtime:
+    desc: Build and run optional Socket.IO runtime
+    cmds:
+      - rtk docker compose --profile realtime up --build
+
+  compose:down:
+    desc: Stop the Compose stack
+    cmds:
+      - rtk docker compose down
+
+  compose:logs:
+    desc: Follow Compose logs
+    cmds:
+      - rtk docker compose logs -f

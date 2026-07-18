@@ -1,6 +1,6 @@
-# Scheduler Rules
+# Scheduler
 
-- Schedulers own time expressions and enqueue options only.
-- Schedulers must never import Prisma or application usecases.
-- Every schedule targets a named queue job and can be tested with a fake queue boundary.
-- Keep schedules idempotent and safe to register more than once.
+The Bun scheduler creates River TypeScript producers and owns only schedules.
+It does not import Prisma or application usecases. The example schedule is
+disabled unless `ENABLE_EXAMPLE_SCHEDULE=true`; schedules return cleanup
+functions and handle SIGINT/SIGTERM.
