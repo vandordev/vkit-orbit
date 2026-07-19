@@ -1,12 +1,16 @@
 # Hybrid TanStack Start, Elysia, River Go Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Execute this plan inline with `superpowers:executing-plans`; do not create a worktree or dispatch subagents for this repository. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Convert the vkit-rapid boilerplate into a TanStack Start application with embedded Elysia, Bun/River job producers, a Go/River worker, Socket.IO notifications relayed by Elysia, and a one-shot migration runtime.
 
 **Architecture:** `apps/web` is the only public server and mounts the Elysia app through a TanStack Start `/api/$` server route. Elysia and the Bun scheduler enqueue typed River jobs into PostgreSQL; a Go/River worker consumes Go-specific work and POSTs completed-event envelopes to Elysia, which validates and forwards them to the isolated Socket.IO runtime. The migration runtime first executes Prisma deploy migrations and then applies River migrations.
 
 **Tech Stack:** Bun 1.3.14, TanStack Start, Vite/Nitro, React 19, Tailwind CSS 4, shadcn/ui primitives, Elysia/Eden, Prisma/PostgreSQL, River TypeScript drivers, Go 1.25.7, pgx, River Go, Socket.IO, Docker Compose, Task.
+
+**Status:** Implemented on `main`. All task steps are complete; focused tests,
+`task quality`, `task build`, and Compose smoke checks passed. See the
+repository README and AGENTS.md for the current operational source of truth.
 
 ---
 
@@ -15,9 +19,9 @@
 - `apps/web/src/routes/{api.$,health}.ts` own TanStack Start's thin Elysia route adapters and Eden's isomorphic client.
 - `apps/web/src/{router.tsx,server.ts,styles.css,components/**,routes/**}` replace Next.js routing and Mantine with TanStack Start and shadcn/Tailwind.
 - `apps/api/src/app.ts` remains the transport-neutral Elysia factory; `src/routes/internal-notifications.ts` accepts authenticated worker completion notifications; `src/lib/realtime-publisher.ts` forwards validated events to Socket.IO.
-- `packages/queue/src/{contracts.ts,river.ts,index.ts}` defines validated, versioned River job contracts and the TypeScript producer used by Elysia and the scheduler.
+- `packages/queue/src/{river.ts,example-realtime-notification.ts,index.ts}` defines validated, versioned River job contracts and the TypeScript producer used by Elysia and the scheduler.
 - `contracts/jobs/README.md` documents cross-language `kind`/JSON versioning rules.
-- `examples/realtime-notification/**` contains the one opt-in worked-example API payload, schedule, Go handler, and web walkthrough references; it is the only baseline job contract.
+- `packages/queue/src/example-realtime-notification.ts`, `apps/api/src/routes/examples.ts`, `apps/scheduler/src/schedules.ts`, `internal/worker/example_realtime_notification.go`, and `apps/web/src/routes/examples/realtime.tsx` contain the one opt-in worked example; it is the only baseline job contract.
 - `go.mod`, `internal/{river,notify}/**`, and `apps/{worker,migrate}/main.go` own Go/River consumption, internal Elysia notification, and Prisma-plus-River migration orchestration.
 - `apps/scheduler/src/**` remains Bun-only and enqueues River contracts; it never imports Prisma or application usecases.
 - `packages/realtime/src/**` and `apps/realtime/src/**` retain Socket.IO, but Elysia becomes its sole upstream publisher.
@@ -30,7 +34,7 @@
 - Modify: `package.json`, `Taskfile.yml`, `turbo.json`, `.gitignore`, `.env.example`
 - Test: `apps/migrate/main_test.go`
 
-- [ ] **Step 1: Write the failing migration-orchestration test.**
+- [x] **Step 1: Write the failing migration-orchestration test.**
 
 ```go
 func TestRunAppliesPrismaBeforeRiver(t *testing.T) {
@@ -47,13 +51,13 @@ func TestRunAppliesPrismaBeforeRiver(t *testing.T) {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails.**
+- [x] **Step 2: Run the test to verify it fails.**
 
 Run: `rtk go test ./apps/migrate -run TestRunAppliesPrismaBeforeRiver -count=1`
 
 Expected: FAIL because the Go module and `run` function do not exist.
 
-- [ ] **Step 3: Add the root Go module and minimal migration command.**
+- [x] **Step 3: Add the root Go module and minimal migration command.**
 
 Create `go.mod` with the fixed module identity and dependencies:
 
@@ -81,7 +85,7 @@ context, reads `DATABASE_URL`, calls `run`, and exits non-zero on error. Keep
 the command runner and River migrator function parameters injectable as in the
 test.
 
-- [ ] **Step 4: Replace root scripts and Task commands.**
+- [x] **Step 4: Replace root scripts and Task commands.**
 
 Update root `package.json` to pin `bun@1.3.14`, remove Next/standalone-API
 scripts, and retain only TypeScript runtime commands: `dev:web`, `dev:scheduler`,
@@ -122,18 +126,18 @@ Set Turbo web build outputs to `.output/**` and `.vite/**`, remove Next-specific
 environment/output entries, and add `go.sum`, `.air/`, `.output/`, `.vite/`, and
 `apps/web/src/routeTree.gen.ts` to the appropriate generated-file rules.
 
-- [ ] **Step 5: Run focused verification.**
+- [x] **Step 5: Run focused verification.**
 
 Run: `rtk go mod tidy && rtk go test ./apps/migrate -count=1 && rtk task --list`
 
 Expected: migration test passes and `migrate`, `dev:worker`, `test:go`, and
 `build:go` appear in the command list.
 
-- [ ] **Step 6: Commit the toolchain baseline.**
+- [x] **Step 6: Commit the toolchain baseline.**
 
 ```bash
-git add go.mod go.sum apps/migrate dev/air/worker.toml package.json Taskfile.yml turbo.json .gitignore .env.example
-git commit -m "build: add go river toolchain"
+rtk git add go.mod go.sum apps/migrate dev/air/worker.toml package.json Taskfile.yml turbo.json .gitignore .env.example
+rtk git commit -m "build: add go river toolchain"
 ```
 
 ### Task 2: Replace Next.js/Mantine with TanStack Start and shadcn/Tailwind
@@ -144,7 +148,7 @@ git commit -m "build: add go river toolchain"
 - Modify: `apps/web/package.json`, `apps/web/tsconfig.json`, `apps/web/eslint.config.js`
 - Test: `apps/web/vite.config.test.ts`, `apps/web/src/routes/__root.test.tsx`
 
-- [ ] **Step 1: Write failing configuration and root-route tests.**
+- [x] **Step 1: Write failing configuration and root-route tests.**
 
 ```ts
 test("uses TanStack Start with Bun Nitro output", async () => {
@@ -160,13 +164,13 @@ test("uses QueryProvider and does not retain Mantine", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail.**
+- [x] **Step 2: Run the tests to verify they fail.**
 
 Run: `rtk bun test apps/web/vite.config.test.ts apps/web/src/routes/__root.test.tsx`
 
 Expected: FAIL because Vite/TanStack route files are absent.
 
-- [ ] **Step 3: Install and configure the TanStack Start web runtime.**
+- [x] **Step 3: Install and configure the TanStack Start web runtime.**
 
 Replace `apps/web/package.json` dependencies with TanStack Start/router/query,
 Vite, Nitro, `@tailwindcss/vite`, Tailwind, `class-variance-authority`, `clsx`,
@@ -193,18 +197,18 @@ Button primitive copied from the Tango baseline. Root and index routes must use
 `QueryProvider`, `HeadContent`, `Scripts`, and an accessible public boilerplate
 landing page.
 
-- [ ] **Step 4: Make the tests pass and generate routes.**
+- [x] **Step 4: Make the tests pass and generate routes.**
 
 Run: `rtk bun install && rtk bun test apps/web/vite.config.test.ts apps/web/src/routes/__root.test.tsx && rtk bun run --cwd apps/web check-types`
 
 Expected: tests pass and `src/routeTree.gen.ts` is generated by the router
 plugin/typecheck without an unstaged diff after it is added to Git.
 
-- [ ] **Step 5: Commit the web conversion.**
+- [x] **Step 5: Commit the web conversion.**
 
 ```bash
-git add apps/web package.json bun.lock
-git commit -m "feat(web): adopt tanstack start and shadcn baseline"
+rtk git add apps/web package.json bun.lock
+rtk git commit -m "feat(web): adopt tanstack start and shadcn baseline"
 ```
 
 ### Task 3: Embed Elysia in the TanStack Start API route and preserve Eden types
@@ -214,7 +218,7 @@ git commit -m "feat(web): adopt tanstack start and shadcn baseline"
 - Create: `apps/web/src/routes/api.$.ts`, `apps/web/src/routes/api.$.test.ts`, `apps/web/src/routes/health.ts`, `apps/web/src/routes/health.test.ts`, `apps/web/src/lib/api.ts`
 - Modify: `apps/api/src/app.ts`, `apps/api/src/app.test.ts`, `apps/api/package.json`, `apps/web/tsconfig.json`, `.agent/{architecture,api,web,config}.md`
 
-- [ ] **Step 1: Write the failing route-adapter test.**
+- [x] **Step 1: Write the failing route-adapter test.**
 
 ```ts
 test("delegates every supported method to Elysia", async () => {
@@ -235,13 +239,13 @@ test("serves Elysia health through the TanStack Start health route", async () =>
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails.**
+- [x] **Step 2: Run the test to verify it fails.**
 
 Run: `rtk bun test apps/web/src/routes/api.$.test.ts`
 
 Expected: FAIL because `api.$.ts` does not exist.
 
-- [ ] **Step 3: Add the embedded handler and isomorphic Eden factory.**
+- [x] **Step 3: Add the embedded handler and isomorphic Eden factory.**
 
 Create `apps/web/src/routes/api.$.ts` with `createFileRoute("/api/$")`, import
 `app`/`App` from `@repo/api`, and expose GET, POST, PUT, PATCH, DELETE, OPTIONS,
@@ -269,18 +273,18 @@ assert the existing `/api` response envelope remains unchanged. Update agent
 documents to replace Next.js terminology with TanStack Start and the route file
 above.
 
-- [ ] **Step 4: Run focused API and web verification.**
+- [x] **Step 4: Run focused API and web verification.**
 
 Run: `rtk bun test apps/api/src/app.test.ts apps/web/src/routes/api.$.test.ts && rtk bun run --cwd apps/web check-types`
 
 Expected: tests pass; a server-side Eden call avoids network I/O and a browser
 Eden call targets the same-origin `/api` handler.
 
-- [ ] **Step 5: Commit embedded Elysia.**
+- [x] **Step 5: Commit embedded Elysia.**
 
 ```bash
-git add apps/api apps/web .agent
-git commit -m "feat(api): embed elysia in tanstack start"
+rtk git add apps/api apps/web .agent
+rtk git commit -m "feat(api): embed elysia in tanstack start"
 ```
 
 ### Task 4: Replace pg-boss with typed River producers and versioned contracts
@@ -290,7 +294,7 @@ git commit -m "feat(api): embed elysia in tanstack start"
 - Create: `packages/queue/src/contracts.ts`, `packages/queue/src/river.ts`, `packages/queue/src/river.test.ts`, `contracts/jobs/README.md`
 - Modify: `packages/queue/src/index.ts`, `packages/queue/package.json`, `apps/scheduler/src/{main,schedules,schedules.test}.ts`, `apps/scheduler/package.json`
 
-- [ ] **Step 1: Write the failing producer tests.**
+- [x] **Step 1: Write the failing producer tests.**
 
 ```ts
 const contract = defineJob("example.v1", z.object({ resourceId: z.string().uuid() }));
@@ -310,13 +314,13 @@ test("forwards the Prisma transaction to River insert", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails.**
+- [x] **Step 2: Run the test to verify it fails.**
 
 Run: `rtk bun test packages/queue/src/river.test.ts`
 
 Expected: FAIL because `defineJob` and `enqueue` do not exist.
 
-- [ ] **Step 3: Implement the River TypeScript-only producer boundary.**
+- [x] **Step 3: Implement the River TypeScript-only producer boundary.**
 
 Install `riverqueue`, `@riverqueue/driver-prisma`, and use `@repo/database`
 Prisma. Implement `defineJob(kind, schema)` to reject blank/whitespace kinds and
@@ -333,18 +337,18 @@ calls (`start`, `stop`, `work`, `schedule`). Write `contracts/jobs/README.md`
 with these invariants: stable `kind`, JSON-only payload, Zod producer validation,
 matching Go struct decoder, and a new `.vN` kind for breaking changes.
 
-- [ ] **Step 4: Run focused River producer verification.**
+- [x] **Step 4: Run focused River producer verification.**
 
 Run: `rtk bun test packages/queue apps/scheduler && rtk bun run --cwd packages/queue check-types && rtk bun run --cwd apps/scheduler check-types`
 
 Expected: all tests pass and `rg "pg-boss" package.json apps packages` returns
 no source/dependency match.
 
-- [ ] **Step 5: Commit the queue conversion.**
+- [x] **Step 5: Commit the queue conversion.**
 
 ```bash
-git add packages/queue apps/scheduler contracts/jobs package.json bun.lock
-git commit -m "feat(queue): enqueue river jobs from typescript"
+rtk git add packages/queue apps/scheduler contracts/jobs package.json bun.lock
+rtk git commit -m "feat(queue): enqueue river jobs from typescript"
 ```
 
 ### Task 5: Add the opt-in end-to-end realtime-notification example
@@ -353,7 +357,7 @@ git commit -m "feat(queue): enqueue river jobs from typescript"
 - Create: `packages/queue/src/example-realtime-notification.ts`, `packages/queue/src/example-realtime-notification.test.ts`, `apps/api/src/routes/examples.ts`, `apps/api/src/routes/examples.test.ts`
 - Modify: `packages/queue/src/index.ts`, `apps/scheduler/src/{main,schedules,schedules.test}.ts`, `apps/api/src/app.ts`, `config/scheduler.yaml`, `packages/config/src/scheduler.ts`, `.env.example`, `README.md`
 
-- [ ] **Step 1: Write failing tests for every example boundary.**
+- [x] **Step 1: Write failing tests for every example boundary.**
 
 ```ts
 test("enqueues the example job from Elysia", async () => {
@@ -376,13 +380,13 @@ test("does not register the example schedule unless enabled", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the example tests to verify they fail.**
+- [x] **Step 2: Run the example tests to verify they fail.**
 
 Run: `rtk bun test packages/queue/src/example-realtime-notification.test.ts apps/api/src/routes/examples.test.ts apps/scheduler/src/schedules.test.ts`
 
 Expected: FAIL because the opt-in contract, route, and schedule do not exist.
 
-- [ ] **Step 3: Implement the named contract, manual API endpoint, and disabled-by-default scheduler.**
+- [x] **Step 3: Implement the named contract, manual API endpoint, and disabled-by-default scheduler.**
 
 In `packages/queue/src/example-realtime-notification.ts`, export exactly:
 
@@ -409,7 +413,7 @@ the same enqueue once at startup, and returns a cleanup function. When disabled,
 it registers neither timer nor job. The scheduler main process calls that cleanup
 on SIGINT/SIGTERM.
 
-- [ ] **Step 4: Verify enabled scheduling and commit the producer-side example.**
+- [x] **Step 4: Verify enabled scheduling and commit the producer-side example.**
 
 Extend the schedule test with `ENABLE_EXAMPLE_SCHEDULE: true`, a fake timer, and
 an assertion that startup invokes `enqueue(exampleRealtimeNotificationJob,
@@ -421,11 +425,11 @@ Run: `rtk bun test packages/queue apps/api apps/scheduler`
 Expected: manual enqueue and both disabled/enabled schedule behavior pass without
 a Prisma model.
 
-- [ ] **Step 5: Commit the producer-side example.**
+- [x] **Step 5: Commit the producer-side example.**
 
 ```bash
-git add packages/queue apps/api apps/scheduler config/scheduler.yaml packages/config/src/scheduler.ts .env.example README.md
-git commit -m "feat: add opt-in realtime job producer example"
+rtk git add packages/queue apps/api apps/scheduler config/scheduler.yaml packages/config/src/scheduler.ts .env.example README.md
+rtk git commit -m "feat: add opt-in realtime job producer example"
 ```
 
 ### Task 6: Add Go/River worker and authenticated Elysia notification client
@@ -435,7 +439,7 @@ git commit -m "feat: add opt-in realtime job producer example"
 - Delete: `apps/worker/src/**`, `apps/worker/package.json`, `apps/worker/tsconfig.json`, `apps/worker/eslint.config.js`
 - Modify: `.env.example`, `config/worker.yaml`, `README.md`, `.agent/worker.md`
 
-- [ ] **Step 1: Write failing Go tests for worker lifecycle and notification.**
+- [x] **Step 1: Write failing Go tests for worker lifecycle and notification.**
 
 ```go
 type notifyFunc func(context.Context, notify.Event) error
@@ -471,13 +475,13 @@ func TestExampleRealtimeNotificationWorkerNotifiesElysiaAfterSuccess(t *testing.
 }
 ```
 
-- [ ] **Step 2: Run the failing Go tests.**
+- [x] **Step 2: Run the failing Go tests.**
 
 Run: `rtk go test ./internal/notify ./internal/worker ./apps/worker -count=1`
 
 Expected: FAIL because worker packages are absent.
 
-- [ ] **Step 3: Implement the worker without product handlers.**
+- [x] **Step 3: Implement the worker without product handlers.**
 
 Implement `internal/river.NewWorkerClient` with a `database/sql` pool backed by
 the pgx stdlib driver, `riverdatabasesql.New(database)`, `river.NewWorkers()`, a
@@ -500,18 +504,18 @@ IDs, builds a UUID event ID and RFC3339Nano timestamp, then calls
 `Notifier.Notify`. Return the notification error unchanged so River retries a
 failed Elysia relay. Do not add a database write or other generic product worker.
 
-- [ ] **Step 4: Make tests pass and format Go.**
+- [x] **Step 4: Make tests pass and format Go.**
 
 Run: `rtk gofmt -w internal apps/worker && rtk go test ./internal/notify ./internal/river ./internal/worker ./apps/worker -count=1`
 
 Expected: all Go tests pass; no worker contains TypeScript usecase imports or
 Socket.IO connection code.
 
-- [ ] **Step 5: Commit the Go worker.**
+- [x] **Step 5: Commit the Go worker.**
 
 ```bash
-git add go.mod go.sum internal apps/worker dev/air/worker.toml .env.example config/worker.yaml README.md .agent/worker.md
-git commit -m "feat(worker): add go river runtime"
+rtk git add go.mod go.sum internal apps/worker dev/air/worker.toml .env.example config/worker.yaml README.md .agent/worker.md
+rtk git commit -m "feat(worker): add go river runtime"
 ```
 
 ### Task 7: Make Elysia the authenticated realtime gateway
@@ -520,7 +524,7 @@ git commit -m "feat(worker): add go river runtime"
 - Create: `apps/api/src/lib/realtime-publisher.ts`, `apps/api/src/lib/realtime-publisher.test.ts`, `apps/api/src/routes/internal-notifications.ts`, `apps/api/src/routes/internal-notifications.test.ts`
 - Modify: `apps/api/src/app.ts`, `apps/api/src/lib/env.ts`, `packages/config/src/api.ts`, `config/api.yaml`, `.env.example`, `packages/realtime/src/events.ts`, `packages/realtime/src/publisher.ts`
 
-- [ ] **Step 1: Write failing API gateway tests.**
+- [x] **Step 1: Write failing API gateway tests.**
 
 ```ts
 test("accepts an authenticated worker event and forwards it once", async () => {
@@ -547,14 +551,14 @@ test("returns retryable failure when the realtime publisher is unavailable", asy
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail.**
+- [x] **Step 2: Run the tests to verify they fail.**
 
 Run: `rtk bun test apps/api/src/routes/internal-notifications.test.ts`
 
 Expected: FAIL because the internal endpoint and injectable app factory do not
 exist.
 
-- [ ] **Step 3: Add the Elysia worker-notification route and publisher.**
+- [x] **Step 3: Add the Elysia worker-notification route and publisher.**
 
 Extend the existing `createApp` dependency object with `workerNotificationApiKey`
 and `publish`, and retain `app = createApp({})` as the production factory result.
@@ -574,7 +578,7 @@ When that publisher rejects a worker notification, map the error to the standard
 503 `{ success: false, error: "REALTIME_UNAVAILABLE", ... }` envelope so the Go
 handler returns an error and River retries the completion notification.
 
-- [ ] **Step 4: Run focused gateway verification.**
+- [x] **Step 4: Run focused gateway verification.**
 
 Run: `rtk bun test apps/api packages/realtime && rtk bun run --cwd apps/api check-types`
 
@@ -582,11 +586,11 @@ Expected: a valid worker completion reaches the injected publisher; wrong key,
 malformed JSON, malformed event, and rejected realtime publisher all have
 deterministic API responses/logging.
 
-- [ ] **Step 5: Commit the Elysia realtime gateway.**
+- [x] **Step 5: Commit the Elysia realtime gateway.**
 
 ```bash
-git add apps/api packages/config packages/realtime config/api.yaml .env.example
-git commit -m "feat(realtime): relay worker events through elysia"
+rtk git add apps/api packages/config packages/realtime config/api.yaml .env.example
+rtk git commit -m "feat(realtime): relay worker events through elysia"
 ```
 
 ### Task 8: Harden the Socket.IO consumer contract and browser refetch hook
@@ -595,7 +599,7 @@ git commit -m "feat(realtime): relay worker events through elysia"
 - Create: `apps/web/src/lib/realtime.ts`, `apps/web/src/lib/realtime.test.ts`, `apps/web/src/routes/examples/realtime.tsx`, `apps/web/src/routes/examples/realtime.test.tsx`
 - Modify: `apps/realtime/src/server.ts`, `apps/realtime/src/server.test.ts`, `apps/realtime/src/main.ts`, `apps/realtime/package.json`, `apps/web/package.json`, `apps/web/tsconfig.json`, `packages/realtime/src/events.ts`, `config/{web,realtime}.yaml`, `packages/config/src/realtime.ts`, `.env.example`, `README.md`
 
-- [ ] **Step 1: Write failing end-to-end relay and refetch tests.**
+- [x] **Step 1: Write failing end-to-end relay and refetch tests.**
 
 ```ts
 test("emits a validated event only to an authorized workspace room", async () => {
@@ -626,14 +630,14 @@ test("cleans up the example socket when its walkthrough unmounts", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail.**
+- [x] **Step 2: Run the tests to verify they fail.**
 
 Run: `rtk bun test apps/realtime/src/server.test.ts apps/web/src/lib/realtime.test.ts`
 
 Expected: the browser hook does not exist and the server has no authorized
 delivery assertion.
 
-- [ ] **Step 3: Implement signal-only Socket.IO consumption.**
+- [x] **Step 3: Implement signal-only Socket.IO consumption.**
 
 Keep `POST /internal/events` private to the Elysia publisher API key. Parse the
 same event schema, derive rooms through `roomsForEvent`, and emit
@@ -663,7 +667,7 @@ calls the typed `POST /api/examples/realtime-notifications` Eden endpoint. The
 page states that it is opt-in, has no default navigation link, does not mint a
 ticket, and returns the socket cleanup function during unmount.
 
-- [ ] **Step 4: Run focused realtime verification.**
+- [x] **Step 4: Run focused realtime verification.**
 
 Run: `rtk bun test apps/realtime packages/realtime apps/web/src/lib/realtime.test.ts apps/web/src/routes/examples/realtime.test.tsx && rtk bun run --cwd apps/realtime check-types`
 
@@ -671,11 +675,11 @@ Expected: unauthorized joins receive `{ ok: false }`; invalid publisher calls
 are rejected; an authorized client receives events and reconnect/event triggers
 only query invalidation; the example route closes its socket on unmount.
 
-- [ ] **Step 5: Commit realtime client/server behavior.**
+- [x] **Step 5: Commit realtime client/server behavior.**
 
 ```bash
-git add apps/realtime apps/web packages/realtime README.md bun.lock
-git commit -m "feat(realtime): refetch after socket notifications"
+rtk git add apps/realtime apps/web packages/realtime README.md bun.lock
+rtk git commit -m "feat(realtime): refetch after socket notifications"
 ```
 
 ### Task 9: Containerize the five runtime topology and finish documentation
@@ -686,7 +690,7 @@ git commit -m "feat(realtime): refetch after socket notifications"
 - Modify: `Dockerfile.realtime`, `docker-compose.yml`, `README.md`, `AGENTS.md`, `.agent/{architecture,config,scheduler,ui,web,worker}.md`, `Taskfile.yml`, `config/{base,web,worker,scheduler,realtime}.yaml`
 - Test: `scripts/check-taskfile.test.ts` (create if no static command validation exists)
 
-- [ ] **Step 1: Write failing topology documentation/Taskfile tests.**
+- [x] **Step 1: Write failing topology documentation/Taskfile tests.**
 
 ```ts
 test("documents TanStack Start embedded Elysia and Go River worker", async () => {
@@ -699,13 +703,13 @@ test("documents TanStack Start embedded Elysia and Go River worker", async () =>
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails.**
+- [x] **Step 2: Run the test to verify it fails.**
 
 Run: `rtk bun test scripts/check-taskfile.test.ts`
 
 Expected: FAIL because the README and Taskfile still describe Next.js/pg-boss.
 
-- [ ] **Step 3: Build reproducible runtime images and Compose dependencies.**
+- [x] **Step 3: Build reproducible runtime images and Compose dependencies.**
 
 Use Bun 1.3.14/Turbo prune for web, scheduler, and realtime images; web builds
 Vite/Nitro and starts `.output/server/index.mjs`. Build the Go worker from
@@ -726,7 +730,7 @@ worker-notification gateway. Update all runtime YAML modules and `.env.example`
 `VITE_REALTIME_URL` and `REALTIME_CORS_ORIGIN` are the only browser/network
 origin values permitted to be public.
 
-- [ ] **Step 4: Run documentation and container checks.**
+- [x] **Step 4: Run documentation and container checks.**
 
 Run: `rtk bun test scripts/check-taskfile.test.ts && rtk docker compose config && rtk task doctor`
 
@@ -734,11 +738,11 @@ Expected: static test passes; Compose configuration has a one-shot migrate
 dependency and no exposed API port; doctor confirms Bun, Go, Task, Docker, and
 required environment configuration.
 
-- [ ] **Step 5: Commit the operating surface.**
+- [x] **Step 5: Commit the operating surface.**
 
 ```bash
-git add Dockerfile.* docker-compose.yml README.md AGENTS.md .agent config .env.example Taskfile.yml scripts
-git commit -m "docs: document hybrid runtime operations"
+rtk git add Dockerfile.* docker-compose.yml README.md AGENTS.md .agent config .env.example Taskfile.yml scripts
+rtk git commit -m "docs: document hybrid runtime operations"
 ```
 
 ### Task 10: Run end-to-end verification and record the template baseline
@@ -746,7 +750,7 @@ git commit -m "docs: document hybrid runtime operations"
 **Files:**
 - Modify: `README.md` only if verification exposes an inaccurate command/result
 
-- [ ] **Step 1: Run narrow tests in dependency order.**
+- [x] **Step 1: Run narrow tests in dependency order.**
 
 Run:
 
@@ -757,13 +761,13 @@ rtk go test ./... -count=1
 
 Expected: all TypeScript and Go tests pass.
 
-- [ ] **Step 2: Run repository quality checks.**
+- [x] **Step 2: Run repository quality checks.**
 
 Run: `rtk task quality`
 
 Expected: tests, linting, and typechecks pass with no generated-file diff.
 
-- [ ] **Step 3: Run build and Compose smoke tests.**
+- [x] **Step 3: Run build and Compose smoke tests.**
 
 Run:
 
@@ -779,12 +783,12 @@ rtk docker compose down
 Expected: web serves embedded Elysia health/status, migration completes before
 web/jobs start, and all containers stop cleanly.
 
-- [ ] **Step 4: Commit final verification-only corrections, if any.**
+- [x] **Step 4: Commit final verification-only corrections, if any.**
 
 ```bash
-git status --short
-git add README.md
-git commit -m "docs: correct hybrid boilerplate commands"
+rtk git status --short
+rtk git add README.md
+rtk git commit -m "docs: correct hybrid boilerplate commands"
 ```
 
 Only create this commit if verification required an actual README correction;

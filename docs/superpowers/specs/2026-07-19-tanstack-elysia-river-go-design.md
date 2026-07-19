@@ -95,8 +95,8 @@ apps/migrate (Go, one-shot) -- Prisma + River migrations --> PostgreSQL
 
 ## HTTP and Web Boundary
 
-Elysia owns all business endpoints under `/api/v1/*`; process health endpoints
-remain under `/health` and `/health/ready`. It returns the existing envelope:
+Elysia owns all business endpoints under `/api/*`; process health is exposed at
+`/health`. It returns the existing envelope:
 
 ```ts
 type ApiSuccess<T> = { success: true; data: T };
@@ -186,14 +186,17 @@ multi-instance Socket.IO adapter is an explicit future extension.
 
 YAML-first configuration and secret interpolation remain the configuration
 system. Runtime modules are scoped to `web`, `api`, `scheduler`, `realtime`,
-`worker`, and `migrate`; browser-visible config remains limited to public
-values. `DATABASE_URL` is never exposed to browser code.
+and `worker`, with `storage` selected where needed; the one-shot migration
+runtime receives `DATABASE_URL` directly and runs Prisma and River migrations.
+Browser-visible config remains limited to deliberate public `VITE_*` values.
+`DATABASE_URL` is never exposed to browser code.
 
 Taskfile is the only supported command interface. It must expose focused
 install, doctor, migration, development, test, build, and quality commands for
 each runtime, plus an umbrella local-development command. Docker Compose runs
-PostgreSQL, migrations, API, web, and optional jobs/realtime profiles with the
-same runtime boundaries.
+PostgreSQL, one-shot migrations, web with embedded Elysia, and optional
+jobs/realtime profiles with the same runtime boundaries. There is no separate
+API service in the default Compose topology.
 
 ## Failure Handling
 

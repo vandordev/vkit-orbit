@@ -1,5 +1,9 @@
 # Optimized Runtime Images Implementation Plan
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (- [ ]) syntax for tracking.
 
 **Goal:** Use Turbo-pruned, production-only Docker images for all deployable runtimes.
@@ -242,4 +246,3 @@ Expected: all commands exit 0.
 git add Taskfile.yml README.md
 git commit -m "docs: describe optimized runtime images"
 ~~~
-

@@ -1,5 +1,9 @@
 # Optimized Runtime Images Design
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 ## Goal
 
 Make every deployable runtime image small, reproducible, and isolated to its own workspace dependency graph.
@@ -35,4 +39,3 @@ Dockerfile contract tests read the files as text and assert the pruner stage, pr
 - Bun tests validate the Dockerfile structural invariants.
 - `docker buildx build --load --platform=linux/amd64` succeeds for each available runtime image.
 - `docker image inspect` confirms final containers use the intended entrypoint and non-root user where configured.
-

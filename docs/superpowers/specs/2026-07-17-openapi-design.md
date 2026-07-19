@@ -1,5 +1,9 @@
 # Generated OpenAPI Design
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 ## Goal
 
 Make the Elysia HTTP contract discoverable to external consumers without maintaining a second, static API specification.

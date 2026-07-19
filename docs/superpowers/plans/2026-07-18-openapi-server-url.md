@@ -1,5 +1,9 @@
 # OpenAPI Server URL Implementation Plan
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a typed API base URL to the generated OpenAPI specification consumed by Scalar.

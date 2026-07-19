@@ -1,5 +1,9 @@
 # Worker Reliability Recipe Design
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 ## Goal
 
 Provide reusable queue-level primitives and documented patterns for reliable external side effects without adding a product outbox schema to the baseline.

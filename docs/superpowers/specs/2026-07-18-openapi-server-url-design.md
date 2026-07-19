@@ -1,5 +1,9 @@
 # OpenAPI Server URL Design
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 ## Goal
 
 Expose the deployed API base URL in the generated OpenAPI document used by Scalar.

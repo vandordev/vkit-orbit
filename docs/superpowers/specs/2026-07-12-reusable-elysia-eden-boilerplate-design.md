@@ -1,5 +1,9 @@
 # Reusable Elysia Eden Boilerplate Design
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 ## Goal
 
 Convert this repository into a reusable, domain-neutral Bun/Turborepo boilerplate. Its runtime apps are the Elysia API, Next.js web app, scheduler, and worker. The sole application HTTP transport is Elysia under `/api`, consumed by Next.js through Eden Treaty. The template contains no task-management, Sleekflow, authentication, or SSO domain code.

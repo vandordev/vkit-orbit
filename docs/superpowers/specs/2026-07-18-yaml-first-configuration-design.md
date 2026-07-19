@@ -1,5 +1,9 @@
 # YAML-First Configuration Design
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 ## Goal
 
 Make committed YAML files the primary, composable source of application configuration. A single uncommitted `.env` supplies local secrets and deployment environments supply the same values in production. Every process validates its final merged configuration with its existing Zod schema before it starts.

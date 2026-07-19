@@ -1,5 +1,9 @@
 # Optional Object Storage Design
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 ## Goal
 
 Offer a reusable S3/MinIO client for server-side object storage while keeping credentials, key ownership, and object visibility product-scoped.

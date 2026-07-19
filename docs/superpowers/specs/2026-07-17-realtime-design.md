@@ -1,5 +1,9 @@
 # Optional Realtime Blueprint Design
 
+> **Status:** Historical record. This document describes an earlier repository
+> architecture and is not the current operational source of truth. Use
+> `README.md` and `docs/superpowers/specs/2026-07-19-tanstack-elysia-river-go-design.md`.
+
 ## Goal
 
 Provide a secure, opt-in realtime runtime for products that need live dashboard updates without changing the default web/API deployment.
