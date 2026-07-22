@@ -27,6 +27,13 @@ test("maps the public server URL for OpenAPI documentation", () => {
   ).toBe("https://api.example.com");
 });
 
+test("defaults the public API origin to port 4100", () => {
+  expect(createApiConfig(loadApiEnvironment({ DATABASE_URL: "postgresql://db" }))).toMatchObject({
+    port: 4100,
+    openapiServerUrl: "http://localhost:4100",
+  });
+});
+
 test("maps optional S3 variables without exposing them to clients", () => {
   expect(
     createApiConfig(loadApiEnvironment({

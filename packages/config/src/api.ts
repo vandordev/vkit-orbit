@@ -7,9 +7,9 @@ import { createStorageConfig, storageServer } from "./storage";
 const apiServer = {
   ...commonServer,
   ...storageServer,
-  PORT: z.coerce.number().int().positive().default(4101),
+  PORT: z.coerce.number().int().positive().default(4100),
   CORS_ORIGIN: z.string().url().default("http://localhost:4100"),
-  OPENAPI_SERVER_URL: z.string().url().default("http://localhost:4101"),
+  OPENAPI_SERVER_URL: z.string().url().default("http://localhost:4100"),
   OPENAPI_BASIC_AUTH_USERNAME: z.string().min(1).optional(),
   OPENAPI_BASIC_AUTH_PASSWORD: z.string().min(1).optional(),
   WORKER_NOTIFICATION_API_KEY: z.string().min(1).optional(),
