@@ -12,12 +12,12 @@ async function getApp() {
 
 test("serves generated OpenAPI JSON", async () => {
   const app = await getApp();
-  const response = await app.handle(new Request("http://localhost:4101/api/openapi.json"));
+	const response = await app.handle(new Request("http://localhost:4100/api/openapi.json"));
 
   expect(response.status).toBe(200);
   const document = await response.json();
   expect(document.openapi).toMatch(/^3\./);
-  expect(document.servers).toEqual([{ url: "http://localhost:4101" }]);
+	expect(document.servers).toEqual([{ url: "http://localhost:4100" }]);
 });
 
 test("serves Scalar documentation", async () => {
