@@ -20,7 +20,13 @@ func TestRunAppliesPrismaBeforeRiver(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := cmp.Diff([]string{"bun --cwd packages/database run db:migrate", "river up"}, calls); diff != "" {
+	if diff := cmp.Diff([]string{"bun run --cwd packages/database db:migrate", "river up"}, calls); diff != "" {
 		t.Fatal(diff)
+	}
+}
+
+func TestRiverSchemaIsDedicated(t *testing.T) {
+	if riverSchema != "river" {
+		t.Fatalf("riverSchema = %q, want river", riverSchema)
 	}
 }

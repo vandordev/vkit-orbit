@@ -15,3 +15,9 @@ func TestNewWorkerClientBuildsWithDefaultQueue(t *testing.T) {
 		t.Fatal("client = nil")
 	}
 }
+
+func TestRiverSchemaIsDedicated(t *testing.T) {
+	if riverSchema != "river" {
+		t.Fatalf("riverSchema = %q, want river", riverSchema)
+	}
+}

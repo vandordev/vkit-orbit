@@ -9,6 +9,8 @@ import (
 
 type RegisterWorkers func(*river.Workers)
 
+const riverSchema = "river"
+
 func NewWorkerClient(database *sql.DB, register RegisterWorkers) (*river.Client[*sql.Tx], error) {
 	workers := river.NewWorkers()
 	if register != nil {
@@ -16,6 +18,7 @@ func NewWorkerClient(database *sql.DB, register RegisterWorkers) (*river.Client[
 	}
 	return river.NewClient[*sql.Tx](riverdatabasesql.New(database), &river.Config{
 		Queues:  map[string]river.QueueConfig{river.QueueDefault: {MaxWorkers: 10}},
+		Schema:  riverSchema,
 		Workers: workers,
 	})
 }

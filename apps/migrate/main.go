@@ -18,8 +18,10 @@ import (
 type runCommand func(context.Context, string, ...string) error
 type runRiverMigration func(context.Context, string) error
 
+const riverSchema = "river"
+
 func run(ctx context.Context, databaseURL string, command runCommand, migrate runRiverMigration) error {
-	if err := command(ctx, "bun", "--cwd", "packages/database", "run", "db:migrate"); err != nil {
+	if err := command(ctx, "bun", "run", "--cwd", "packages/database", "db:migrate"); err != nil {
 		return fmt.Errorf("apply prisma migrations: %w", err)
 	}
 	if err := migrate(ctx, databaseURL); err != nil {
@@ -42,7 +44,7 @@ func migrateRiver(ctx context.Context, databaseURL string) error {
 	if err := database.PingContext(ctx); err != nil {
 		return err
 	}
-	migrator, err := rivermigrate.New(riverdatabasesql.New(database), nil)
+	migrator, err := rivermigrate.New(riverdatabasesql.New(database), &rivermigrate.Config{Schema: riverSchema})
 	if err != nil {
 		return err
 	}
