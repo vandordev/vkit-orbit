@@ -30,3 +30,13 @@ test("implements accessible collapsed, auth, authorization, and command behavior
   expect(user).toContain("Loading current user");
   expect(user).toContain("onLogout");
 });
+
+test("keeps optional UI files outside the baseline", async () => {
+  const packageJson = await Bun.file("apps/web/package.json").text();
+  const routes = await Bun.file("apps/web/src/routes/index.tsx").text();
+  expect(packageJson).not.toContain("Animate UI");
+  expect(packageJson).not.toContain("Niko Table");
+  expect(routes).not.toContain("admin-workspace-ui");
+  const example = await Bun.file(new URL("files/apps/web/src/routes/admin-example.tsx", root)).text();
+  expect(example).toContain("AdminShell");
+});
