@@ -29,6 +29,24 @@ type Repository interface {
 	Aggregate(context.Context, string) (ParentState, error)
 }
 
+func AggregateStates(states []ItemState) ParentState {
+	if len(states) == 0 { return ParentRunning }
+	hasSent, hasFailure := false, false
+	for _, state := range states {
+		switch state {
+		case StatePending, StateProcessing:
+			return ParentRunning
+		case StateSent:
+			hasSent = true
+		case StateFailed, StateUnknown:
+			hasFailure = true
+		}
+	}
+	if hasSent && hasFailure { return ParentPartiallyFailed }
+	if hasFailure { return ParentFailed }
+	return ParentCompleted
+}
+
 // The claim transaction must lock one item briefly, mark it PROCESSING, and commit
 // before the provider call. It must never hold a database lock over network I/O.
 const claimNextSQL = `SELECT item.id, item.parent_id, item.idempotency_key FROM fanout_items AS item WHERE item.parent_id = $1::text AND item.state = $2::fanout_item_state ORDER BY item.created_at, item.id LIMIT 1 FOR UPDATE OF item SKIP LOCKED`

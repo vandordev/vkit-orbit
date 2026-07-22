@@ -53,6 +53,13 @@ func TestQueueDrainsAndNotifiesAfterMixedTerminalAggregate(t *testing.T) {
 	if calls != 1 || repository.items[0].State != StateSent || repository.items[1].State != StateSent { t.Fatalf("calls=%d states=%s,%s", calls, repository.items[0].State, repository.items[1].State) }
 }
 
+func TestNotifierFailureRemainsRetryable(t *testing.T) {
+	repository := &fakeRepository{items: []*Item{{ParentID: "p1", ID: "i1", State: StatePending}}}
+	sentinel := errors.New("gateway unavailable")
+	err := (&Worker{Repository: repository, Provider: fakeProvider{}, Notify: func(context.Context, string) error { return sentinel }}).Process(context.Background(), "p1")
+	if !errors.Is(err, sentinel) { t.Fatalf("err=%v", err) }
+}
+
 type fakeRepository struct{ items []*Item }
 func (f *fakeRepository) ClaimNext(context.Context, string) (*Item, error) { for _, item := range f.items { if item.State == StatePending { item.State = StateProcessing; return item, nil } }; return nil, nil }
 func (f *fakeRepository) PersistOutcome(_ context.Context, outcome Outcome) error { for _, item := range f.items { if item.ID == outcome.ItemID { item.State = outcome.State } }; return nil }
