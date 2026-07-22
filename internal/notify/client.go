@@ -31,7 +31,9 @@ func NewNotifier(baseURL, apiKey string, client *http.Client) *Client {
 	if client == nil {
 		client = http.DefaultClient
 	}
-	return &Client{baseURL: strings.TrimRight(baseURL, "/"), apiKey: apiKey, client: client}
+	baseURL = strings.TrimRight(baseURL, "/")
+	baseURL = strings.TrimSuffix(baseURL, "/api/internal/worker-events")
+	return &Client{baseURL: baseURL, apiKey: apiKey, client: client}
 }
 
 func (c *Client) Notify(ctx context.Context, event Event) error {

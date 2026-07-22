@@ -28,6 +28,19 @@ func TestNotifierPostsCompletionToElysia(t *testing.T) {
 	}
 }
 
+func TestNotifierAcceptsConfiguredWorkerEventsEndpoint(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/internal/worker-events" {
+			t.Fatalf("path = %s", r.URL.Path)
+		}
+		w.WriteHeader(http.StatusAccepted)
+	}))
+	defer server.Close()
+	if err := NewNotifier(server.URL+"/api/internal/worker-events", "worker-key", server.Client()).Notify(context.Background(), validEvent()); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestNotifierReturnsErrorForRetryableGatewayFailure(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusServiceUnavailable) }))
 	defer server.Close()

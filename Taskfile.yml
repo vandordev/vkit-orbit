@@ -81,7 +81,7 @@ tasks:
   migrate:
     desc: Apply Prisma and River migrations
     cmds:
-      - rtk go run ./apps/migrate
+      - rtk bun --env-file=.env run packages/config/src/run.ts --modules base -- go run ./apps/migrate
 
   test:
     desc: Run TypeScript and Go tests
