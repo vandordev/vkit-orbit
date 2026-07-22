@@ -37,7 +37,7 @@ test("loads the base, api, and web configuration modules", () => {
   ).toMatchObject({
     NODE_ENV: "test",
     DATABASE_URL: "postgresql://db",
-    PORT: "4101",
+		PORT: "4100",
     VITE_REALTIME_URL: "http://localhost:4102",
   });
 });
