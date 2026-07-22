@@ -18,3 +18,15 @@ test("documents dependency tiers without baseline leakage", async () => {
   expect(readme).toContain("Niko Table");
   expect(readme).toContain("baseline");
 });
+
+test("implements accessible collapsed, auth, authorization, and command behaviors", async () => {
+  const shell = await Bun.file(new URL("files/apps/web/src/components/admin-shell.tsx", root)).text();
+  const command = await Bun.file(new URL("files/apps/web/src/components/command-menu.tsx", root)).text();
+  const user = await Bun.file(new URL("files/apps/web/src/components/user-menu.tsx", root)).text();
+  expect(shell).toContain("aria-label={collapsed ? item.label : undefined}");
+  expect(shell).toContain("canView");
+  expect(command).toContain("metaKey || event.ctrlKey");
+  expect(command).toContain("removeEventListener");
+  expect(user).toContain("Loading current user");
+  expect(user).toContain("onLogout");
+});
