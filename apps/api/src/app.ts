@@ -1,7 +1,5 @@
 import { Elysia } from "elysia";
 
-import { createRiverClient, enqueue, exampleRealtimeNotificationJob, type ExampleRealtimeNotificationPayload } from "@repo/queue";
-import { prisma } from "@repo/database";
 import type { RealtimeEvent } from "@repo/realtime";
 
 import { env } from "./lib/env";
@@ -10,7 +8,7 @@ import { AppError } from "./lib/errors";
 import { logger } from "./lib/logger";
 import { openapiPlugin } from "./openapi";
 import { createRealtimePublisher } from "./lib/realtime-publisher";
-import { createExampleRoutes, createInternalNotificationRoutes, healthRoutes, statusRoutes, type EnqueueExample } from "./routes";
+import { createInternalNotificationRoutes, healthRoutes, statusRoutes } from "./routes";
 
 const blockedPathPatterns: readonly RegExp[] = [
 	/^\/\.env/,
@@ -25,13 +23,9 @@ const blockedPathPatterns: readonly RegExp[] = [
 	/\/\.env$/,
 	/\/\.git\//,
 ];
-const river = createRiverClient(prisma);
-const defaultEnqueueExample: EnqueueExample = (payload: ExampleRealtimeNotificationPayload) => enqueue(river, exampleRealtimeNotificationJob, payload) as Promise<{ job?: { id: number }; id?: number }>;
-
-export type AppDependencies = { enqueueExample?: EnqueueExample; workerNotificationApiKey?: string; publish?: (event: RealtimeEvent) => Promise<void> };
+export type AppDependencies = { workerNotificationApiKey?: string; publish?: (event: RealtimeEvent) => Promise<void> };
 
 export function createApp(dependencies: AppDependencies = {}) {
-	const enqueueExample = dependencies.enqueueExample ?? defaultEnqueueExample;
 	const publish = dependencies.publish ?? (env.REALTIME_INTERNAL_URL && env.REALTIME_PUBLISH_API_KEY ? createRealtimePublisher({ baseUrl: env.REALTIME_INTERNAL_URL, apiKey: env.REALTIME_PUBLISH_API_KEY }) : async () => {});
 	return new Elysia()
 		.onRequest(({ request, set }) => {
@@ -78,7 +72,6 @@ export function createApp(dependencies: AppDependencies = {}) {
 		})
 		.use(healthRoutes)
 		.use(statusRoutes)
-		.use(createExampleRoutes(enqueueExample))
 		.use(createInternalNotificationRoutes({ workerNotificationApiKey: dependencies.workerNotificationApiKey ?? env.WORKER_NOTIFICATION_API_KEY ?? "", publish }));
 }
 

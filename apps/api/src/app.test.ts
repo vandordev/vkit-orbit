@@ -10,7 +10,19 @@ async function getApp() {
 	return (await import("./app")).app;
 }
 
-	describe("external API boundary", () => {
+describe("external API boundary", () => {
+	test("baseline does not expose the realtime example", async () => {
+		const sources = await Promise.all([
+			Bun.file(new URL("./app.ts", import.meta.url)).text(),
+			Bun.file(new URL("../../../packages/queue/src/index.ts", import.meta.url)).text(),
+			Bun.file(new URL("../../web/src/routeTree.gen.ts", import.meta.url)).text(),
+		]);
+
+		expect(sources.join("\n")).not.toContain("exampleRealtimeNotificationJob");
+		expect(sources.join("\n")).not.toContain("example-realtime-notification");
+		expect(sources.join("\n")).not.toContain("/examples/realtime");
+	});
+
 	test("serves the API status contract under /api", async () => {
 		const app = await getApp();
 		const response = await app.fetch(new Request("http://localhost:4100/api/status"));

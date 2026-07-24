@@ -4,17 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/riverqueue/river"
-	"github.com/vandordev/vkit-orbit/internal/notify"
 	riverclient "github.com/vandordev/vkit-orbit/internal/river"
-	workerjobs "github.com/vandordev/vkit-orbit/internal/worker"
 )
 
 func main() {
@@ -35,10 +31,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	notifier := notify.NewNotifier(os.Getenv("WORKER_NOTIFICATION_URL"), os.Getenv("WORKER_NOTIFICATION_API_KEY"), http.DefaultClient)
-	client, err := riverclient.NewWorkerClient(database, func(workers *river.Workers) {
-		river.AddWorker(workers, &workerjobs.ExampleRealtimeNotificationWorker{Notifier: notifier})
-	})
+	client, err := riverclient.NewWorkerClient(database, nil)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
