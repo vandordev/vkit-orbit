@@ -14,8 +14,10 @@ Read `README.md`, the relevant `.agent/*.md`, the plan/spec, and run
 - `packages/database`: the only Prisma client owner and migration source.
 - `packages/application`: TypeScript business rules and transactions.
 - `packages/queue`: River TypeScript producer and versioned JSON contracts.
-- `apps/scheduler`: Bun enqueue-only schedules; no Prisma business reads.
-- `apps/worker`: Go/River handlers, retries, idempotency, and Elysia notifier.
+- `apps/scheduler`: Bun lifecycle and consumer-installed enqueue-only schedules;
+  no Prisma business reads.
+- `apps/worker`: long-running Go/River runtime plus consumer-installed handlers,
+  retries, idempotency, and Elysia notifier.
 - `apps/realtime`: Socket.IO auth, room authorization, and private publisher.
 - `apps/migrate`: Prisma deploy first, River migration second.
 
@@ -36,8 +38,9 @@ Workers notify Elysia only after successful job completion; Elysia alone talks
 to Socket.IO. Realtime payloads are invalidation signals, not source-of-truth
 data.
 
-The only baseline example is opt-in `example.realtime-notification.v1`; it has
-no product model, auth implementation, or default schedule.
+The baseline has no installed product/example job, schedule, route, credential,
+or product model. The executable `example.realtime-notification.v1` walkthrough
+is an opt-in copy/install recipe in `recipes/realtime-notification/`.
 
 ## Workflow
 

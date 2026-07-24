@@ -22,6 +22,13 @@ test("dev follows the web foreground and background-runtime split", () => {
 	expect(devTask).toContain("dev:realtime");
 });
 
+test("dev background keeps scheduler and worker runtimes available for idle baseline", () => {
+	const devTask = taskfile.slice(taskfile.indexOf("  dev:bg:"), taskfile.indexOf("\n  dev:web:"));
+
+	expect(devTask).toContain("dev:worker");
+	expect(devTask).toContain("dev:scheduler");
+});
+
 test("migrate loads base configuration before starting the Go runtime", () => {
 	const migrateTask = taskfile.slice(taskfile.indexOf("  migrate:"), taskfile.indexOf("\n  test:"));
 	expect(migrateTask).toContain("packages/config/src/run.ts --modules base -- go run ./apps/migrate");

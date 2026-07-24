@@ -6,10 +6,11 @@ into a matching struct and return retryable errors when downstream delivery
 fails. Breaking payload changes require a new `.vN` kind; additive compatible
 fields must remain decodable by older workers.
 
-## Baseline example
+## Optional recipe example
 
-The boilerplate's only example job is `example.realtime-notification.v1`. Its
-JSON args are:
+The baseline installs no job contracts by default. The opt-in
+`recipes/realtime-notification/` recipe supplies
+`example.realtime-notification.v1`; its JSON args are:
 
 ```json
 {
@@ -18,5 +19,7 @@ JSON args are:
 }
 ```
 
-The example writes no Prisma model. It is enqueued manually through Elysia or
-through the disabled-by-default scheduler, then consumed by the Go worker.
+The recipe writes no Prisma model. After explicit installation it can be
+enqueued through its Elysia adapter or scheduler, then consumed by its Go
+worker handler. Workers notify Elysia only after success; Elysia publishes to
+Socket.IO.

@@ -39,8 +39,8 @@ task dev -- web
 ```
 
 Run multiple local runtimes with `task dev -- web worker scheduler realtime`.
-The example schedule is disabled by default; enable it only with
-`ENABLE_EXAMPLE_SCHEDULE=true`.
+The scheduler and worker are idle long-running runtimes until a consumer
+installs domain work.
 
 ## Configuration
 
@@ -57,18 +57,14 @@ Realtime credentials are paired across the boundaries:
 - realtime: `REALTIME_PUBLISH_API_KEY`, `REALTIME_CORS_ORIGIN`, and ticket secret;
 - web: public `VITE_REALTIME_URL` only.
 
-## Opt-in worked example
+## Optional realtime recipe
 
-`example.realtime-notification.v1` is the sole baseline job contract. Its JSON
-payload contains `resourceId` and `workspaceId`; it writes no Prisma model.
-The manual Elysia endpoint is
-`POST /api/examples/realtime-notifications`. The scheduler enqueues it only
-when explicitly enabled. The Go worker validates the same payload and, after
-success, POSTs a `resource.updated` envelope to Elysia. Elysia authenticates
-and forwards it to Socket.IO. The web walkthrough at
-`/examples/realtime` accepts a product-issued ticket and invalidates/refetches
-API-backed queries on events and reconnects. It is executable documentation,
-not authentication or a default product feature.
+The baseline has no product/example job, schedule, API route, or web walkthrough
+installed by default. To add the executable `example.realtime-notification.v1`
+walkthrough, copy and wire the files in
+`recipes/realtime-notification/README.md`. The recipe keeps payloads as
+invalidation signals, sends successful worker events to Elysia, and leaves
+Socket.IO publishing to Elysia.
 
 River kinds and JSON payloads are cross-language contracts documented in
 `contracts/jobs/README.md`; breaking changes use a new `.vN` kind.
