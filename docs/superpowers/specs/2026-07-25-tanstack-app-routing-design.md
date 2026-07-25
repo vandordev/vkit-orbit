@@ -187,19 +187,42 @@ helper.
 
 ## Documentation and Verification
 
-Create `apps/web/ROUTING.md` as the complete operational reference for a
-developer adopting this boilerplate. It explains the route-source migration,
-directory tree, each native naming token, group versus pathless-layout
-semantics, ignored colocation files, generated-tree ownership, and concrete
-examples for static, dynamic, nested-layout, server-adapter, and future auth
-routes. It also documents Elysia adapter isolation, typed Eden data access,
-TanStack Query/loader prefetch boundaries, Zod search validation, typed links,
-metadata helper usage, default Symmetric Wave loading UI, the global error UI,
-not-found behavior, reduced-motion expectations, and focused testing commands.
+Restructure `.agent/` into modular runtime documentation:
 
-Update `.agent/web.md` with concise non-duplicated hard rules and a link to
-`apps/web/ROUTING.md`. The Markdown guide is the source of detail; the agent
-file remains a short discovery and enforcement aid.
+```text
+.agent/
+├── architecture.md
+├── config.md
+├── database.md
+├── web/
+│   ├── README.md
+│   └── routing.md
+├── api/README.md
+├── worker/README.md
+├── scheduler/README.md
+└── realtime/README.md
+```
+
+Move the current runtime documents to their matching directories; move the UI
+baseline into `web/README.md`. Root-level `architecture.md`, `config.md`, and
+`database.md` remain cross-cutting references. Each runtime README holds its
+non-negotiable ownership rules and links to focused documents as that runtime
+grows.
+
+Create `.agent/web/routing.md` as the complete operational reference for a
+developer or agent adopting this boilerplate. It explains the route-source
+migration, directory tree, each native naming token, group versus
+pathless-layout semantics, ignored colocation files, generated-tree ownership,
+and concrete examples for static, dynamic, nested-layout, server-adapter, and
+future auth routes. It also documents Elysia adapter isolation, typed Eden data
+access, TanStack Query/loader prefetch boundaries, Zod search validation,
+typed links, metadata helper usage, default Symmetric Wave loading UI, the
+global error UI, not-found behavior, reduced-motion expectations, and focused
+testing commands.
+
+Update `AGENTS.md` to require reading relevant nested `.agent/**/*.md` files
+instead of only `.agent/*.md`. This ensures work in a runtime loads both its
+README and its focused rules without duplicating all guidance in one file.
 
 Tests cover:
 
