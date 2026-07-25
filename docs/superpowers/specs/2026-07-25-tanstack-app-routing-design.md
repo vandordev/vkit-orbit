@@ -1,0 +1,154 @@
+# TanStack App Routing Design
+
+## Goal
+
+Move the web route source to `apps/web/src/app` and establish a documented,
+directory-first TanStack Start routing convention. The convention should feel
+easy to scan like an app-directory project while retaining TanStack Router's
+native file tokens and the existing embedded Elysia boundary.
+
+## Constraints
+
+- TanStack Start remains the only public HTTP server.
+- Elysia remains the only business HTTP boundary under `/api/*`; `/health` is
+  also handled by Elysia.
+- The web adapter calls `app.fetch(request)` directly. It does not proxy over
+  the network, transform Elysia responses, or implement business endpoints.
+- `packages/database` remains the only Prisma owner. Browser code receives no
+  server credentials.
+- `src/routeTree.gen.ts` remains generated and must never be edited manually.
+- The project uses native TanStack routing tokens rather than custom
+  `layout.tsx` or `page.tsx` tokens.
+
+## Route Source and Layout
+
+Configure the TanStack Start Vite plugin with
+`routesDirectory: "./src/app"`. Keep the generated route tree at
+`src/routeTree.gen.ts`.
+
+The canonical starting structure is:
+
+```text
+apps/web/src/app/
+├── __root.tsx
+├── index.tsx
+├── api/
+│   └── $.ts
+├── health/
+│   └── index.ts
+├── _public/
+│   ├── route.tsx
+│   └── index.tsx
+├── dashboard/
+│   ├── route.tsx
+│   ├── index.tsx
+│   └── settings/
+│       └── index.tsx
+└── users/
+    ├── route.tsx
+    ├── index.tsx
+    └── $userId/
+        └── index.tsx
+```
+
+`__root.tsx` owns the document shell, global providers, `<HeadContent />`,
+`<Scripts />`, global error UI, and global not-found UI. `index.tsx` is the
+index route for its directory. A `route.tsx` defines a layout only when the
+directory needs a shared component, loader, guard, or route-level policy; it
+renders an `<Outlet />`.
+
+Dynamic segments use `$name`; splats use a final `$.ts` or `$.tsx`. A
+pathless layout uses an `_name` directory and `route.tsx`, such as `_public`
+or a future `_authenticated`. Its name does not appear in the URL, but its
+component and route options wrap its children.
+
+## File Naming and Colocation
+
+Use TanStack's native reserved names:
+
+- `__root.tsx`: required root route.
+- `index.tsx`: exact index route.
+- `route.tsx`: directory layout route.
+- `$name`: dynamic URL segment; `$`: splat segment.
+- `_name`: pathless layout.
+- `(name)`: organization-only route group with no URL or component-tree
+  effect.
+- `-name`: ignored by route generation.
+
+Route-local non-route code must use the `-` prefix. Examples include
+`-components/`, `-queries/`, `-schemas/`, and `-form-user.tsx`. Do not use
+`_components`: `_` has TanStack pathless-layout semantics and is not an ignore
+prefix. Existing `*.test.*` route files remain ignored through the Vite route
+plugin configuration.
+
+## Elysia Transport Boundary
+
+`app/api/$.ts` registers every supported HTTP method and delegates directly to
+`app.fetch(request)`. `app/health/index.ts` delegates its GET request the same
+way. These routes are server adapters only: they have no UI component and do
+not configure `errorComponent`, `pendingComponent`, or `notFoundComponent`.
+
+Consequently, Elysia owns API validation, failure envelopes, unexpected-error
+mapping, response status, and response body. TanStack UI error pages must
+never replace an Elysia response for `/api/*` or `/health`.
+
+## UI Data, Navigation, and Failure Policy
+
+UI routes access business data through the existing typed Eden client. Server
+loaders use the embedded app client; browser components use the same-origin
+`/api/*` client. No route imports Prisma, database configuration, or business
+usecases. Route loaders and TanStack Query must share query-option functions
+when a feature needs cache hydration or prefetching, so a navigation does not
+make avoidable duplicate requests.
+
+Every UI search parameter is parsed by `validateSearch` with Zod. Internal
+navigation uses typed TanStack `<Link>` or `navigate`, not raw same-origin
+anchors. A future authenticated area uses `_authenticated/route.tsx` and
+`beforeLoad` rather than repeating authorization checks in pages.
+
+UI routes use the following failure taxonomy:
+
+- `errorComponent`: thrown loader, query, or component errors intended for UI
+  handling.
+- `notFound()` and `notFoundComponent`: missing UI resources and unmatched UI
+  paths.
+- `pendingComponent`: loader/suspense pending state after an intentional
+  `pendingMs` threshold.
+- Elysia adapters: unchanged Elysia `Response`, including failures.
+
+Shared error, pending, and not-found components are colocated in ignored
+`-`-prefixed files or directories and wired explicitly through route options;
+`error.tsx` and `loading.tsx` are not magic file names.
+
+## Metadata
+
+Add `apps/web/src/lib/metadata.ts` as a typed `head`-object helper. It accepts
+route metadata such as title, description, canonical path, and optional Open
+Graph values, applies the application brand consistently, and returns a value
+directly compatible with `head: () => ...`.
+
+The root route supplies document-level defaults. Layout and leaf UI routes use
+`head` to override or extend metadata; dynamic pages may derive input from
+`loaderData`. TanStack's nested head merging and deduplication chooses the
+most-specific title/meta values. Elysia adapters do not use the metadata
+helper.
+
+## Documentation and Verification
+
+Create web routing documentation that explains this structure and all policy
+above, including source ownership, reserved tokens, colocation, transport
+boundaries, Eden data access, search-param validation, navigation, auth
+extension, error taxonomy, metadata, and generated files.
+
+Tests cover:
+
+- generated routing with `src/app` as the source;
+- unchanged `/api/*` method delegation and Elysia status/body responses;
+- unchanged `/health` response;
+- metadata helper output and root/global UI route configuration;
+- representative UI route behavior for typed search validation, pending/error
+  boundaries, and not-found handling where testable without a product domain.
+
+Focused tests run before each implementation step. Completion requires focused
+tests, `rtk task quality`, `rtk task build`, and the repository's Compose
+smoke checks.
