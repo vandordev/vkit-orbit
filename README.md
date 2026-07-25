@@ -6,9 +6,14 @@ Bun/River producers, a Go/River worker, and optional Socket.IO realtime.
 ## Runtime topology
 
 `apps/web` is the only public application server. TanStack Start mounts the
-Elysia app directly through `apps/web/src/routes/api.$.ts`; there is no API
+Elysia app directly through `apps/web/src/app/api/$.ts`; there is no API
 proxy or separate API process in the default Compose topology. `/health` is the
-only non-`/api` Elysia mount. Web uses Tailwind CSS and shadcn/ui primitives.
+only non-`/api` Elysia mount at `apps/web/src/app/health/index.ts`. Web uses
+Tailwind CSS and shadcn/ui primitives.
+
+Web routing is directory-first under `apps/web/src/app`; see
+[.agent/web/routing.md](.agent/web/routing.md) for native TanStack tokens,
+generated-tree ownership, and adapter isolation rules.
 
 ```text
 Browser -- same-origin /api/* --> TanStack Start + embedded Elysia --> Prisma --> PostgreSQL

@@ -11,3 +11,6 @@ same-origin Eden calls. Do not reintroduce Next.js or Mantine as defaults.
 
 See [routing.md](routing.md) for the complete directory-first route
 convention, adapter isolation rules, and focused test commands.
+
+The generated tree is owned by the TanStack plugin. Keep route-local helpers
+under `-`-prefixed files or directories; `_` is reserved for pathless layouts.

@@ -11,6 +11,7 @@ src/app/
 ├── _public/route.tsx
 ├── _public/index.tsx
 ├── _public/-components/
+├── -components/                 # global pending/error/not-found UI
 ├── api/$.ts
 └── health/index.ts
 ```
@@ -77,6 +78,19 @@ UI resources. Elysia responses remain outside all three UI boundaries.
 
 Motion is progressive only: every animated route has a static equivalent and
 honors `prefers-reduced-motion`. Content and actions never require motion.
+
+For a future searchable UI route, define a Zod validator explicitly:
+
+```tsx
+export const Route = createFileRoute("/users/")({
+  validateSearch: z.object({ q: z.string().optional() }),
+})
+```
+
+For a dynamic resource, use `$userId/index.tsx` and call `notFound()` for a
+missing UI resource; do not put Prisma or credentials in the route. A future
+authenticated tree belongs under `_authenticated/route.tsx` and performs its
+guard in `beforeLoad`.
 
 ## Generated ownership and tests
 
