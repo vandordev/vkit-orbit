@@ -148,6 +148,17 @@ Shared error, pending, and not-found components are colocated in ignored
 `-`-prefixed files or directories and wired explicitly through route options;
 `error.tsx` and `loading.tsx` are not magic file names.
 
+`app/-components/global-error.tsx` provides the default root
+`errorComponent`. It follows the Vkit Orbit visual language without treating
+an error state as product content: a restrained disrupted-orbit visual, an
+accessible status heading, an explanation in safe user-facing language, and
+two actions. **Try again** invokes the TanStack `reset` callback. **Back to
+home** uses typed TanStack navigation to `/`. The component must work with
+motion disabled, preserve visible keyboard focus, and never reveal a raw error
+message, stack trace, request payload, credential, or implementation detail in
+production. It only handles TanStack UI errors; Elysia adapter responses remain
+unchanged.
+
 The project installs the default loading primitive with:
 
 ```text
@@ -189,6 +200,8 @@ Tests cover:
 - unchanged `/health` response;
 - metadata helper output and root/global UI route configuration;
 - the Symmetric Wave component is the configured default pending UI;
+- global error UI invokes the provided reset callback and keeps Elysia adapter
+  responses outside its boundary;
 - representative UI route behavior for typed search validation, pending/error
   boundaries, and not-found handling where testable without a product domain.
 
