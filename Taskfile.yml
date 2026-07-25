@@ -4,29 +4,29 @@ tasks:
   default:
     desc: Show available commands
     cmds:
-      - rtk task --list
+      - task --list
 
   install:
     desc: Install Bun and Go dependencies
     cmds:
-      - rtk bun install --ignore-scripts
-      - rtk go mod download
+      - bun install --ignore-scripts
+      - go mod download
 
   doctor:
     desc: Verify required tools and local runtime configuration
     cmds:
       - |
-        rtk proxy test -f .env || { rtk proxy echo "missing .env; run: cp .env.example .env" >&2; exit 1; }
-        rtk go version >/dev/null
-        rtk bun --version >/dev/null
-        rtk task --version >/dev/null
-        rtk docker compose version >/dev/null
-        rtk go test ./apps/migrate -run TestRunAppliesPrismaBeforeRiver -count=1
+        proxy test -f .env || { proxy echo "missing .env; run: cp .env.example .env" >&2; exit 1; }
+        go version >/dev/null
+        bun --version >/dev/null
+        task --version >/dev/null
+        docker compose version >/dev/null
+        go test ./apps/migrate -run TestRunAppliesPrismaBeforeRiver -count=1
 
   dev:
     desc: Run TanStack Start with embedded Elysia
     cmds:
-      - rtk bun run dev:web
+      - bun run dev:web
 
   dev:bg:
     desc: Run worker, scheduler, and realtime in the foreground with interleaved logs
@@ -38,140 +38,140 @@ tasks:
   dev:web:
     desc: Run TanStack Start with embedded Elysia
     cmds:
-      - rtk bun run dev:web
+      - bun run dev:web
 
   dev:worker:
     desc: Run the Go River worker with Air
     cmds:
-      - rtk go tool air -c dev/air/worker.toml
+      - go tool air -c dev/air/worker.toml
 
   dev:scheduler:
     desc: Run the Bun River scheduler
     cmds:
-      - rtk bun run dev:scheduler
+      - bun run dev:scheduler
 
   dev:realtime:
     desc: Run the Socket.IO runtime
     cmds:
-      - rtk bun run dev:realtime
+      - bun run dev:realtime
 
   start:
     desc: Start the built web app
     cmds:
-      - rtk bun run start:web
+      - bun run start:web
 
   start:jobs:
     desc: Start the Go worker and Bun scheduler
     cmds:
-      - rtk task --parallel --output=interleaved start:worker start:scheduler
+      - task --parallel --output=interleaved start:worker start:scheduler
 
   start:worker:
     desc: Start the built Go worker
     cmds:
-      - rtk go run ./apps/worker
+      - go run ./apps/worker
 
   start:scheduler:
     desc: Start the built Bun scheduler
     cmds:
-      - rtk bun run start:scheduler
+      - bun run start:scheduler
 
   start:realtime:
     desc: Start the built Socket.IO runtime
     cmds:
-      - rtk bun run start:realtime
+      - bun run start:realtime
 
   migrate:
     desc: Apply Prisma and River migrations
     cmds:
-      - rtk bun --env-file=.env run packages/config/src/run.ts --modules base -- go run ./apps/migrate
+      - bun --env-file=.env run packages/config/src/run.ts --modules base -- go run ./apps/migrate
 
   test:
     desc: Run TypeScript and Go tests
     cmds:
-      - rtk bun test apps/api apps/web apps/scheduler apps/realtime packages
-      - rtk go test ./... -count=1
+      - bun test apps/api apps/web apps/scheduler apps/realtime packages
+      - go test ./... -count=1
 
   test:go:
     desc: Run Go tests
     cmds:
-      - rtk go test ./... -count=1
+      - go test ./... -count=1
 
   quality:
     desc: Run tests, lint, typechecks, and Go vet
     cmds:
-      - rtk task test
-      - rtk bun run lint
-      - rtk bun run check-types
-      - rtk go vet ./...
+      - task test
+      - bun run lint
+      - bun run check-types
+      - go vet ./...
 
   build:
     desc: Build TypeScript and Go runtimes
     cmds:
-      - rtk bun run build
-      - rtk task build:go
+      - bun run build
+      - task build:go
 
   build:go:
     desc: Build the Go worker and migration runtime
     cmds:
-      - rtk go build ./apps/worker ./apps/migrate
+      - go build ./apps/worker ./apps/migrate
 
   lint:
     desc: Lint all TypeScript workspaces
     cmds:
-      - rtk bun run lint
+      - bun run lint
 
   check-types:
     desc: Typecheck all TypeScript workspaces
     cmds:
-      - rtk bun run check-types
+      - bun run check-types
 
   db:generate:
     desc: Generate the Prisma client
     dir: packages/database
     cmds:
-      - rtk bun run db:generate
+      - bun run db:generate
 
   db:migrate:
     desc: Apply Prisma migrations through the migration runtime
     cmds:
-      - rtk task migrate
+      - task migrate
 
   web:health:
     desc: Check the embedded Elysia health endpoint
     cmds:
-      - rtk curl --fail http://localhost:4100/health
+      - curl --fail http://localhost:4100/health
 
   api:status:
     desc: Check the embedded Elysia status endpoint
     cmds:
-      - rtk curl --fail http://localhost:4100/api/status
+      - curl --fail http://localhost:4100/api/status
 
   compose:up:
     desc: Build and run db, migrate, and web
     cmds:
-      - rtk docker compose up --build
+      - docker compose up --build
 
   compose:up:detached:
     desc: Build and run the default stack in the background
     cmds:
-      - rtk docker compose up --build -d
+      - docker compose up --build -d
 
   compose:jobs:
     desc: Build and run optional Go worker and Bun scheduler
     cmds:
-      - rtk docker compose --profile jobs up --build
+      - docker compose --profile jobs up --build
 
   compose:realtime:
     desc: Build and run optional Socket.IO runtime
     cmds:
-      - rtk docker compose --profile realtime up --build
+      - docker compose --profile realtime up --build
 
   compose:down:
     desc: Stop the Compose stack
     cmds:
-      - rtk docker compose down
+      - docker compose down
 
   compose:logs:
     desc: Follow Compose logs
     cmds:
-      - rtk docker compose logs -f
+      - docker compose logs -f

@@ -58,13 +58,13 @@ test("rejects an API config without DATABASE_URL", () => {
 
 - [ ] **Step 2: Run the test and verify failure**
 
-Run: `rtk bun test packages/config/src/api.test.ts`
+Run: `bun test packages/config/src/api.test.ts`
 
 Expected: FAIL because `./api` does not exist.
 
 - [ ] **Step 3: Add dependencies and minimal config implementation**
 
-First create `packages/config/package.json` with `{ "name": "@repo/config", "version": "0.1.0", "private": true, "type": "module" }` and the TypeScript config. Then run: `rtk bun add --cwd packages/config @t3-oss/env-core zod`
+First create `packages/config/package.json` with `{ "name": "@repo/config", "version": "0.1.0", "private": true, "type": "module" }` and the TypeScript config. Then run: `bun add --cwd packages/config @t3-oss/env-core zod`
 
 Create `common.ts` with `commonServerSchema = z.object({ NODE_ENV: z.enum(["development", "test", "staging", "production"]).default("development"), DATABASE_URL: z.string().url() })`. Implement each loader with an explicit `runtimeEnv` argument; return camelCase properties, never the raw environment object. `createApiConfig` additionally requires coerced `PORT` and `CORS_ORIGIN`; worker and scheduler initially return only the common values. Export the three loaders from `index.ts`.
 
@@ -72,15 +72,15 @@ Set the package name to `@repo/config`, add `check-types`, `lint`, and `clean` s
 
 - [ ] **Step 4: Re-run focused config tests**
 
-Run: `rtk bun test packages/config/src/api.test.ts packages/config/src/worker.test.ts packages/config/src/scheduler.test.ts`
+Run: `bun test packages/config/src/api.test.ts packages/config/src/worker.test.ts packages/config/src/scheduler.test.ts`
 
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add package.json bun.lock turbo.json packages/config
-rtk git commit -m "feat(config): add typed runtime configuration"
+git add package.json bun.lock turbo.json packages/config
+git commit -m "feat(config): add typed runtime configuration"
 ```
 
 ### Task 2: Reset persistence and remove legacy application code
@@ -103,7 +103,7 @@ test("exports one Prisma client", () => {
 
 - [ ] **Step 2: Run the test before deletion**
 
-Run: `rtk bun test packages/database/src/client.test.ts`
+Run: `bun test packages/database/src/client.test.ts`
 
 Expected: PASS; this records the client behavior retained after deleting domain code.
 
@@ -113,19 +113,19 @@ Replace `schema.prisma` with only `generator client` and PostgreSQL `datasource`
 
 - [ ] **Step 4: Regenerate and verify the baseline**
 
-Run: `rtk bun run --cwd packages/database db:generate`
+Run: `bun run --cwd packages/database db:generate`
 
 Expected: command exits 0 and `@prisma/client` is generated for the empty schema.
 
-Run: `rtk bun test packages/database/src/client.test.ts && rtk bun run check-types --filter=@repo/database --filter=@repo/application`
+Run: `bun test packages/database/src/client.test.ts && bun run check-types --filter=@repo/database --filter=@repo/application`
 
 Expected: PASS with no references to Contact, Message, or command roles.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add packages/database packages/application bun.lock
-rtk git commit -m "refactor: reset domain persistence and usecases"
+git add packages/database packages/application bun.lock
+git commit -m "refactor: reset domain persistence and usecases"
 ```
 
 ### Task 3: Make API a typed `/api` boundary
@@ -161,7 +161,7 @@ test("uses the API failure envelope", async () => {
 
 - [ ] **Step 2: Run tests and verify status route fails**
 
-Run: `rtk bun test apps/api/src/app.test.ts`
+Run: `bun test apps/api/src/app.test.ts`
 
 Expected: FAIL only for `/api/status` because the route does not yet exist.
 
@@ -171,15 +171,15 @@ Rename the workspace package from `api` to `@repo/api`; expose `./src/index.ts` 
 
 - [ ] **Step 4: Verify API tests and type export**
 
-Run: `rtk bun test apps/api/src/app.test.ts && rtk bun run check-types --filter=@repo/api`
+Run: `bun test apps/api/src/app.test.ts && bun run check-types --filter=@repo/api`
 
 Expected: PASS; `App` is type-only importable and the process is not started by importing `index.ts`.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/api packages/config package.json bun.lock
-rtk git commit -m "feat(api): expose typed Elysia API boundary"
+git add apps/api packages/config package.json bun.lock
+git commit -m "feat(api): expose typed Elysia API boundary"
 ```
 
 ### Task 4: Replace legacy web integration with embedded Elysia and Eden
@@ -201,13 +201,13 @@ test("builds an Eden treaty client from the configured URL", () => {
 
 - [ ] **Step 2: Run test and verify it fails**
 
-Run: `rtk bun test apps/web/lib/api/client.test.ts 'apps/web/app/api/[[...slugs]]/route.test.ts'`
+Run: `bun test apps/web/lib/api/client.test.ts 'apps/web/app/api/[[...slugs]]/route.test.ts'`
 
 Expected: FAIL because the Eden client module does not exist.
 
 - [ ] **Step 3: Implement the web baseline**
 
-Run: `rtk bun add --cwd apps/web @elysia/eden @t3-oss/env-nextjs`
+Run: `bun add --cwd apps/web @elysia/eden @t3-oss/env-nextjs`
 
 Add `@repo/api: "*"` as a runtime dependency and an `elysia` development dependency pinned to the same version as `@repo/api`. Add `transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core", "@repo/api"]` to Next config. Create `app/api/[[...slugs]]/route.ts` that exports `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `OPTIONS` from `app.fetch`. Implement `lib/env.ts` with `createEnv`, requiring `NEXT_PUBLIC_APP_URL`. Implement the browser Eden client as `treaty<App>(env.NEXT_PUBLIC_APP_URL).api` and the Server Component client as `treaty(app).api`.
 
@@ -215,19 +215,19 @@ Replace the tRPC provider with a `QueryClientProvider` only. Delete all tRPC, SS
 
 - [ ] **Step 4: Verify web behavior and absence of legacy paths**
 
-Run: `rtk bun test apps/web/lib/api/client.test.ts 'apps/web/app/api/[[...slugs]]/route.test.ts' apps/web/next.config.test.ts`
+Run: `bun test apps/web/lib/api/client.test.ts 'apps/web/app/api/[[...slugs]]/route.test.ts' apps/web/next.config.test.ts`
 
 Expected: PASS.
 
-Run: `rtk rg -n "@trpc|nextapi|NEXT_PUBLIC_API_URL|API_INTERNAL_URL|authServer|DATABASE_URL|Sleekflow|Oriskin" apps/web`
+Run: `rg -n "@trpc|nextapi|NEXT_PUBLIC_API_URL|API_INTERNAL_URL|authServer|DATABASE_URL|Sleekflow|Oriskin" apps/web`
 
 Expected: no matches.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/web package.json bun.lock
-rtk git commit -m "refactor(web): replace trpc and auth with Eden"
+git add apps/web package.json bun.lock
+git commit -m "refactor(web): replace trpc and auth with Eden"
 ```
 
 ### Task 5: Align environment, tooling, deployment, and rules
@@ -240,7 +240,7 @@ Create `scripts/check-architecture.ts` that exits non-zero when it finds `@trpc`
 
 - [ ] **Step 2: Run the check and verify failure on current stale docs/config**
 
-Run: `rtk bun test scripts/check-architecture.test.ts`
+Run: `bun test scripts/check-architecture.test.ts`
 
 Expected: FAIL until the rule checker and fixtures exist.
 
@@ -250,13 +250,13 @@ Add `.agent/architecture.md`, `api.md`, `database.md`, `web.md`, and `config.md`
 
 - [ ] **Step 4: Run repository verification**
 
-Run: `rtk bun test scripts/check-architecture.test.ts && rtk bun run check:architecture && rtk bun run lint && rtk bun run check-types && rtk bun run build`
+Run: `bun test scripts/check-architecture.test.ts && bun run check:architecture && bun run lint && bun run check-types && bun run build`
 
 Expected: every command exits 0.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add .agent .env.api.example .env.web.example .gitignore Taskfile.yml README.md docker-compose.yml Dockerfile.api Dockerfile.web package.json turbo.json scripts
-rtk git commit -m "docs: document reusable API and web architecture"
+git add .agent .env.api.example .env.web.example .gitignore Taskfile.yml README.md docker-compose.yml Dockerfile.api Dockerfile.web package.json turbo.json scripts
+git commit -m "docs: document reusable API and web architecture"
 ```

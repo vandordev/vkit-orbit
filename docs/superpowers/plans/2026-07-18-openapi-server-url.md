@@ -35,7 +35,7 @@ expect(document.servers).toEqual([{ url: env.openapiServerUrl }]);
 
 - [ ] **Step 2: Run tests to verify RED**
 
-Run: `rtk bun test packages/config/src/api.test.ts apps/api/src/openapi.test.ts`
+Run: `bun test packages/config/src/api.test.ts apps/api/src/openapi.test.ts`
 
 Expected: FAIL because the API config has no `openapiServerUrl` property and the OpenAPI document has no configured `servers` value.
 
@@ -60,13 +60,13 @@ Use the API runtime configuration to instantiate the plugin. Add `OPENAPI_SERVER
 
 - [ ] **Step 4: Run focused GREEN verification**
 
-Run: `rtk bun test packages/config/src/api.test.ts apps/api/src/openapi.test.ts && rtk turbo run check-types --filter=@repo/config --filter=@repo/api`
+Run: `bun test packages/config/src/api.test.ts apps/api/src/openapi.test.ts && turbo run check-types --filter=@repo/config --filter=@repo/api`
 
 Expected: all tests and both typechecks pass.
 
 - [ ] **Step 5: Run repository verification and commit**
 
-Run: `rtk task quality && rtk task build`
+Run: `task quality && task build`
 
 Expected: all commands exit `0`.
 

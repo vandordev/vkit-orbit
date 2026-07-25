@@ -38,7 +38,7 @@ test("maps optional S3 variables without exposing them to clients", () => {
 
 - [ ] **Step 2: Run RED**
 
-Run: `rtk bun test packages/config/src/storage.test.ts`  
+Run: `bun test packages/config/src/storage.test.ts`  
 Expected: FAIL because the storage schema and `storage` result do not exist.
 
 - [ ] **Step 3: Implement the reusable server schema fragment**
@@ -58,7 +58,7 @@ Reject partial credentials and return `storage: null` only if all credential fie
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: `rtk task test:config`  
+Run: `task test:config`  
 Expected: PASS.
 
 ```bash
@@ -83,7 +83,7 @@ test("rejects a key outside the configured root", () => {
 
 - [ ] **Step 2: Run RED**
 
-Run: `rtk bun test packages/storage/src/keys.test.ts packages/storage/src/client.test.ts`  
+Run: `bun test packages/storage/src/keys.test.ts packages/storage/src/client.test.ts`  
 Expected: FAIL because `@repo/storage` does not exist.
 
 - [ ] **Step 3: Implement the smallest package API**
@@ -102,7 +102,7 @@ export function createStorageClient(config: StorageConfig, client = new S3Client
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: `rtk bun test packages/storage && rtk turbo run check-types --filter=@repo/storage`  
+Run: `bun test packages/storage && turbo run check-types --filter=@repo/storage`  
 Expected: both commands exit `0`.
 
 ```bash
@@ -133,7 +133,7 @@ S3_ROOT_PREFIX=uploads
 
 - [ ] **Step 3: Verify and commit**
 
-Run: `rtk task test:config && rtk bun test packages/storage && rtk task check-types`  
+Run: `task test:config && bun test packages/storage && task check-types`  
 Expected: all commands exit `0`.
 
 ```bash

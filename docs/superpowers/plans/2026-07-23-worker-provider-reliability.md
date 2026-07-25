@@ -22,7 +22,7 @@
 - [ ] Write failing Go tests for `ClaimNext`, `PersistOutcome`, `HasPending`, and `Aggregate`; test states `PENDING`, `PROCESSING`, `SENT`, `FAILED`, and `UNKNOWN`.
 - [ ] Add a README state table: retryable provider failure transitions `PROCESSING → PENDING`; timeout transitions to `UNKNOWN`; terminal aggregate is completed, failed, or partially failed only when no active item remains.
 - [ ] Define a repository interface whose claim returns one item and whose persistence receives a complete outcome record; worker code must not execute SQL directly.
-- [ ] Run `rtk go test ./recipes/worker-provider-reliability/...`; expect interface/test failures. Commit `docs(recipe): define reliable fanout state model`.
+- [ ] Run `go test ./recipes/worker-provider-reliability/...`; expect interface/test failures. Commit `docs(recipe): define reliable fanout state model`.
 
 ### Task 2: Implement safe claim and persistence examples
 
@@ -34,11 +34,11 @@
 
 - [ ] Add tests with a fake repository/provider for retryable failure, timeout, two-item queue draining, all-success, all-failed, mixed aggregate, and notifier failure.
 - [ ] Implement worker flow: claim, call provider outside transaction, classify error, persist, enqueue one follow-up if pending, then notify Elysia. Return provider/notifier errors unchanged when River should retry.
-- [ ] Run `rtk go test ./recipes/worker-provider-reliability/... -count=1`; expect PASS. Commit `feat(recipe): add fanout worker lifecycle`.
+- [ ] Run `go test ./recipes/worker-provider-reliability/... -count=1`; expect PASS. Commit `feat(recipe): add fanout worker lifecycle`.
 
 ### Task 4: Align producer and contract documentation
 
 - [ ] Add a Bun test that producer kind is exactly `fanout-delivery.v1` and payload validation rejects missing parent/item identity.
 - [ ] Implement the TypeScript producer and document versioning rules, idempotency-key placement, and Elysia-only realtime boundary.
-- [ ] Run recipe Bun/Go tests, then `rtk task quality`. Commit `docs(recipe): complete fanout provider contract`.
+- [ ] Run recipe Bun/Go tests, then `task quality`. Commit `docs(recipe): complete fanout provider contract`.
 

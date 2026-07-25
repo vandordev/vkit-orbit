@@ -28,11 +28,11 @@
 
 - [ ] Add React tests for current-user loading, collapsed navigation accessible labels/tooltips, authorization-filtered items, `Meta/Ctrl+K` command opening, and logout callback.
 - [ ] Implement a responsive shell using neutral labels, `aria-label` values, keyboard event cleanup, and consumer-provided route links/callbacks.
-- [ ] Run `rtk bun test ./recipes/admin-workspace-ui/tests`; expect PASS. Commit `feat(recipe): add neutral admin shell`.
+- [ ] Run `bun test ./recipes/admin-workspace-ui/tests`; expect PASS. Commit `feat(recipe): add neutral admin shell`.
 
 ### Task 3: Add optional UI tiers without baseline leakage
 
 - [ ] Add tests/docs assertions that root `apps/web/package.json` is unchanged and no baseline route imports recipe files.
 - [ ] Document Animate UI as an optional sidebar enhancement and Niko Table as a separately installed advanced-data-grid option, including its large maintenance cost.
-- [ ] Add a static example page only under the recipe, never baseline routes. Run recipe tests plus `rtk bun test apps/web`; expect PASS. Commit `docs(recipe): document optional dashboard extensions`.
+- [ ] Add a static example page only under the recipe, never baseline routes. Run recipe tests plus `bun test apps/web`; expect PASS. Commit `docs(recipe): document optional dashboard extensions`.
 

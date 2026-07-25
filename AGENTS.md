@@ -4,7 +4,7 @@
 
 Read `README.md`, the relevant `.agent/**/*.md` files for the runtime being
 changed, the plan/spec, and run
-`rtk git status --short` before changing code. Preserve unrelated changes.
+`git status --short` before changing code. Preserve unrelated changes.
 
 ## Repository shape
 
@@ -47,6 +47,6 @@ is an opt-in copy/install recipe in `recipes/realtime-notification/`.
 
 For every behavior change: write a focused failing test, run it and inspect the
 expected failure, implement the smallest fix, run focused tests/typechecks,
-then commit the task with its planned conventional message. Use `rtk` before
-every shell command. Prefer `task` commands. Before completion run focused
-tests, `rtk task quality`, `rtk task build`, and Compose smoke checks.
+then commit the task with its planned conventional message. Prefer `task`
+commands. Before completion run focused
+tests, `task quality`, `task build`, and Compose smoke checks.

@@ -38,7 +38,7 @@ test("accepts matching Basic credentials", () => {
 
 - [ ] **Step 2: Run RED**
 
-Run: `rtk bun test packages/config/src/api.test.ts apps/api/src/lib/docs-auth.test.ts`  
+Run: `bun test packages/config/src/api.test.ts apps/api/src/lib/docs-auth.test.ts`  
 Expected: FAIL because the keys and `isDocumentationAuthorized` do not exist.
 
 - [ ] **Step 3: Implement the smallest boundary**
@@ -61,7 +61,7 @@ export function isDocumentationAuthorized(authorization: string | undefined, use
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: `rtk bun test packages/config/src/api.test.ts apps/api/src/lib/docs-auth.test.ts`  
+Run: `bun test packages/config/src/api.test.ts apps/api/src/lib/docs-auth.test.ts`  
 Expected: PASS.
 
 ```bash
@@ -91,7 +91,7 @@ test("requires documentation credentials when configured", async () => {
 
 - [ ] **Step 2: Run RED**
 
-Run: `rtk bun test apps/api/src/openapi.test.ts`  
+Run: `bun test apps/api/src/openapi.test.ts`  
 Expected: FAIL with `404` because neither docs endpoint exists.
 
 - [ ] **Step 3: Add `@elysiajs/openapi` and compose it once**
@@ -108,7 +108,7 @@ In `app.ts`, return `401`, `WWW-Authenticate: Basic realm="API documentation"`, 
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: `rtk bun test apps/api/src/openapi.test.ts apps/api/src/app.test.ts`  
+Run: `bun test apps/api/src/openapi.test.ts apps/api/src/app.test.ts`  
 Expected: PASS.
 
 ```bash
@@ -134,7 +134,7 @@ Set both `OPENAPI_BASIC_AUTH_USERNAME` and `OPENAPI_BASIC_AUTH_PASSWORD` to prot
 
 - [ ] **Step 3: Verify and commit**
 
-Run: `rtk task test:api && rtk task check-types:api`  
+Run: `task test:api && task check-types:api`  
 Expected: both commands exit `0`.
 
 ```bash

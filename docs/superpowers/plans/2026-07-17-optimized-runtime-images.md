@@ -53,7 +53,7 @@ test("Dockerfile.web builds from a pruned graph", () => {
 
 - [ ] **Step 2: Run RED**
 
-Run: rtk bun test scripts/dockerfiles.test.ts  
+Run: bun test scripts/dockerfiles.test.ts  
 Expected: FAIL because the current images copy the full workspace graph and do not prune.
 
 - [ ] **Step 3: Verify test failure is structural**
@@ -77,7 +77,7 @@ test("Dockerfile.web uses cache mounts and a non-root standalone runner", () => 
 
 - [ ] **Step 2: Run RED**
 
-Run: rtk bun test scripts/dockerfiles.test.ts  
+Run: bun test scripts/dockerfiles.test.ts  
 Expected: FAIL because the current web Dockerfile has no pruned build or BuildKit cache mounts.
 
 - [ ] **Step 3: Replace the web Dockerfile with a pruned build**
@@ -115,7 +115,7 @@ coverage
 
 - [ ] **Step 5: Run GREEN and commit**
 
-Run: rtk bun test scripts/dockerfiles.test.ts  
+Run: bun test scripts/dockerfiles.test.ts  
 Expected: PASS.
 
 ~~~bash
@@ -139,7 +139,7 @@ test("API and worker copy generated Prisma artifacts into their runners", () => 
 
 - [ ] **Step 2: Run RED**
 
-Run: rtk bun test scripts/dockerfiles.test.ts  
+Run: bun test scripts/dockerfiles.test.ts  
 Expected: FAIL because API and worker lack the production-dependency/pruned contract.
 
 - [ ] **Step 3: Use the four-stage non-web pattern**
@@ -162,7 +162,7 @@ For API and worker, generate Prisma in the builder and copy node_modules/.prisma
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: rtk bun test scripts/dockerfiles.test.ts  
+Run: bun test scripts/dockerfiles.test.ts  
 Expected: PASS.
 
 ~~~bash
@@ -182,7 +182,7 @@ git commit -m "build: prune API and job runtime images"
 
 - [ ] **Step 2: Run RED**
 
-Run: rtk bun test scripts/dockerfiles.test.ts  
+Run: bun test scripts/dockerfiles.test.ts  
 Expected: FAIL because no realtime Dockerfile exists before the optional realtime implementation is completed.
 
 - [ ] **Step 3: Add the production-only realtime image**
@@ -200,7 +200,7 @@ Use a build-deps/builder pair to compile apps/realtime, copy production dependen
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: rtk bun test scripts/dockerfiles.test.ts  
+Run: bun test scripts/dockerfiles.test.ts  
 Expected: PASS.
 
 ~~~bash
@@ -217,29 +217,29 @@ git commit -m "build(realtime): add optimized runtime image"
 ~~~yaml
 docker:build:api:
   desc: Build the standalone API image
-  cmds: [rtk docker buildx build --load --platform=linux/amd64 --file Dockerfile.api --tag vkit-rapid-api:local .]
+  cmds: [docker buildx build --load --platform=linux/amd64 --file Dockerfile.api --tag vkit-rapid-api:local .]
 ~~~
 
 Add equivalent docker:build:web, docker:build:worker, docker:build:scheduler, and docker:build:realtime tasks. The realtime task is documented as available only after its optional runtime has been enabled.
 
 - [ ] **Step 2: Build every available image**
 
-Run: rtk docker buildx build --load --platform=linux/amd64 --file Dockerfile.web --tag vkit-rapid-web:local .  
-Run: rtk docker buildx build --load --platform=linux/amd64 --file Dockerfile.api --tag vkit-rapid-api:local .  
-Run: rtk docker buildx build --load --platform=linux/amd64 --file Dockerfile.worker --tag vkit-rapid-worker:local .  
-Run: rtk docker buildx build --load --platform=linux/amd64 --file Dockerfile.scheduler --tag vkit-rapid-scheduler:local .  
+Run: docker buildx build --load --platform=linux/amd64 --file Dockerfile.web --tag vkit-rapid-web:local .  
+Run: docker buildx build --load --platform=linux/amd64 --file Dockerfile.api --tag vkit-rapid-api:local .  
+Run: docker buildx build --load --platform=linux/amd64 --file Dockerfile.worker --tag vkit-rapid-worker:local .  
+Run: docker buildx build --load --platform=linux/amd64 --file Dockerfile.scheduler --tag vkit-rapid-scheduler:local .  
 Expected: every command exits 0.
 
 - [ ] **Step 3: Inspect runner metadata and document opt-in services**
 
-Run: rtk docker image inspect vkit-rapid-web:local vkit-rapid-api:local vkit-rapid-worker:local vkit-rapid-scheduler:local --format '{{.Config.User}} {{json .Config.Cmd}}'  
+Run: docker image inspect vkit-rapid-web:local vkit-rapid-api:local vkit-rapid-worker:local vkit-rapid-scheduler:local --format '{{.Config.User}} {{json .Config.Cmd}}'  
 Expected: web prints nextjs and every image reports its intended runtime command.
 
 Document that Dockerfiles build images only; image registry push, deployment, and optional realtime activation remain project/operator decisions.
 
 - [ ] **Step 4: Run repository verification and commit**
 
-Run: rtk task quality && rtk task build && rtk git diff --check  
+Run: task quality && task build && git diff --check  
 Expected: all commands exit 0.
 
 ~~~bash

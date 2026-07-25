@@ -62,4 +62,4 @@ The web wrapper must run before `next dev` and `next build`, so `NEXT_PUBLIC_*` 
 
 Unit tests cover merge order, nested merge, array replacement, missing modules, required interpolation failure, default interpolation, optional empty values, and preservation of non-interpolated scalar types. Runtime config tests prove each selected module set produces valid configuration and that invalid/missing required values fail. A web-focused test verifies the resolved public application URL is available to the existing Eden client configuration, while a server-only secret is absent from client-facing configuration.
 
-Focused tests run before repository verification. The final verification is `rtk task quality` and `rtk task build`.
+Focused tests run before repository verification. The final verification is `task quality` and `task build`.

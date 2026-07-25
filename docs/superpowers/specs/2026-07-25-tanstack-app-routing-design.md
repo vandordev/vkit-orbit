@@ -238,5 +238,5 @@ Tests cover:
   boundaries, and not-found handling where testable without a product domain.
 
 Focused tests run before each implementation step. Completion requires focused
-tests, `rtk task quality`, `rtk task build`, and the repository's Compose
+tests, `task quality`, `task build`, and the repository's Compose
 smoke checks.

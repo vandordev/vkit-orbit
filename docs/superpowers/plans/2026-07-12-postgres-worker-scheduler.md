@@ -39,27 +39,27 @@ test("starts with no product-domain job names", () => {
 
 - [ ] **Step 2: Run the test and verify failure**
 
-Run: `rtk bun test packages/queue/src/jobs.test.ts`
+Run: `bun test packages/queue/src/jobs.test.ts`
 
 Expected: FAIL because the package does not exist.
 
 - [ ] **Step 3: Implement queue boundary**
 
-First create `packages/queue/package.json` with `{ "name": "@repo/queue", "version": "0.1.0", "private": true, "type": "module" }` and the TypeScript config. Then run: `rtk bun add --cwd packages/queue pg-boss`
+First create `packages/queue/package.json` with `{ "name": "@repo/queue", "version": "0.1.0", "private": true, "type": "module" }` and the TypeScript config. Then run: `bun add --cwd packages/queue pg-boss`
 
 Implement `createQueue(databaseUrl)` using `new PgBoss(databaseUrl)`, `start()`, and an idempotent `stop()`. Export a `QueueClient` interface with `start`, `stop`, `send`, and `work`; keep `jobNames` as `[] as const` and make scheduler/worker reject unknown names at startup. Do not put a product job in the boilerplate.
 
 - [ ] **Step 4: Verify focused queue tests**
 
-Run: `rtk bun test packages/queue/src/jobs.test.ts && rtk bun run check-types --filter=@repo/queue`
+Run: `bun test packages/queue/src/jobs.test.ts && bun run check-types --filter=@repo/queue`
 
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add packages/queue package.json bun.lock
-rtk git commit -m "feat(queue): add PostgreSQL job queue boundary"
+git add packages/queue package.json bun.lock
+git commit -m "feat(queue): add PostgreSQL job queue boundary"
 ```
 
 ### Task 2: Add the worker process
@@ -81,7 +81,7 @@ test("registers no domain handlers in the generic baseline", async () => {
 
 - [ ] **Step 2: Run test and verify failure**
 
-Run: `rtk bun test apps/worker/src/handlers.test.ts`
+Run: `bun test apps/worker/src/handlers.test.ts`
 
 Expected: FAIL because worker handlers do not exist.
 
@@ -91,15 +91,15 @@ Create a workspace package `@repo/worker` depending on `@repo/config`, `@repo/qu
 
 - [ ] **Step 4: Verify worker test and types**
 
-Run: `rtk bun test apps/worker/src/handlers.test.ts && rtk bun run check-types --filter=@repo/worker`
+Run: `bun test apps/worker/src/handlers.test.ts && bun run check-types --filter=@repo/worker`
 
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/worker packages/config package.json bun.lock
-rtk git commit -m "feat(worker): add queue consumer runtime"
+git add apps/worker packages/config package.json bun.lock
+git commit -m "feat(worker): add queue consumer runtime"
 ```
 
 ### Task 3: Add the scheduler process
@@ -121,7 +121,7 @@ test("registers no product schedules in the generic baseline", async () => {
 
 - [ ] **Step 2: Run test and verify failure**
 
-Run: `rtk bun test apps/scheduler/src/schedules.test.ts`
+Run: `bun test apps/scheduler/src/schedules.test.ts`
 
 Expected: FAIL because scheduler files do not exist.
 
@@ -131,15 +131,15 @@ Create `@repo/scheduler` using `@repo/config` and `@repo/queue`. `main.ts` start
 
 - [ ] **Step 4: Verify scheduler isolation**
 
-Run: `rtk bun test apps/scheduler/src/schedules.test.ts && rtk rg -n "@repo/(database|application)" apps/scheduler && rtk bun run check-types --filter=@repo/scheduler`
+Run: `bun test apps/scheduler/src/schedules.test.ts && rg -n "@repo/(database|application)" apps/scheduler && bun run check-types --filter=@repo/scheduler`
 
 Expected: test and typecheck pass; `rg` prints no imports.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/scheduler packages/config package.json bun.lock
-rtk git commit -m "feat(scheduler): add enqueue-only runtime"
+git add apps/scheduler packages/config package.json bun.lock
+git commit -m "feat(scheduler): add enqueue-only runtime"
 ```
 
 ### Task 4: Add deployment and operator support
@@ -152,7 +152,7 @@ Create a Bun test that reads root `package.json` and asserts `dev:worker`, `dev:
 
 - [ ] **Step 2: Run test and verify failure**
 
-Run: `rtk bun test scripts/runtime-layout.test.ts`
+Run: `bun test scripts/runtime-layout.test.ts`
 
 Expected: FAIL because commands and services are absent.
 
@@ -162,13 +162,13 @@ Add root scripts and Taskfile targets for all four apps. Add Dockerfiles that in
 
 - [ ] **Step 4: Run full verification**
 
-Run: `rtk bun test && rtk bun run lint && rtk bun run check-types && rtk bun run build`
+Run: `bun test && bun run lint && bun run check-types && bun run build`
 
 Expected: every command exits 0.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add Dockerfile.worker Dockerfile.scheduler docker-compose.yml Taskfile.yml README.md .agent .env.worker.example .env.scheduler.example .gitignore package.json turbo.json scripts
-rtk git commit -m "chore: add worker and scheduler operations"
+git add Dockerfile.worker Dockerfile.scheduler docker-compose.yml Taskfile.yml README.md .agent .env.worker.example .env.scheduler.example .gitignore package.json turbo.json scripts
+git commit -m "chore: add worker and scheduler operations"
 ```

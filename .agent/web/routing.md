@@ -107,6 +107,6 @@ from `src/app`; run the web dev/build command after route changes and verify its
 imports. Focused tests include:
 
 ```bash
-rtk bun test apps/web/src/app apps/web/src/lib
-rtk bun --cwd apps/web run check-types
+bun test apps/web/src/app apps/web/src/lib
+bun --cwd apps/web run check-types
 ```

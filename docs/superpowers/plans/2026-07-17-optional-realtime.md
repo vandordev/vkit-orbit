@@ -39,7 +39,7 @@ test("rejects an expired ticket", () => {
 
 - [ ] **Step 2: Run RED**
 
-Run: `rtk bun test packages/realtime`  
+Run: `bun test packages/realtime`  
 Expected: FAIL because the package has not been created.
 
 - [ ] **Step 3: Implement contracts**
@@ -54,7 +54,7 @@ Implement `createRealtimePublisher` to validate before POSTing JSON with `x-real
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: `rtk bun test packages/realtime`  
+Run: `bun test packages/realtime`  
 Expected: PASS.
 
 ```bash
@@ -81,7 +81,7 @@ test("does not join an unauthorized workspace", async () => {
 
 - [ ] **Step 2: Run RED**
 
-Run: `rtk bun test apps/realtime`  
+Run: `bun test apps/realtime`  
 Expected: FAIL because `createRealtimeServer` does not exist.
 
 - [ ] **Step 3: Implement the isolated server factory**
@@ -102,7 +102,7 @@ export function createRealtimeServer(dependencies: Dependencies) {
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: `rtk bun test apps/realtime && rtk turbo run check-types --filter=@repo/realtime-server`  
+Run: `bun test apps/realtime && turbo run check-types --filter=@repo/realtime-server`  
 Expected: both commands exit `0`.
 
 ```bash
@@ -124,7 +124,7 @@ git commit -m "feat(realtime): add optional Socket.IO runtime"
 ```yaml
 dev:realtime:
   desc: Run the optional realtime runtime
-  cmds: [rtk bun run dev:realtime]
+  cmds: [bun run dev:realtime]
 ```
 
 - [ ] **Step 2: Add isolated environment and Compose profile**
@@ -150,7 +150,7 @@ The realtime process is optional and single-instance by default. Publish only af
 
 - [ ] **Step 4: Verify and commit**
 
-Run: `rtk bun test packages/realtime apps/realtime && rtk turbo run check-types --filter=@repo/realtime --filter=@repo/realtime-server`  
+Run: `bun test packages/realtime apps/realtime && turbo run check-types --filter=@repo/realtime --filter=@repo/realtime-server`  
 Expected: all commands exit `0`.
 
 ```bash

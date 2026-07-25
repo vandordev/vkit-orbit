@@ -15,11 +15,15 @@ test("Taskfile exposes the hybrid runtime operations", () => {
 test("dev follows the web foreground and background-runtime split", () => {
 	const devTask = taskfile.slice(taskfile.indexOf("  dev:"), taskfile.indexOf("\n  dev:web:"));
 	expect(devTask).toContain('desc: Run TanStack Start with embedded Elysia');
-	expect(devTask).toContain("rtk bun run dev:web");
+	expect(devTask).toContain("bun run dev:web");
 	expect(devTask).toContain("  dev:bg:");
 	expect(devTask).toContain("dev:worker");
 	expect(devTask).toContain("dev:scheduler");
 	expect(devTask).toContain("dev:realtime");
+});
+
+test("Taskfile leaves command wrappers to each developer", () => {
+	expect(taskfile).not.toContain(["r", "t", "k"].join(""));
 });
 
 test("dev background keeps scheduler and worker runtimes available for idle baseline", () => {

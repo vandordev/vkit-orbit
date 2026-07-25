@@ -14,7 +14,7 @@
 - Do not read credentials or `process.env` from the web feature config.
 - Keep `apps/web/src/routeTree.gen.ts` generated and never edit it manually.
 - Preserve `components/ui/button.tsx`; brand styling/config belongs at call sites or route files.
-- Prefix every shell command with `rtk`; use `apply_patch` for text edits.
+- Use `apply_patch` for text edits.
 
 ---
 
@@ -49,7 +49,7 @@ describe("web app config", () => {
 
 - [ ] **Step 2: Run the focused test and verify RED**
 
-Run `rtk bun test ./apps/web/src/lib/config.test.ts` from the repository root. It must fail because `./config` does not exist.
+Run `bun test ./apps/web/src/lib/config.test.ts` from the repository root. It must fail because `./config` does not exist.
 
 - [ ] **Step 3: Implement the minimal config**
 
@@ -65,13 +65,13 @@ export const appConfig = {
 
 - [ ] **Step 4: Run the focused test and verify GREEN**
 
-Run `rtk bun test ./apps/web/src/lib/config.test.ts`; expect one passing test.
+Run `bun test ./apps/web/src/lib/config.test.ts`; expect one passing test.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/web/src/lib/config.ts apps/web/src/lib/config.test.ts
-rtk git commit -m "feat(web): add centralized app config"
+git add apps/web/src/lib/config.ts apps/web/src/lib/config.test.ts
+git commit -m "feat(web): add centralized app config"
 ```
 
 ### Task 2: Replace hard-coded web brand values
@@ -96,7 +96,7 @@ Extend the existing tests to require `appConfig` imports/usages in metadata, roo
 
 - [ ] **Step 2: Run focused tests and verify RED**
 
-Run `rtk bun test ./apps/web/src/lib/metadata.test.ts ./apps/web/src/app/__root.test.tsx ./apps/web/src/app/_public/index.test.tsx`; expect failures because current files still hard-code brand values.
+Run `bun test ./apps/web/src/lib/metadata.test.ts ./apps/web/src/app/__root.test.tsx ./apps/web/src/app/_public/index.test.tsx`; expect failures because current files still hard-code brand values.
 
 - [ ] **Step 3: Implement the smallest replacements**
 
@@ -104,13 +104,13 @@ Import `appConfig` in each consumer. Replace the hard-coded title, description, 
 
 - [ ] **Step 4: Run focused tests and web typecheck**
 
-Run `rtk bun test ./apps/web/src/lib/metadata.test.ts ./apps/web/src/app/__root.test.tsx ./apps/web/src/app/_public/index.test.tsx` and `rtk bun run check-types` from `apps/web`; expect all to pass.
+Run `bun test ./apps/web/src/lib/metadata.test.ts ./apps/web/src/app/__root.test.tsx ./apps/web/src/app/_public/index.test.tsx` and `bun run check-types` from `apps/web`; expect all to pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/web/src/lib apps/web/src/app
-rtk git commit -m "refactor(web): consume centralized app config"
+git add apps/web/src/lib apps/web/src/app
+git commit -m "refactor(web): consume centralized app config"
 ```
 
 ### Task 3: Document web configuration ownership
@@ -126,25 +126,25 @@ Document `apps/web/src/lib/config.ts` as the single source of truth for static w
 
 - [ ] **Step 2: Verify documentation**
 
-Run `rtk rg -n "lib/config\.ts|appConfig|defaultDescription|repositoryUrl|environment" .agent/web README.md` and `rtk git diff --check`.
+Run `rg -n "lib/config\.ts|appConfig|defaultDescription|repositoryUrl|environment" .agent/web README.md` and `git diff --check`.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-rtk git add .agent/web README.md
-rtk git commit -m "docs(web): document centralized app config"
+git add .agent/web README.md
+git commit -m "docs(web): document centralized app config"
 ```
 
 ### Task 4: Run final verification
 
 - [ ] **Step 1: Run focused web tests**
 
-Run `rtk bun test apps/web/src/app apps/web/src/lib`.
+Run `bun test apps/web/src/app apps/web/src/lib`.
 
 - [ ] **Step 2: Run repository quality and build checks**
 
-Run `rtk task quality` and `rtk task build`.
+Run `task quality` and `task build`.
 
 - [ ] **Step 3: Inspect the final change set**
 
-Run `rtk git status --short` and `rtk git diff --check`; expect a clean working tree and no whitespace errors.
+Run `git status --short` and `git diff --check`; expect a clean working tree and no whitespace errors.

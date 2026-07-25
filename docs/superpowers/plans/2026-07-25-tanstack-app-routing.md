@@ -19,7 +19,7 @@
 - Use `validateSearch` with Zod for every UI search parameter and typed `<Link>`/`navigate` for internal navigation.
 - The default pending UI is the shadcn-installed Symmetric Wave component; the global error UI must use `reset()` and never expose raw production error details.
 - All motion honors `prefers-reduced-motion`; the landing remains understandable and operable without motion.
-- Preserve unrelated working-tree changes. Prefix every shell command with `rtk`; prefer Taskfile verification commands.
+- Preserve unrelated working-tree changes. Prefer Taskfile verification commands.
 
 ---
 
@@ -81,8 +81,8 @@ apps/web/src/
 Add a temporary assertion block to the planning scratchpad or run these checks before moving files:
 
 ```bash
-rtk test -f .agent/web/routing.md
-rtk rg -n "\.agent/\*\.md" AGENTS.md
+test -f .agent/web/routing.md
+rg -n "\.agent/\*\.md" AGENTS.md
 ```
 
 Expected: the first command fails because `routing.md` does not exist; the second command shows the non-recursive instruction.
@@ -104,9 +104,9 @@ Replace the start-here instruction with an explicit requirement to read `README.
 Run:
 
 ```bash
-rtk test -f .agent/web/routing.md
-rtk rg -n "\.agent/\*\*/\*\.md" AGENTS.md
-rtk rg -n "Elysia|validateSearch|Symmetric Wave|routeTree.gen" .agent/web
+test -f .agent/web/routing.md
+rg -n "\.agent/\*\*/\*\.md" AGENTS.md
+rg -n "Elysia|validateSearch|Symmetric Wave|routeTree.gen" .agent/web
 ```
 
 Expected: all commands succeed and the routing guide contains the mandatory rules.
@@ -114,8 +114,8 @@ Expected: all commands succeed and the routing guide contains the mandatory rule
 - [ ] **Step 6: Commit**
 
 ```bash
-rtk git add AGENTS.md .agent
-rtk git commit -m "docs: organize runtime agent guidance"
+git add AGENTS.md .agent
+git commit -m "docs: organize runtime agent guidance"
 ```
 
 ### Task 2: Move the route source and preserve Elysia adapters
@@ -151,7 +151,7 @@ expect(await response.json()).toEqual({ success: true, data: { status: "ok" } })
 Run:
 
 ```bash
-rtk bun test apps/web/src/routes/api.$.test.ts apps/web/src/routes/health.test.ts
+bun test apps/web/src/routes/api.$.test.ts apps/web/src/routes/health.test.ts
 ```
 
 Expected: PASS before the move; these assertions define the non-regression contract.
@@ -165,7 +165,7 @@ Set `tanstackStart({ router: { routesDirectory: "./src/app", routeFileIgnorePatt
 Run:
 
 ```bash
-rtk bun --cwd apps/web run dev
+bun --cwd apps/web run dev
 ```
 
 Stop the process after the router plugin writes `src/routeTree.gen.ts`. Confirm its imports resolve from `./app/`; do not edit the generated file directly.
@@ -175,8 +175,8 @@ Stop the process after the router plugin writes `src/routeTree.gen.ts`. Confirm 
 Run:
 
 ```bash
-rtk bun test apps/web/src/app/api/$.test.ts apps/web/src/app/health/index.test.ts
-rtk bun --cwd apps/web run check-types
+bun test apps/web/src/app/api/$.test.ts apps/web/src/app/health/index.test.ts
+bun --cwd apps/web run check-types
 ```
 
 Expected: adapter tests pass with unchanged response status/body and web typecheck passes.
@@ -184,8 +184,8 @@ Expected: adapter tests pass with unchanged response status/body and web typeche
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/web/vite.config.ts apps/web/src/app apps/web/src/routeTree.gen.ts
-rtk git commit -m "refactor(web): move TanStack routes into app"
+git add apps/web/vite.config.ts apps/web/src/app apps/web/src/routeTree.gen.ts
+git commit -m "refactor(web): move TanStack routes into app"
 ```
 
 ### Task 3: Install the Symmetric Wave loading primitive
@@ -204,7 +204,7 @@ rtk git commit -m "refactor(web): move TanStack routes into app"
 Run:
 
 ```bash
-rtk test -f apps/web/src/components/ui/symmetric-wave.tsx
+test -f apps/web/src/components/ui/symmetric-wave.tsx
 ```
 
 Expected: FAIL because the registry component is absent.
@@ -214,7 +214,7 @@ Expected: FAIL because the registry component is absent.
 Run from `apps/web`:
 
 ```bash
-rtk bunx --bun shadcn@latest view @loading-ui/symmetric-wave
+bunx --bun shadcn@latest view @loading-ui/symmetric-wave
 ```
 
 Expected: the registry details identify the Symmetric Wave source and every file/dependency the add command will apply. Confirm the component destination is `src/components/ui/symmetric-wave.tsx` and that its imports are compatible with the existing `@/` aliases.
@@ -224,7 +224,7 @@ Expected: the registry details identify the Symmetric Wave source and every file
 Run from `apps/web`:
 
 ```bash
-rtk bunx --bun shadcn@latest add @loading-ui/symmetric-wave
+bunx --bun shadcn@latest add @loading-ui/symmetric-wave
 ```
 
 Read the generated file, confirm it imports with the existing `@/` alias and has no incompatible hard-coded alias.
@@ -234,15 +234,15 @@ Read the generated file, confirm it imports with the existing `@/` alias and has
 Run:
 
 ```bash
-rtk test -f apps/web/src/components/ui/symmetric-wave.tsx
-rtk bun --cwd apps/web run check-types
+test -f apps/web/src/components/ui/symmetric-wave.tsx
+bun --cwd apps/web run check-types
 ```
 
 Expected: PASS.
 
 ```bash
-rtk git add apps/web/package.json bun.lock apps/web/src/components/ui/symmetric-wave.tsx
-rtk git commit -m "feat(web): add symmetric wave loading primitive"
+git add apps/web/package.json bun.lock apps/web/src/components/ui/symmetric-wave.tsx
+git commit -m "feat(web): add symmetric wave loading primitive"
 ```
 
 ### Task 4: Add typed metadata and root UI boundaries
@@ -284,7 +284,7 @@ Extend `__root.test.tsx` to require `errorComponent`, `notFoundComponent`, `pend
 Run:
 
 ```bash
-rtk bun test apps/web/src/lib/metadata.test.ts apps/web/src/app/__root.test.tsx
+bun test apps/web/src/lib/metadata.test.ts apps/web/src/app/__root.test.tsx
 ```
 
 Expected: FAIL because helper and boundary files do not exist.
@@ -341,8 +341,8 @@ Retain charset, viewport, stylesheet, `<HeadContent />`, and `<Scripts />`; repl
 Run:
 
 ```bash
-rtk bun test apps/web/src/lib/metadata.test.ts apps/web/src/app/__root.test.tsx
-rtk bun --cwd apps/web run check-types
+bun test apps/web/src/lib/metadata.test.ts apps/web/src/app/__root.test.tsx
+bun --cwd apps/web run check-types
 ```
 
 Expected: PASS.
@@ -350,8 +350,8 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-rtk git add apps/web/src/lib/metadata.ts apps/web/src/lib/metadata.test.ts apps/web/src/app
-rtk git commit -m "feat(web): add route metadata and global boundaries"
+git add apps/web/src/lib/metadata.ts apps/web/src/lib/metadata.test.ts apps/web/src/app
+git commit -m "feat(web): add route metadata and global boundaries"
 ```
 
 ### Task 5: Build the pathless public shell and Vkit Orbit landing page
@@ -388,7 +388,7 @@ Add assertions that `orbit-hero.tsx` contains `useReducedMotion` and `architectu
 Run:
 
 ```bash
-rtk bun test apps/web/src/app/_public/index.test.tsx
+bun test apps/web/src/app/_public/index.test.tsx
 ```
 
 Expected: FAIL because the pathless public route does not exist.
@@ -398,7 +398,7 @@ Expected: FAIL because the pathless public route does not exist.
 Run:
 
 ```bash
-rtk bun --cwd apps/web add framer-motion
+bun --cwd apps/web add framer-motion
 ```
 
 Use it only in the public visual components. CSS/SVG must render the central mark, rings, and runtime nodes without JavaScript; Framer Motion may animate opacity, transform, and hover only when `useReducedMotion()` is false.
@@ -414,9 +414,9 @@ Use the existing shadcn `Button` for calls to action. Keep the copy explicitly b
 Run the Vite dev command once to update `routeTree.gen.ts`, then run:
 
 ```bash
-rtk bun test apps/web/src/app/_public/index.test.tsx
-rtk bun --cwd apps/web run check-types
-rtk bun --cwd apps/web run build
+bun test apps/web/src/app/_public/index.test.tsx
+bun --cwd apps/web run check-types
+bun --cwd apps/web run build
 ```
 
 Expected: route test, typecheck, and production web build pass.
@@ -424,8 +424,8 @@ Expected: route test, typecheck, and production web build pass.
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/web/package.json bun.lock apps/web/src/app/_public apps/web/src/routeTree.gen.ts
-rtk git commit -m "feat(web): add Vkit Orbit boilerplate landing"
+git add apps/web/package.json bun.lock apps/web/src/app/_public apps/web/src/routeTree.gen.ts
+git commit -m "feat(web): add Vkit Orbit boilerplate landing"
 ```
 
 ### Task 6: Finish the complete web routing documentation
@@ -444,7 +444,7 @@ rtk git commit -m "feat(web): add Vkit Orbit boilerplate landing"
 Run:
 
 ```bash
-rtk rg -n "src/routes|api\.\$\.ts|routes/health\.ts" .agent/web README.md
+rg -n "src/routes|api\.\$\.ts|routes/health\.ts" .agent/web README.md
 ```
 
 Expected: FAIL while stale route paths are still documented or no relevant routing reference exists in the README.
@@ -460,8 +460,8 @@ In `.agent/web/README.md`, retain concise hard rules and link to `routing.md`. I
 Run:
 
 ```bash
-rtk rg -n "src/app/api/\$\.ts|src/app/health/index\.ts|routeTree\.gen\.ts|Symmetric Wave|GlobalError" .agent/web README.md
-rtk rg -n "src/routes|api\.\$\.ts|routes/health\.ts" .agent/web README.md
+rg -n "src/app/api/\$\.ts|src/app/health/index\.ts|routeTree\.gen\.ts|Symmetric Wave|GlobalError" .agent/web README.md
+rg -n "src/routes|api\.\$\.ts|routes/health\.ts" .agent/web README.md
 ```
 
 Expected: the first command finds every current convention; the second returns no stale routing paths.
@@ -469,8 +469,8 @@ Expected: the first command finds every current convention; the second returns n
 - [ ] **Step 4: Commit**
 
 ```bash
-rtk git add .agent README.md
-rtk git commit -m "docs(web): document TanStack app routing"
+git add .agent README.md
+git commit -m "docs(web): document TanStack app routing"
 ```
 
 ### Task 7: Run repository verification and Compose smoke checks
@@ -487,7 +487,7 @@ rtk git commit -m "docs(web): document TanStack app routing"
 Run:
 
 ```bash
-rtk bun test apps/web/src/app apps/web/src/lib
+bun test apps/web/src/app apps/web/src/lib
 ```
 
 Expected: all moved adapter, root-boundary, metadata, and public-route tests pass.
@@ -497,8 +497,8 @@ Expected: all moved adapter, root-boundary, metadata, and public-route tests pas
 Run:
 
 ```bash
-rtk task quality
-rtk task build
+task quality
+task build
 ```
 
 Expected: zero test, lint, typecheck, vet, or build failures.
@@ -508,10 +508,10 @@ Expected: zero test, lint, typecheck, vet, or build failures.
 Run:
 
 ```bash
-rtk task compose:up:detached
-rtk task web:health
-rtk task api:status
-rtk task compose:down
+task compose:up:detached
+task web:health
+task api:status
+task compose:down
 ```
 
 Expected: `/health` returns success through embedded Elysia; `/api/status` returns the Elysia status envelope; Compose stops cleanly.
@@ -521,8 +521,8 @@ Expected: `/health` returns success through embedded Elysia; `/api/status` retur
 Run:
 
 ```bash
-rtk git status --short
-rtk git diff --check
+git status --short
+git diff --check
 ```
 
 Expected: no unexpected files and no whitespace errors. If verification exposes a scoped issue, add a focused failing test, apply the smallest correction, rerun the relevant command, and commit with `fix(web): <specific behavior>`.

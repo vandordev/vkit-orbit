@@ -14,7 +14,7 @@
 - `apps/scheduler` and `apps/worker` must remain alive until `SIGINT` or `SIGTERM` even without consumer work.
 - Workers notify Elysia only after successful work; Elysia alone publishes to Socket.IO.
 - River payload-breaking changes require a new `.vN` kind.
-- Use `rtk` for every shell command, write a failing focused test before each behavior change, and preserve unrelated changes.
+- Write a failing focused test before each behavior change and preserve unrelated changes.
 
 ---
 
@@ -68,7 +68,7 @@ Also replace schedule tests with a source assertion that baseline no longer has 
 
 - [ ] **Step 2: Run focused tests and verify RED**
 
-Run: `rtk bun test apps/scheduler/src/runtime.test.ts apps/scheduler/src/schedules.test.ts packages/config/src/scheduler.test.ts`
+Run: `bun test apps/scheduler/src/runtime.test.ts apps/scheduler/src/schedules.test.ts packages/config/src/scheduler.test.ts`
 
 Expected: FAIL because `runScheduler` does not exist and scheduler config still exposes example values.
 
@@ -90,16 +90,16 @@ Implement `waitForTermination()` with one-time `SIGINT` and `SIGTERM` listeners 
 
 - [ ] **Step 4: Run focused tests and verify GREEN**
 
-Run: `rtk bun test apps/scheduler packages/config/src/scheduler.test.ts`
+Run: `bun test apps/scheduler packages/config/src/scheduler.test.ts`
 
 Expected: PASS; the scheduler lifecycle remains pending until the injected shutdown promise resolves and no example config is parsed.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/scheduler packages/config/src/scheduler.ts packages/config/src/scheduler.test.ts config/scheduler.yaml
-rtk git rm apps/scheduler/src/schedules.ts
-rtk git commit -m "fix(scheduler): keep idle runtime alive"
+git add apps/scheduler packages/config/src/scheduler.ts packages/config/src/scheduler.test.ts config/scheduler.yaml
+git rm apps/scheduler/src/schedules.ts
+git commit -m "fix(scheduler): keep idle runtime alive"
 ```
 
 ### Task 2: Remove example behavior from baseline queue, API, worker, and web
@@ -127,7 +127,7 @@ Add a Go test that reads `apps/worker/main.go` and asserts it does not contain `
 
 - [ ] **Step 2: Run focused tests and verify RED**
 
-Run: `rtk bun test apps/api/src/app.test.ts apps/web/src/routes/__root.test.tsx packages/queue/src && rtk go test ./apps/worker -count=1`
+Run: `bun test apps/api/src/app.test.ts apps/web/src/routes/__root.test.tsx packages/queue/src && go test ./apps/worker -count=1`
 
 Expected: FAIL because baseline imports/registers the example and the route tree retains the walkthrough.
 
@@ -137,16 +137,16 @@ Remove queue example exports and API `enqueueExample` dependencies/default River
 
 - [ ] **Step 4: Run focused tests and verify GREEN**
 
-Run: `rtk bun test apps/api apps/web packages/queue && rtk go test ./apps/worker ./internal/river -count=1 && rtk bun run --cwd apps/web build`
+Run: `bun test apps/api apps/web packages/queue && go test ./apps/worker ./internal/river -count=1 && bun run --cwd apps/web build`
 
 Expected: PASS; no baseline example endpoint, contract, handler, or web route remains while generic internal notifications still pass.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add apps/api apps/worker apps/web packages/queue
-rtk git rm internal/worker/example_realtime_notification.go internal/worker/example_realtime_notification_test.go apps/api/src/routes/examples.ts apps/api/src/routes/examples.test.ts packages/queue/src/example-realtime-notification.ts packages/queue/src/example-realtime-notification.test.ts apps/web/src/routes/examples/realtime.tsx apps/web/src/routes/examples/realtime.test.tsx
-rtk git commit -m "refactor(baseline): remove realtime example behavior"
+git add apps/api apps/worker apps/web packages/queue
+git rm internal/worker/example_realtime_notification.go internal/worker/example_realtime_notification_test.go apps/api/src/routes/examples.ts apps/api/src/routes/examples.test.ts packages/queue/src/example-realtime-notification.ts packages/queue/src/example-realtime-notification.test.ts apps/web/src/routes/examples/realtime.tsx apps/web/src/routes/examples/realtime.test.tsx
+git commit -m "refactor(baseline): remove realtime example behavior"
 ```
 
 ### Task 3: Package the executable realtime walkthrough as a recipe
@@ -187,7 +187,7 @@ test("recipe keeps the versioned example payload", async () => {
 
 - [ ] **Step 2: Run focused tests and verify RED**
 
-Run: `rtk bun test recipes/realtime-notification/tests`
+Run: `bun test recipes/realtime-notification/tests`
 
 Expected: FAIL because the recipe directory is absent.
 
@@ -206,15 +206,15 @@ In worker integration, instruct consumers to register `ExampleRealtimeNotificati
 
 - [ ] **Step 4: Run focused tests and verify GREEN**
 
-Run: `rtk bun test recipes/realtime-notification/tests`
+Run: `bun test recipes/realtime-notification/tests`
 
 Expected: PASS; recipe documents all copy targets and retains the exact v1 contract without baseline imports.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add recipes/realtime-notification
-rtk git commit -m "feat(recipe): add realtime notification walkthrough"
+git add recipes/realtime-notification
+git commit -m "feat(recipe): add realtime notification walkthrough"
 ```
 
 ### Task 4: Update baseline guidance and final isolation checks
@@ -242,7 +242,7 @@ test("baseline has no example schedule or route", async () => {
 
 - [ ] **Step 2: Run focused tests and verify RED**
 
-Run: `rtk bun test scripts/realtime-example-isolation.test.ts scripts/taskfile.test.ts`
+Run: `bun test scripts/realtime-example-isolation.test.ts scripts/taskfile.test.ts`
 
 Expected: FAIL because baseline documentation still describes the opt-in example schedule.
 
@@ -252,15 +252,15 @@ Replace the baseline example sections in README, AGENTS, and contracts documenta
 
 - [ ] **Step 4: Run final verification**
 
-Run: `rtk bun test scripts/realtime-example-isolation.test.ts scripts/taskfile.test.ts recipes/realtime-notification/tests && rtk task quality && rtk task build`
+Run: `bun test scripts/realtime-example-isolation.test.ts scripts/taskfile.test.ts recipes/realtime-notification/tests && task quality && task build`
 
-Run isolated Compose smoke: `rtk docker compose -p vkit-orbit-recipe-smoke up --build -d`, then `rtk curl --fail http://localhost:4100/health`, then `rtk docker compose -p vkit-orbit-recipe-smoke down -v`.
+Run isolated Compose smoke: `docker compose -p vkit-orbit-recipe-smoke up --build -d`, then `curl --fail http://localhost:4100/health`, then `docker compose -p vkit-orbit-recipe-smoke down -v`.
 
 Expected: all tests/builds pass; web becomes healthy while jobs/realtime remain opt-in and baseline scheduler has no default enqueue side effect.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add README.md AGENTS.md contracts/jobs/README.md scripts
-rtk git commit -m "docs: document recipe-only realtime example"
+git add README.md AGENTS.md contracts/jobs/README.md scripts
+git commit -m "docs: document recipe-only realtime example"
 ```

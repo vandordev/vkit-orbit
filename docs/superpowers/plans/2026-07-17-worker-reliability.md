@@ -40,7 +40,7 @@ test("forwards local concurrency when registering a worker", async () => {
 
 - [ ] **Step 2: Run RED**
 
-Run: `rtk bun test packages/queue/src/client.test.ts`  
+Run: `bun test packages/queue/src/client.test.ts`  
 Expected: FAIL because `createQueue` has no injectable factory and `work` has no options parameter.
 
 - [ ] **Step 3: Implement the minimal typed boundary**
@@ -59,7 +59,7 @@ Add a lazily memoized `start()` promise that starts pg-boss once and creates eve
 
 - [ ] **Step 4: Run GREEN and commit**
 
-Run: `rtk task test:queue`  
+Run: `task test:queue`  
 Expected: PASS.
 
 ```bash
@@ -96,7 +96,7 @@ expect(queue.send).toHaveBeenCalledWith("feature-publish", { id: "outbox-1" });
 
 - [ ] **Step 3: Verify and commit**
 
-Run: `rtk git diff --check && rtk task test:queue`  
+Run: `git diff --check && task test:queue`  
 Expected: both commands exit `0`.
 
 ```bash

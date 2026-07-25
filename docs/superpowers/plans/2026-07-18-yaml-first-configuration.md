@@ -55,7 +55,7 @@ expect(loadConfig({ configDirectory, modules: ["base", "api", "web"], environmen
 
 - [ ] **Step 2: Run the new test to verify RED**
 
-Run: `rtk bun test packages/config/src/loader.test.ts`
+Run: `bun test packages/config/src/loader.test.ts`
 
 Expected: FAIL because `loadConfig` and the YAML module fixtures do not exist.
 
@@ -67,7 +67,7 @@ Every secret reference must use `${NAME}` or `${NAME:-}`. `.env.example` lists e
 
 - [ ] **Step 4: Run the fixture test to verify the committed module layout**
 
-Run: `rtk bun test packages/config/src/loader.test.ts`
+Run: `bun test packages/config/src/loader.test.ts`
 
 Expected: still FAIL only because the loader is not implemented; fixture files resolve from the repository `config/` directory.
 
@@ -109,7 +109,7 @@ Include tests proving `${NAME}` accepts a non-empty value, `${NAME:-fallback}` u
 
 - [ ] **Step 2: Run the loader tests to verify RED**
 
-Run: `rtk bun test packages/config/src/loader.test.ts`
+Run: `bun test packages/config/src/loader.test.ts`
 
 Expected: FAIL because no loader exports exist.
 
@@ -131,7 +131,7 @@ Accept only module identifiers matching `/^[a-z][a-z0-9-]*$/`, read `<configDire
 
 - [ ] **Step 4: Run focused GREEN verification**
 
-Run: `rtk bun test packages/config/src/loader.test.ts && rtk turbo run check-types --filter=@repo/config`
+Run: `bun test packages/config/src/loader.test.ts && turbo run check-types --filter=@repo/config`
 
 Expected: every loader test passes and the config workspace typecheck exits `0`.
 
@@ -173,7 +173,7 @@ Also preserve current coverage for paired OpenAPI credentials, optional S3 confi
 
 - [ ] **Step 2: Run tests to verify RED**
 
-Run: `rtk bun test packages/config/src/run.test.ts packages/config/src/common.test.ts packages/config/src/api.test.ts packages/config/src/worker.test.ts packages/config/src/scheduler.test.ts packages/config/src/realtime.test.ts`
+Run: `bun test packages/config/src/run.test.ts packages/config/src/common.test.ts packages/config/src/api.test.ts packages/config/src/worker.test.ts packages/config/src/scheduler.test.ts packages/config/src/realtime.test.ts`
 
 Expected: FAIL because the wrapper does not exist and runtime factories have not been exercised through YAML.
 
@@ -185,7 +185,7 @@ Keep Zod factories as the final validation layer. Remove the old implicit local 
 
 - [ ] **Step 4: Run focused GREEN verification**
 
-Run: `rtk task test:config && rtk turbo run check-types --filter=@repo/config`
+Run: `task test:config && turbo run check-types --filter=@repo/config`
 
 Expected: the wrapper, loader-backed runtime validation, and existing config tests pass.
 
@@ -221,7 +221,7 @@ Add a route test that starts the embedded API with the selected `base`, `api`, a
 
 - [ ] **Step 2: Run the runtime tests to verify RED**
 
-Run: `rtk bun test apps/web/lib/api/client.test.ts apps/web/next.config.test.ts 'apps/web/app/api/[[...slugs]]/route.test.ts'`
+Run: `bun test apps/web/lib/api/client.test.ts apps/web/next.config.test.ts 'apps/web/app/api/[[...slugs]]/route.test.ts'`
 
 Expected: FAIL because runtime scripts still select `.env.<runtime>` files and no resolved module list is supplied.
 
@@ -233,7 +233,7 @@ Ensure the web dev and build scripts execute the wrapper before `next dev`/`next
 
 - [ ] **Step 4: Run focused GREEN verification**
 
-Run: `rtk task test:web && rtk task test:api && rtk task test:worker && rtk task test:scheduler && rtk turbo run check-types --filter=web --filter=@repo/api --filter=@repo/worker --filter=@repo/scheduler --filter=@repo/realtime-server`
+Run: `task test:web && task test:api && task test:worker && task test:scheduler && turbo run check-types --filter=web --filter=@repo/api --filter=@repo/worker --filter=@repo/scheduler --filter=@repo/realtime-server`
 
 Expected: all runtime tests and typechecks pass, including the embedded API route and Eden client tests.
 
@@ -268,7 +268,7 @@ Place these checks in a focused repository-level configuration test so the requi
 
 - [ ] **Step 2: Run the deployment test to verify RED**
 
-Run: `rtk bun test packages/config/src/deployment.test.ts`
+Run: `bun test packages/config/src/deployment.test.ts`
 
 Expected: FAIL because Compose and container images still reference runtime-specific environment files and do not copy `config/`.
 
@@ -280,7 +280,7 @@ Document `cp .env.example .env`, module composition, merge order, `${NAME}`/`${N
 
 - [ ] **Step 4: Run complete verification**
 
-Run: `rtk task quality && rtk task build`
+Run: `task quality && task build`
 
 Expected: all tests, lint, typechecks, and builds exit `0`.
 
