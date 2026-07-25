@@ -9,9 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './app/__root'
+import { Route as PublicRouteRouteImport } from './app/_public/route'
+import { Route as PublicIndexRouteImport } from './app/_public/index'
 import { Route as ApiSplatRouteImport } from './app/api/$'
 import { Route as HealthIndexRouteImport } from './app/health/index'
 
+const PublicRouteRoute = PublicRouteRouteImport.update({
+  id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PublicIndexRoute = PublicIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -24,33 +35,52 @@ const HealthIndexRoute = HealthIndexRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof PublicIndexRoute
   '/api/$': typeof ApiSplatRoute
   '/health/': typeof HealthIndexRoute
 }
 export interface FileRoutesByTo {
   '/api/$': typeof ApiSplatRoute
+  '/': typeof PublicIndexRoute
   '/health': typeof HealthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_public': typeof PublicRouteRouteWithChildren
   '/api/$': typeof ApiSplatRoute
+  '/_public/': typeof PublicIndexRoute
   '/health/': typeof HealthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/api/$' | '/health/'
+  fullPaths: '/' | '/api/$' | '/health/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/api/$' | '/health'
-  id: '__root__' | '/api/$' | '/health/'
+  to: '/api/$' | '/' | '/health'
+  id: '__root__' | '/_public' | '/api/$' | '/_public/' | '/health/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  PublicRouteRoute: typeof PublicRouteRouteWithChildren
   ApiSplatRoute: typeof ApiSplatRoute
   HealthIndexRoute: typeof HealthIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_public': {
+      id: '/_public'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof PublicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_public/': {
+      id: '/_public/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
     '/api/$': {
       id: '/api/$'
       path: '/api/$'
@@ -68,7 +98,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PublicRouteRouteChildren {
+  PublicIndexRoute: typeof PublicIndexRoute
+}
+
+const PublicRouteRouteChildren: PublicRouteRouteChildren = {
+  PublicIndexRoute: PublicIndexRoute,
+}
+
+const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
+  PublicRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
+  PublicRouteRoute: PublicRouteRouteWithChildren,
   ApiSplatRoute: ApiSplatRoute,
   HealthIndexRoute: HealthIndexRoute,
 }
