@@ -68,9 +68,13 @@ browser query to avoid duplicate requests. UI search parameters must use
 
 ## Metadata and route boundaries
 
-Use `createMetadata` from `src/lib/metadata.ts` in `head: () => ...`; nested
-TanStack head values merge with the most-specific title/meta winning. The root
-defaults to Vkit Orbit metadata. The root `pendingComponent` uses the shadcn
+Use `appConfig` from `src/lib/config.ts` for static brand values. Its
+`appName`, `defaultTitle`, `defaultDescription`, `favicon`, and `repositoryUrl`
+fields are the web app's single source of truth. Use `createMetadata` from
+`src/lib/metadata.ts` in `head: () => ...`; nested TanStack head values merge
+with the most-specific title/meta winning. Route metadata may override title or
+description for a specific page. The root defaults come from `appConfig`. The
+root `pendingComponent` uses the shadcn
 Symmetric Wave primitive through `GlobalPending`; route-local pending states may
 wrap the same component. `GlobalError` calls the supplied `reset()` and offers
 a typed home link without exposing raw errors. `GlobalNotFound` handles missing
@@ -78,6 +82,10 @@ UI resources. Elysia responses remain outside all three UI boundaries.
 
 Motion is progressive only: every animated route has a static equivalent and
 honors `prefers-reduced-motion`. Content and actions never require motion.
+
+`appConfig` is static and server-safe. Do not add credentials, database URLs,
+or `process.env` reads to it; runtime secrets continue through the YAML config
+loader and server-only runtime modules.
 
 For a future searchable UI route, define a Zod validator explicitly:
 

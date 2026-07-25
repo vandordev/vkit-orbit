@@ -15,6 +15,10 @@ Web routing is directory-first under `apps/web/src/app`; see
 [.agent/web/routing.md](.agent/web/routing.md) for native TanStack tokens,
 generated-tree ownership, and adapter isolation rules.
 
+Web brand defaults are centralized in `apps/web/src/lib/config.ts`; see the
+[web guidance](.agent/web/README.md) before changing application metadata or
+public brand copy.
+
 ```text
 Browser -- same-origin /api/* --> TanStack Start + embedded Elysia --> Prisma --> PostgreSQL
 Browser ----------------------> Socket.IO (optional apps/realtime)

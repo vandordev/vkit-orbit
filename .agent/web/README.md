@@ -14,3 +14,10 @@ convention, adapter isolation rules, and focused test commands.
 
 The generated tree is owned by the TanStack plugin. Keep route-local helpers
 under `-`-prefixed files or directories; `_` is reserved for pathless layouts.
+
+Static web brand configuration lives in `apps/web/src/lib/config.ts` as the
+`appConfig` single source of truth. It owns `appName`, `defaultTitle`,
+`defaultDescription`, `favicon`, and `repositoryUrl`. Metadata and public UI
+may override route-specific copy, but must not repeat the application defaults.
+Secrets and runtime environment values remain in the YAML configuration
+modules; `appConfig` never reads credentials or `process.env`.
