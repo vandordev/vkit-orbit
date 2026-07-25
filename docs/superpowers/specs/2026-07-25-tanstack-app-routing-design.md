@@ -31,14 +31,17 @@ The canonical starting structure is:
 ```text
 apps/web/src/app/
 ├── __root.tsx
-├── index.tsx
+├── _public/
+│   ├── route.tsx
+│   ├── index.tsx
+│   └── -components/
+│       ├── orbit-hero.tsx
+│       ├── architecture-map.tsx
+│       └── public-header.tsx
 ├── api/
 │   └── $.ts
 ├── health/
 │   └── index.ts
-├── _public/
-│   ├── route.tsx
-│   └── index.tsx
 ├── dashboard/
 │   ├── route.tsx
 │   ├── index.tsx
@@ -61,6 +64,31 @@ Dynamic segments use `$name`; splats use a final `$.ts` or `$.tsx`. A
 pathless layout uses an `_name` directory and `route.tsx`, such as `_public`
 or a future `_authenticated`. Its name does not appear in the URL, but its
 component and route options wrap its children.
+
+## Default Public Boilerplate Landing Page
+
+`_public/index.tsx` is the `/` route and presents a domain-neutral **Vkit
+Orbit** landing page. It is an orientation page for a new boilerplate consumer,
+not a product feature, product dashboard, authentication flow, or sample
+domain. It may be replaced when an adopting product starts its own UI.
+
+The page uses the existing Tailwind and shadcn/ui baseline for controls and
+accessible interactions. Its visual language is a dark, restrained solar
+system: a central Vkit Orbit mark, orbiting nodes representing the actual
+runtime boundaries, and clear typography explaining TanStack Start, embedded
+Elysia, Prisma, River, the Go worker, and optional realtime. The architecture
+section must describe the real runtime topology; the visual must not imply a
+business API proxy or a second default HTTP server.
+
+CSS and lightweight SVG provide the static orbital composition. Framer Motion
+is an allowed dependency for progressive entrance, hover, and slow orbital
+motion. All motion honors `prefers-reduced-motion`, has a static equivalent,
+and must not be required to read content or activate calls to action. Route
+components use `-components/` for the visual sections, keeping the route file
+focused on route configuration and composition.
+
+The landing route uses the metadata helper with the `Vkit Orbit` title and a
+description of the domain-neutral TanStack/Elysia/River boilerplate.
 
 ## File Naming and Colocation
 
@@ -143,6 +171,7 @@ extension, error taxonomy, metadata, and generated files.
 Tests cover:
 
 - generated routing with `src/app` as the source;
+- the pathless `_public` index route at `/` and its Vkit Orbit metadata;
 - unchanged `/api/*` method delegation and Elysia status/body responses;
 - unchanged `/health` response;
 - metadata helper output and root/global UI route configuration;
