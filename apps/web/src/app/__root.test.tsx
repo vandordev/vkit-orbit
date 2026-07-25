@@ -18,4 +18,9 @@ describe("TanStack Start root route", () => {
 		expect(source).toContain("reset()");
 		expect(source).toContain('<Link to="/">');
 	});
+
+	test("uses the Vandor landing favicon", async () => {
+		const source = await Bun.file(new URL("./__root.tsx", import.meta.url)).text();
+		expect(source).toContain('{ rel: "icon", href: "/favicon.ico" }');
+	});
 });

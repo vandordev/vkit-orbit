@@ -9,7 +9,7 @@ import { createMetadata } from "@/lib/metadata";
 import appCss from "@/styles.css?url";
 
 export const Route = createRootRoute({
-	head: () => ({ meta: [{ charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" }, ...createMetadata({ title: "Vkit Orbit", description: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers." }).meta], links: [{ rel: "stylesheet", href: appCss }, ...createMetadata({ title: "Vkit Orbit", description: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers." }).links] }),
+	head: () => ({ meta: [{ charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" }, ...createMetadata({ title: "Vkit Orbit", description: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers." }).meta], links: [{ rel: "stylesheet", href: appCss }, { rel: "icon", href: "/favicon.ico" }, ...createMetadata({ title: "Vkit Orbit", description: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers." }).links] }),
 	shellComponent: RootDocument,
 	errorComponent: GlobalError,
 	notFoundComponent: GlobalNotFound,
