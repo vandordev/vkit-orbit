@@ -209,7 +209,17 @@ rtk test -f apps/web/src/components/ui/symmetric-wave.tsx
 
 Expected: FAIL because the registry component is absent.
 
-- [ ] **Step 2: Add the exact registry component**
+- [ ] **Step 2: Inspect the exact registry item before installation**
+
+Run from `apps/web`:
+
+```bash
+rtk bunx --bun shadcn@latest view @loading-ui/symmetric-wave
+```
+
+Expected: the registry details identify the Symmetric Wave source and every file/dependency the add command will apply. Confirm the component destination is `src/components/ui/symmetric-wave.tsx` and that its imports are compatible with the existing `@/` aliases.
+
+- [ ] **Step 3: Add the exact registry component**
 
 Run from `apps/web`:
 
@@ -219,7 +229,7 @@ rtk bunx --bun shadcn@latest add @loading-ui/symmetric-wave
 
 Read the generated file, confirm it imports with the existing `@/` alias and has no incompatible hard-coded alias.
 
-- [ ] **Step 3: Verify and commit**
+- [ ] **Step 4: Verify and commit**
 
 Run:
 
