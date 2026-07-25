@@ -85,14 +85,16 @@ export function RotatingEarth({ width = 800, height = 600, className = "" }: Rot
 		const context = canvas.getContext("2d");
 		if (!context) return;
 
-		const containerWidth = Math.min(width, window.innerWidth - 40);
-		const containerHeight = Math.min(height, window.innerHeight - 100);
-		const radius = Math.min(containerWidth, containerHeight) / 2.5;
+		const parentWidth = canvas.parentElement?.clientWidth || window.innerWidth - 40;
+		const containerSize = Math.min(width, height, parentWidth);
+		const containerWidth = containerSize;
+		const containerHeight = containerSize;
+		const radius = containerSize / 2.5;
 		const dpr = window.devicePixelRatio || 1;
 		canvas.width = containerWidth * dpr;
 		canvas.height = containerHeight * dpr;
-		canvas.style.width = `${containerWidth}px`;
-		canvas.style.height = `${containerHeight}px`;
+		canvas.style.width = "100%";
+		canvas.style.height = "100%";
 		context.setTransform(dpr, 0, 0, dpr, 0, 0);
 
 		const projection = d3.geoOrthographic().scale(radius).translate([containerWidth / 2, containerHeight / 2]).clipAngle(90);
@@ -211,5 +213,5 @@ export function RotatingEarth({ width = 800, height = 600, className = "" }: Rot
 		return <div className={`flex min-h-80 items-center justify-center rounded-2xl border border-slate-800 bg-slate-950 p-8 ${className}`}><div className="text-center"><p className="mb-2 font-semibold text-red-300">Error loading Earth visualization</p><p className="text-sm text-slate-400">{error}</p></div></div>;
 	}
 
-	return <div className={`relative ${className}`}><canvas ref={canvasRef} aria-label="Interactive rotating Earth map" className="h-auto w-full rounded-2xl bg-[#080b13]" style={{ maxWidth: "100%", height: "auto" }} />{isLoading && <div className="absolute inset-0 grid place-items-center rounded-2xl bg-[#080b13]/80 text-sm text-slate-400" role="status">Loading Earth map...</div>}<div className="absolute bottom-4 left-4 rounded-md bg-slate-950/90 px-2 py-1 text-xs text-slate-400">Drag to rotate · Scroll to zoom</div></div>;
+	return <div className={`relative aspect-square ${className}`}><canvas ref={canvasRef} aria-label="Interactive rotating Earth map" className="h-full w-full rounded-2xl bg-[#080b13]" />{isLoading && <div className="absolute inset-0 grid place-items-center rounded-2xl bg-[#080b13]/80 text-sm text-slate-400" role="status">Loading Earth map...</div>}<div className="absolute bottom-4 left-4 rounded-md bg-slate-950/90 px-2 py-1 text-xs text-slate-400">Drag to rotate · Scroll to zoom</div></div>;
 }

@@ -24,6 +24,8 @@ describe("Vkit Orbit public route", () => {
 		expect(earth).toContain("useReducedMotion");
 		expect(earth).toContain("canvas");
 		expect(earth).toContain("d3");
+		expect(earth).toContain("aspect-square");
+		expect(earth).toContain("containerSize");
 		for (const label of ["TanStack Start", "Embedded Elysia", "Prisma", "River", "Go worker", "Realtime (optional)"]) {
 			expect(architecture).toContain(label);
 		}
