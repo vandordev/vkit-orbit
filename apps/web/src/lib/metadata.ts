@@ -1,3 +1,5 @@
+import { appConfig } from "./config";
+
 export type MetadataInput = {
 	title: string;
 	description: string;
@@ -6,7 +8,7 @@ export type MetadataInput = {
 };
 
 export function createMetadata({ title, description, pathname, image }: MetadataInput) {
-	const fullTitle = title === "Vkit Orbit" ? title : `${title} | Vkit Orbit`;
+	const fullTitle = title === appConfig.appName ? title : `${title} | ${appConfig.appName}`;
 
 	return {
 		meta: [

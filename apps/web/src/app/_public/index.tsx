@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { appConfig } from "@/lib/config";
 import { createMetadata } from "@/lib/metadata";
 import { ArchitectureMap } from "./-components/architecture-map";
 import { OrbitHero } from "./-components/orbit-hero";
 import { PublicHeader } from "./-components/public-header";
 
 export const Route = createFileRoute("/_public/")({
-	head: () => createMetadata({ title: "Vkit Orbit", description: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers.", pathname: "/" }),
+	head: () => createMetadata({ title: appConfig.appName, description: appConfig.defaultDescription, pathname: "/" }),
 	component: LandingPage,
 });
 

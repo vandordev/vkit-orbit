@@ -3,6 +3,12 @@ import { describe, expect, test } from "bun:test";
 import { createMetadata } from "./metadata";
 
 describe("createMetadata", () => {
+	test("uses the centralized application brand", async () => {
+		const source = await Bun.file(new URL("./metadata.ts", import.meta.url)).text();
+		expect(source).toContain('import { appConfig } from "./config"');
+		expect(source).toContain("appConfig.appName");
+	});
+
 	test("adds the brand and canonical metadata for a route", () => {
 		const metadata = createMetadata({ title: "Pricing", description: "Plans", pathname: "/pricing" });
 		expect(metadata.meta).toEqual(expect.arrayContaining([

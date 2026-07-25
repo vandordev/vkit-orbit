@@ -5,9 +5,15 @@ describe("Vkit Orbit public route", () => {
 		const source = await Bun.file(new URL("./index.tsx", import.meta.url)).text();
 		expect(source).toContain('createFileRoute("/_public/")');
 		expect(source).toContain("createMetadata");
-		expect(source).toContain("Vkit Orbit");
+		expect(source).toContain("appConfig.defaultDescription");
+		expect(source).toContain("appConfig.appName");
 		expect(source).toContain("OrbitHero");
 		expect(source).toContain("ArchitectureMap");
+	});
+
+	test("uses the configured repository URL in the public header", async () => {
+		const source = await Bun.file(new URL("./-components/public-header.tsx", import.meta.url)).text();
+		expect(source).toContain("appConfig.repositoryUrl");
 	});
 
 	test("keeps the orbital visual accessible without motion", async () => {
