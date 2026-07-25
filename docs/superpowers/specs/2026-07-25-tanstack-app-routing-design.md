@@ -148,6 +148,19 @@ Shared error, pending, and not-found components are colocated in ignored
 `-`-prefixed files or directories and wired explicitly through route options;
 `error.tsx` and `loading.tsx` are not magic file names.
 
+The project installs the default loading primitive with:
+
+```text
+bunx --bun shadcn@latest add @loading-ui/symmetric-wave
+```
+
+Use the generated Symmetric Wave component for the root `pendingComponent` and
+for any route-local pending UI. A local wrapper may supply semantic loading
+copy or layout spacing, but must not replace the loading indicator with a
+different bespoke animation. This keeps loading feedback consistent while
+allowing a layout such as `dashboard/route.tsx` to choose its own pending
+boundary and threshold.
+
 ## Metadata
 
 Add `apps/web/src/lib/metadata.ts` as a typed `head`-object helper. It accepts
@@ -175,6 +188,7 @@ Tests cover:
 - unchanged `/api/*` method delegation and Elysia status/body responses;
 - unchanged `/health` response;
 - metadata helper output and root/global UI route configuration;
+- the Symmetric Wave component is the configured default pending UI;
 - representative UI route behavior for typed search validation, pending/error
   boundaries, and not-found handling where testable without a product domain.
 
