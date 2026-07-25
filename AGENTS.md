@@ -2,7 +2,8 @@
 
 ## Start here
 
-Read `README.md`, the relevant `.agent/*.md`, the plan/spec, and run
+Read `README.md`, the relevant `.agent/**/*.md` files for the runtime being
+changed, the plan/spec, and run
 `rtk git status --short` before changing code. Preserve unrelated changes.
 
 ## Repository shape
