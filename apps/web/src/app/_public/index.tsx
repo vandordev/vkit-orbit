@@ -2,9 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { appConfig } from "@/lib/config";
 import { createMetadata } from "@/lib/metadata";
-import { ArchitectureMap } from "./-components/architecture-map";
-import { OrbitHero } from "./-components/orbit-hero";
-import { PublicHeader } from "./-components/public-header";
+import { HeroText } from "@/components/ui/hero-shutter-text";
 
 export const Route = createFileRoute("/_public/")({
 	head: () => createMetadata({ title: appConfig.appName, description: appConfig.defaultDescription, pathname: "/" }),
@@ -12,5 +10,9 @@ export const Route = createFileRoute("/_public/")({
 });
 
 function LandingPage() {
-	return <div className="min-h-screen bg-[#080b13] text-slate-100"><PublicHeader /><main><OrbitHero /><ArchitectureMap /></main></div>;
+	return (
+		<main className="h-screen w-screen overflow-hidden bg-white dark:bg-zinc-950">
+			<HeroText />
+		</main>
+	);
 }
