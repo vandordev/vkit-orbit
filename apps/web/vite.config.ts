@@ -7,7 +7,8 @@ import { defineConfig } from "vite";
 export default defineConfig({
 	plugins: [
 		tailwindcss(),
-		tanstackStart({ router: { routeFileIgnorePattern: "\\.test\\." } }),
+		// TanStack Start resolves router paths from the configured src directory.
+		tanstackStart({ router: { routesDirectory: "./app", routeFileIgnorePattern: "\\.test\\." } }),
 		nitro({ preset: "bun" }),
 		react(),
 	],
