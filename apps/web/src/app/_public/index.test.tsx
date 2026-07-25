@@ -14,7 +14,7 @@ describe("Vkit Orbit public route", () => {
 		const source = await Bun.file(
 			new URL("../../components/ui/hero-shutter-text.tsx", import.meta.url),
 		).text();
-		expect(source).toContain('text = "IMMERSE"');
+		expect(source).toContain('text = "VKIT-ORBIT"');
 		expect(source).toContain("AnimatePresence");
 		expect(source).toContain("RefreshCw");
 		expect(source).toContain("setCount");

@@ -9,7 +9,7 @@ interface HeroTextProps {
 	className?: string;
 }
 
-export function HeroText({ text = "IMMERSE", className = "" }: HeroTextProps) {
+export function HeroText({ text = "VKIT-ORBIT", className = "" }: HeroTextProps) {
 	const [count, setCount] = useState(0);
 	const characters = text.split("");
 
