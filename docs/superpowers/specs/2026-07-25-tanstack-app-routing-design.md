@@ -187,10 +187,19 @@ helper.
 
 ## Documentation and Verification
 
-Create web routing documentation that explains this structure and all policy
-above, including source ownership, reserved tokens, colocation, transport
-boundaries, Eden data access, search-param validation, navigation, auth
-extension, error taxonomy, metadata, and generated files.
+Create `apps/web/ROUTING.md` as the complete operational reference for a
+developer adopting this boilerplate. It explains the route-source migration,
+directory tree, each native naming token, group versus pathless-layout
+semantics, ignored colocation files, generated-tree ownership, and concrete
+examples for static, dynamic, nested-layout, server-adapter, and future auth
+routes. It also documents Elysia adapter isolation, typed Eden data access,
+TanStack Query/loader prefetch boundaries, Zod search validation, typed links,
+metadata helper usage, default Symmetric Wave loading UI, the global error UI,
+not-found behavior, reduced-motion expectations, and focused testing commands.
+
+Update `.agent/web.md` with concise non-duplicated hard rules and a link to
+`apps/web/ROUTING.md`. The Markdown guide is the source of detail; the agent
+file remains a short discovery and enforcement aid.
 
 Tests cover:
 
