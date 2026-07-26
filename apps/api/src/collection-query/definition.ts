@@ -1,6 +1,6 @@
 import { t, type TSchema } from "elysia";
 
-import { createQueryFingerprint, decodeCursor, type CursorPosition } from "./cursor";
+import { createQueryFingerprint, decodeCursor, encodeCursor, type CursorPosition } from "./cursor";
 
 type DescriptionOptions = {
 	description: string;
@@ -55,6 +55,8 @@ export type CollectionDefinition<
 	readonly config: CollectionConfig<Filters, Sorts>;
 	readonly querySchema: TSchema;
 	parse(query: Record<string, unknown>): CollectionQuery<Filters>;
+	createCursor(query: CollectionQuery<Filters>, position: CursorPosition): string;
+	serialize(query: CollectionQuery<Filters>): URLSearchParams;
 };
 
 export function enumFilter<const Values extends readonly [string, ...string[]]>(
@@ -96,18 +98,55 @@ export function defineCollection<const Filters extends FilterDefinitions, const 
 				throw new Error("Only one cursor direction may be used");
 			}
 
-			const fingerprint = createQueryFingerprint({
-				sort: sort.map(({ field, direction }) => `${direction === "desc" ? "-" : ""}${field}`),
-				filters,
-				search,
-			});
+			const fingerprint = createFingerprint(sort, filters, search);
 			const pagination: CollectionQuery<Filters>["pagination"] = { type: "cursor", size };
 			if (after !== undefined) pagination.after = decodeCursor(asString(after, "page[after]"), fingerprint);
 			if (before !== undefined) pagination.before = decodeCursor(asString(before, "page[before]"), fingerprint);
 
 			return { pagination, sort, filters, ...(search ? { search } : {}) };
 		},
+		createCursor(query, position) {
+			return encodeCursor({ position, fingerprint: createFingerprint(query.sort, query.filters, query.search) });
+		},
+		serialize(query) {
+			const parameters = new URLSearchParams();
+			parameters.set("page[size]", String(query.pagination.size));
+			parameters.set("sort", query.sort.map(({ field, direction }) => `${direction === "desc" ? "-" : ""}${field}`).join(","));
+
+			for (const [name, filter] of Object.entries(config.filters)) {
+				const value = query.filters[name];
+				if (value === undefined) continue;
+				if (filter.kind === "enum") {
+					parameters.set(`filter[${name}]`, String(value));
+					continue;
+				}
+
+				const range = value as { gte?: Date; lte?: Date };
+				if (range.gte) parameters.set(`filter[${name}][gte]`, range.gte.toISOString());
+				if (range.lte) parameters.set(`filter[${name}][lte]`, range.lte.toISOString());
+			}
+			if (query.search) parameters.set("q", query.search);
+			if (query.pagination.after)
+				parameters.set(
+					"page[after]",
+					encodeCursor({ position: query.pagination.after, fingerprint: createFingerprint(query.sort, query.filters, query.search) }),
+				);
+			if (query.pagination.before)
+				parameters.set(
+					"page[before]",
+					encodeCursor({ position: query.pagination.before, fingerprint: createFingerprint(query.sort, query.filters, query.search) }),
+				);
+			return parameters;
+		},
 	};
+}
+
+function createFingerprint(sort: CollectionQuery["sort"], filters: Record<string, unknown>, search: string | undefined) {
+	return createQueryFingerprint({
+		sort: sort.map(({ field, direction }) => `${direction === "desc" ? "-" : ""}${field}`),
+		filters,
+		search,
+	});
 }
 
 function createQuerySchema<Filters extends FilterDefinitions, Sorts extends Record<string, SortDefinition>>(
