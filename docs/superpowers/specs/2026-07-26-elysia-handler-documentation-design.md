@@ -108,6 +108,14 @@ author can fix the exact operation. It allows schema constructs that cannot be
 described field-by-field, including `t.Any()`, only when explicitly registered
 as a narrow route-local exemption.
 
+## Route-author guidance
+
+`.agent/api/README.md` documents the mandatory route metadata and schema
+documentation rules with concise examples for operation metadata, parameters,
+request payloads, response schemas, and response examples. It states that
+documentation is part of the handler contract and that the repository quality
+gate rejects undocumented operations.
+
 ## Verification
 
 Tests add one intentionally incomplete fixture operation and assert that the
