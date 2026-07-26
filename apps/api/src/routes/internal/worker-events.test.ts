@@ -1,7 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
 
-import { createApp } from "../app";
-
 const validEvent = {
 	type: "resource.updated",
 	eventId: "b7fa9ad5-9c93-4cce-a83d-8d0438abef12",
@@ -20,26 +18,31 @@ function authenticatedRequest(body: unknown = validEvent) {
 
 describe("worker notification gateway", () => {
 	test("accepts an authenticated worker event and forwards it once", async () => {
-		const publish = mock(async () => undefined);
-		const app = createApp({ workerNotificationApiKey: "worker-key", publish });
+		const publishRealtimeEvent = mock(async () => undefined);
+		mock.module("../../runtime", () => ({ workerNotificationApiKey: "worker-key", publishRealtimeEvent }));
+		const { app } = await import("../../app");
+
 		const response = await app.fetch(authenticatedRequest());
 		expect(response.status).toBe(202);
-		expect(publish).toHaveBeenCalledWith(validEvent);
+		expect(publishRealtimeEvent).toHaveBeenCalledWith(validEvent);
 	});
 
 	test("rejects an invalid or unauthenticated worker event", async () => {
-		const app = createApp({ workerNotificationApiKey: "worker-key", publish: async () => undefined });
+		const { app } = await import("../../app");
+
 		expect((await app.fetch(new Request("http://localhost:4100/api/internal/worker-events", { method: "POST" }))).status).toBe(401);
 		expect((await app.fetch(authenticatedRequest({ type: "bad" }))).status).toBe(400);
 	});
 
 	test("returns retryable failure when the realtime publisher is unavailable", async () => {
-		const app = createApp({
+		mock.module("../../runtime", () => ({
 			workerNotificationApiKey: "worker-key",
-			publish: async () => {
+			publishRealtimeEvent: async () => {
 				throw new Error("unavailable");
 			},
-		});
+		}));
+		const { app } = await import("../../app");
+
 		const response = await app.fetch(authenticatedRequest());
 		expect(response.status).toBe(503);
 		expect(await response.json()).toMatchObject({ success: false, error: "REALTIME_UNAVAILABLE" });

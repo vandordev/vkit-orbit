@@ -1,14 +1,11 @@
 import { Elysia } from "elysia";
 
-import type { RealtimeEvent } from "@repo/realtime";
-
 import { env } from "./lib/env";
 import { isDocumentationAuthorized } from "./lib/docs-auth";
 import { AppError } from "./lib/errors";
 import { logger } from "./lib/logger";
 import { openapiPlugin } from "./openapi";
-import { createRealtimePublisher } from "./lib/realtime-publisher";
-import { createInternalNotificationRoutes, createV1Routes, healthRoutes } from "./routes";
+import { createV1Routes, healthRoutes, workerEventRoutes } from "./routes";
 
 const blockedPathPatterns: readonly RegExp[] = [
 	/^\/\.env/,
@@ -23,14 +20,7 @@ const blockedPathPatterns: readonly RegExp[] = [
 	/\/\.env$/,
 	/\/\.git\//,
 ];
-export type AppDependencies = { workerNotificationApiKey?: string; publish?: (event: RealtimeEvent) => Promise<void> };
-
-export function createApp(dependencies: AppDependencies = {}) {
-	const publish =
-		dependencies.publish ??
-		(env.REALTIME_INTERNAL_URL && env.REALTIME_PUBLISH_API_KEY
-			? createRealtimePublisher({ baseUrl: env.REALTIME_INTERNAL_URL, apiKey: env.REALTIME_PUBLISH_API_KEY })
-			: async () => {});
+export function createApp() {
 	return new Elysia()
 		.onRequest(({ request, set }) => {
 			const pathname = new URL(request.url).pathname.toLowerCase();
@@ -104,12 +94,7 @@ export function createApp(dependencies: AppDependencies = {}) {
 		})
 		.use(healthRoutes)
 		.use(createV1Routes())
-		.use(
-			createInternalNotificationRoutes({
-				workerNotificationApiKey: dependencies.workerNotificationApiKey ?? env.WORKER_NOTIFICATION_API_KEY ?? "",
-				publish,
-			}),
-		);
+		.use(workerEventRoutes);
 }
 
 export const app = createApp();
