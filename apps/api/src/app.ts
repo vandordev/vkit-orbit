@@ -8,7 +8,7 @@ import { AppError } from "./lib/errors";
 import { logger } from "./lib/logger";
 import { openapiPlugin } from "./openapi";
 import { createRealtimePublisher } from "./lib/realtime-publisher";
-import { createInternalNotificationRoutes, healthRoutes, statusRoutes } from "./routes";
+import { createInternalNotificationRoutes, createV1Routes, healthRoutes } from "./routes";
 
 const blockedPathPatterns: readonly RegExp[] = [
 	/^\/\.env/,
@@ -103,7 +103,7 @@ export function createApp(dependencies: AppDependencies = {}) {
 			};
 		})
 		.use(healthRoutes)
-		.use(statusRoutes)
+		.use(createV1Routes())
 		.use(
 			createInternalNotificationRoutes({
 				workerNotificationApiKey: dependencies.workerNotificationApiKey ?? env.WORKER_NOTIFICATION_API_KEY ?? "",

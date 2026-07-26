@@ -20,12 +20,19 @@ describe("external API boundary", () => {
 		expect(sources.join("\n")).not.toContain("/examples/realtime");
 	});
 
-	test("serves the API status contract under /api", async () => {
+	test("serves the API status contract under /api/v1", async () => {
 		const app = await getApp();
-		const response = await app.fetch(new Request("http://localhost:4100/api/status"));
+		const response = await app.fetch(new Request("http://localhost:4100/api/v1/status"));
 
 		expect(response.status).toBe(200);
 		expect(await response.json()).toEqual({ success: true, data: { status: "ok" } });
+	});
+
+	test("does not retain the unversioned public status route", async () => {
+		const app = await getApp();
+		const response = await app.fetch(new Request("http://localhost:4100/api/status"));
+
+		expect(response.status).toBe(404);
 	});
 
 	test("uses the API failure envelope", async () => {

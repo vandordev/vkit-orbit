@@ -11,7 +11,7 @@ describe("embedded Elysia route handler", () => {
 		expect(Object.keys(handlers).sort()).toEqual(["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]);
 		expect((route.Route as any).options.component).toBeUndefined();
 		expect((route.Route as any).options.errorComponent).toBeUndefined();
-		const response = await handlers.GET({ request: new Request("http://localhost:4100/api/status") });
+		const response = await handlers.GET({ request: new Request("http://localhost:4100/api/v1/status") });
 		expect(response.status).toBe(200);
 		expect(await response.json()).toEqual({ success: true, data: { status: "ok" } });
 	});

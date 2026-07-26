@@ -157,7 +157,7 @@ tasks:
   api:status:
     desc: Check the embedded Elysia status endpoint
     cmds:
-      - curl --fail http://localhost:4100/api/status
+      - curl --fail http://localhost:4100/api/v1/status
 
   compose:up:
     desc: Build and run db, migrate, and web
