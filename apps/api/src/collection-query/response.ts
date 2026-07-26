@@ -2,6 +2,7 @@ import { t, type TSchema } from "elysia";
 
 import type { CursorPosition } from "./cursor";
 import type { CollectionDefinition } from "./definition";
+import type { ResponseDocumentation } from "../schemas/envelope";
 
 export type CollectionPage<T> = {
 	items: T[];
@@ -11,26 +12,63 @@ export type CollectionPage<T> = {
 	endPosition?: CursorPosition;
 };
 
-export function collectionEnvelope<T extends TSchema>(item: T) {
-	return t.Object({
-		success: t.Literal(true),
-		data: t.Array(item),
-		meta: t.Object({
-			requestId: t.String(),
-			page: t.Object({
-				size: t.Integer({ minimum: 1 }),
-				hasNextPage: t.Boolean(),
-				hasPreviousPage: t.Boolean(),
-				startCursor: t.Union([t.String(), t.Null()]),
-				endCursor: t.Union([t.String(), t.Null()]),
+export function collectionEnvelope<T extends TSchema>(item: T, documentation: ResponseDocumentation) {
+	return t.Object(
+		{
+			success: t.Literal(true, {
+				description: "Whether the request completed successfully.",
+				examples: [true],
 			}),
-		}),
-		links: t.Object({
-			self: t.String(),
-			next: t.Union([t.String(), t.Null()]),
-			prev: t.Union([t.String(), t.Null()]),
-		}),
-	});
+			data: t.Array(item),
+			meta: t.Object({
+				requestId: t.String({
+					description: "Identifier used to correlate this request with server logs.",
+					examples: ["req_01JQZ3HAP4D77YQ58D7T"],
+				}),
+				page: t.Object({
+					size: t.Integer({
+						minimum: 1,
+						description: "Number of items requested for this page.",
+						examples: [25],
+					}),
+					hasNextPage: t.Boolean({
+						description: "Whether a subsequent page is available.",
+						examples: [true],
+					}),
+					hasPreviousPage: t.Boolean({
+						description: "Whether a preceding page is available.",
+						examples: [false],
+					}),
+					startCursor: t.Union([t.String(), t.Null()], {
+						description: "Cursor representing the first item in this page, or null when empty.",
+						examples: ["eyJ2IjoxfQ", null],
+					}),
+					endCursor: t.Union([t.String(), t.Null()], {
+						description: "Cursor representing the last item in this page, or null when empty.",
+						examples: ["eyJ2IjoxfQ", null],
+					}),
+				}),
+			}),
+			links: t.Object({
+				self: t.String({
+					description: "Canonical relative URL for this page.",
+					examples: ["/api/v1/orders?page[size]=25"],
+				}),
+				next: t.Union([t.String(), t.Null()], {
+					description: "Relative URL for the next page, or null when there is no next page.",
+					examples: ["/api/v1/orders?page[after]=eyJ2IjoxfQ", null],
+				}),
+				prev: t.Union([t.String(), t.Null()], {
+					description: "Relative URL for the previous page, or null when there is no previous page.",
+					examples: ["/api/v1/orders?page[before]=eyJ2IjoxfQ", null],
+				}),
+			}),
+		},
+		{
+			description: documentation.description,
+			examples: [documentation.example],
+		},
+	);
 }
 
 export function createCollectionResponse<T, Definition extends CollectionDefinition<any, any>>(

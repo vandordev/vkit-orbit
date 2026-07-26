@@ -38,10 +38,30 @@ export const workerEventRoutes = new Elysia({ prefix: "/api/internal", tags: ["I
 		// Authentication must run before body validation so malformed unauthenticated requests remain 401.
 		body: t.Any(),
 		response: {
-			202: successEnvelope(t.Object({ accepted: t.Literal(true) })),
-			400: failureEnvelope(),
-			401: failureEnvelope(),
-			503: failureEnvelope(),
+			202: successEnvelope(t.Object({ accepted: t.Literal(true) }), {
+				description: "Accepted worker-event notification response.",
+				example: { success: true, data: { accepted: true } },
+			}),
+			400: failureEnvelope({
+				description: "Malformed worker-event notification response.",
+				example: { success: false, error: "VALIDATION_ERROR", message: "Validation failed" },
+			}),
+			401: failureEnvelope({
+				description: "Unauthenticated worker-event notification response.",
+				example: {
+					success: false,
+					error: "UNAUTHORIZED",
+					message: "Worker notification authentication required",
+				},
+			}),
+			503: failureEnvelope({
+				description: "Unavailable realtime publisher response.",
+				example: {
+					success: false,
+					error: "REALTIME_UNAVAILABLE",
+					message: "Realtime publisher unavailable",
+				},
+			}),
 		},
 		detail: { hide: true },
 	},

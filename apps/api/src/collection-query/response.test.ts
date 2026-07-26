@@ -57,10 +57,31 @@ test("uses null navigation links when no adjacent page exists", () => {
 });
 
 test("declares collection response metadata and links", () => {
-	const schema = collectionEnvelope(t.Object({ id: t.String() }));
+	const schema = collectionEnvelope(t.Object({ id: t.String() }), {
+		description: "Paginated orders response.",
+		example: {
+			success: true,
+			data: [{ id: "ord_1" }],
+			meta: {
+				requestId: "request-1",
+				page: {
+					size: 25,
+					hasNextPage: false,
+					hasPreviousPage: false,
+					startCursor: null,
+					endCursor: null,
+				},
+			},
+			links: { self: "/api/v1/orders", next: null, prev: null },
+		},
+	});
 
 	expect(schema.properties.data.type).toBe("array");
 	expect(schema.required).toEqual(expect.arrayContaining(["success", "data", "meta", "links"]));
 	expect(schema.properties.meta.properties.requestId.type).toBe("string");
 	expect(schema.properties.links.required).toEqual(expect.arrayContaining(["self", "next", "prev"]));
+	expect(schema.description).toBe("Paginated orders response.");
+	expect(schema.examples).toHaveLength(1);
+	expect(schema.properties.meta.properties.page.properties.size.description).toBe("Number of items requested for this page.");
+	expect(schema.properties.links.properties.next.description).toBe("Relative URL for the next page, or null when there is no next page.");
 });
