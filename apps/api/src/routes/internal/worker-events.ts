@@ -4,6 +4,7 @@ import { Elysia, t } from "elysia";
 import { realtimeEventSchema, type RealtimeEvent } from "@repo/realtime";
 
 import { publishRealtimeEvent, workerNotificationApiKey } from "../../runtime";
+import { failureEnvelope, successEnvelope } from "../../schemas/envelope";
 
 function matchesSecret(expected: string, actual: string | null) {
 	if (!actual) return false;
@@ -33,5 +34,15 @@ export const workerEventRoutes = new Elysia({ prefix: "/api/internal", tags: ["I
 		set.status = 202;
 		return { success: true as const, data: { accepted: true as const } };
 	},
-	{ body: t.Any(), detail: { hide: true } },
+	{
+		// Authentication must run before body validation so malformed unauthenticated requests remain 401.
+		body: t.Any(),
+		response: {
+			202: successEnvelope(t.Object({ accepted: t.Literal(true) })),
+			400: failureEnvelope(),
+			401: failureEnvelope(),
+			503: failureEnvelope(),
+		},
+		detail: { hide: true },
+	},
 );
