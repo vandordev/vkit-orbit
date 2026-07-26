@@ -185,7 +185,7 @@ function createQuerySchema<Filters extends FilterDefinitions, Sorts extends Reco
 	for (const [name, filter] of Object.entries(config.filters)) {
 		if (filter.kind === "enum") {
 			properties[`filter[${name}]`] = t.Optional(
-				t.Union(filter.values.map((value) => t.Literal(value)) as [ReturnType<typeof t.Literal>, ...ReturnType<typeof t.Literal>[]], {
+				t.UnionEnum(filter.values as [string, ...string[]], {
 					description: filter.description,
 					examples: [filter.values[0]],
 				}),

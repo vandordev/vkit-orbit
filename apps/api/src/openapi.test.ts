@@ -1,6 +1,10 @@
 import { expect, test } from "bun:test";
+import { openapi } from "@elysiajs/openapi";
+import { Elysia } from "elysia";
 
 import { resolvedConfigEnvironment } from "../../../packages/config/src/run";
+import { collectionQueryPlugin } from "./collection-query/plugin";
+import { defineCollection, enumFilter } from "./collection-query/definition";
 
 async function getApp() {
 	Object.assign(process.env, resolvedConfigEnvironment(["base", "api"], { DATABASE_URL: "postgresql://db", NODE_ENV: "test" }));
@@ -25,4 +29,56 @@ test("serves Scalar documentation", async () => {
 
 	expect(response.status).toBe(200);
 	expect(await response.text()).toContain('"url":"/api/openapi.json"');
+});
+
+test("documents declared collection query parameters", async () => {
+	const orders = defineCollection({
+		page: { defaultSize: 25, maxSize: 100 },
+		sorts: {
+			createdAt: { description: "Sort orders by creation time." },
+			id: { description: "Sort orders by identifier." },
+		},
+		defaultSort: ["-createdAt"],
+		tieBreaker: "id",
+		filters: {
+			status: enumFilter(["draft", "paid", "cancelled"], {
+				description: "Return orders with the given lifecycle status.",
+			}),
+		},
+		search: { description: "Searches order reference and customer name." },
+	});
+	const app = new Elysia()
+		.use(openapi({ path: "/docs", specPath: "/openapi.json", provider: null }))
+		.use(collectionQueryPlugin)
+		.get("/orders", () => ({ success: true }), { collection: orders });
+
+	const response = await app.handle(new Request("http://localhost/openapi.json"));
+	const document = await response.json();
+	const parameters = document.paths["/orders"].get.parameters;
+
+	expect(parameters).toEqual(
+		expect.arrayContaining([
+			expect.objectContaining({
+				name: "page[size]",
+				in: "query",
+				schema: expect.objectContaining({ description: "Maximum number of items to return." }),
+			}),
+			expect.objectContaining({
+				name: "page[after]",
+				in: "query",
+				schema: expect.objectContaining({ description: "Opaque cursor that continues forward from a previous response." }),
+			}),
+			expect.objectContaining({
+				name: "filter[status]",
+				in: "query",
+				schema: expect.objectContaining({ description: "Return orders with the given lifecycle status." }),
+			}),
+			expect.objectContaining({
+				name: "q",
+				in: "query",
+				schema: expect.objectContaining({ description: "Searches order reference and customer name." }),
+			}),
+		]),
+	);
+	expect(parameters).not.toEqual(expect.arrayContaining([expect.objectContaining({ name: "filter[customerEmail]" })]));
 });
