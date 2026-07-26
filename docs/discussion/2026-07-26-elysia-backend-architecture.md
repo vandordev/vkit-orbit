@@ -257,6 +257,26 @@ composition, lifecycle, validation, guard/macro, response schema, Eden, dan
 OpenAPI. Lihat [Elysia documentation](https://elysiajs.com/llms.txt) dan
 [Elysia plugin guidance](https://elysiajs.com/essential/plugin).
 
+### Collection query contract
+
+Collection `GET` route memakai macro Elysia `collection` yang tersedia dari
+`createRoutes(version)`. Route mendeklarasikan `defineCollection(...)` sekali;
+macro tersebut memasang schema TypeBox, mengubah query tervalidasi menjadi
+input typed, dan menghasilkan parameter OpenAPI dari schema yang sama.
+
+Kontrak cursor mengikuti nama JSON:API: `page[size]`, `page[after]`, dan
+`page[before]`. Sorting memakai bentuk `sort=-createdAt,id`; filtering memakai
+`filter[field]` atau operator yang dideklarasikan endpoint; `q` hanya ada bila
+endpoint menjelaskan cakupan search-nya. Semua parameter public memiliki
+description berbahasa Inggris pada schema OpenAPI.
+
+Kemampuan query merupakan whitelist endpoint, bukan representasi Prisma yang
+dipublikasikan. Cursor menyimpan posisi ordering dan fingerprint sort/filter/
+search yang dinormalisasi. Respons collection menambahkan `meta.page` dan link
+relatif canonical `self`, `next`, dan `prev` ke success envelope. Validation
+schema, termasuk cursor yang tidak valid atau tidak kompatibel, mengembalikan
+failure envelope HTTP 422.
+
 ## Guidance dan guard yang akan ditambahkan
 
 Saat implementasi dimulai, aturan ini akan dipindahkan ke guidance yang
