@@ -28,11 +28,11 @@
 
 ```ts
 test("requires a complete documentation credential pair", () => {
-  expect(() => createApiConfig({ DATABASE_URL: url, OPENAPI_BASIC_AUTH_USERNAME: "docs" })).toThrow();
+	expect(() => createApiConfig({ DATABASE_URL: url, OPENAPI_BASIC_AUTH_USERNAME: "docs" })).toThrow();
 });
 
 test("accepts matching Basic credentials", () => {
-  expect(isDocumentationAuthorized(`Basic ${btoa("docs:secret")}`, "docs", "secret")).toBe(true);
+	expect(isDocumentationAuthorized(`Basic ${btoa("docs:secret")}`, "docs", "secret")).toBe(true);
 });
 ```
 
@@ -45,17 +45,17 @@ Expected: FAIL because the keys and `isDocumentationAuthorized` do not exist.
 
 ```ts
 const apiServer = {
-  ...commonServer,
-  OPENAPI_BASIC_AUTH_USERNAME: z.string().min(1).optional(),
-  OPENAPI_BASIC_AUTH_PASSWORD: z.string().min(1).optional(),
+	...commonServer,
+	OPENAPI_BASIC_AUTH_USERNAME: z.string().min(1).optional(),
+	OPENAPI_BASIC_AUTH_PASSWORD: z.string().min(1).optional(),
 } as const;
 
 export function isDocumentationAuthorized(authorization: string | undefined, username?: string, password?: string) {
-  if (!username && !password) return true;
-  if (!username || !password || !authorization?.startsWith("Basic ")) return false;
-  const expected = Buffer.from(`${username}:${password}`);
-  const actual = Buffer.from(authorization.slice(6), "base64");
-  return actual.length === expected.length && timingSafeEqual(actual, expected);
+	if (!username && !password) return true;
+	if (!username || !password || !authorization?.startsWith("Basic ")) return false;
+	const expected = Buffer.from(`${username}:${password}`);
+	const actual = Buffer.from(authorization.slice(6), "base64");
+	return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 ```
 
@@ -77,15 +77,15 @@ git commit -m "feat(api): add optional documentation authentication"
 
 ```ts
 test("serves generated OpenAPI JSON", async () => {
-  const response = await app.handle(new Request("http://localhost:4101/api/openapi.json"));
-  expect(response.status).toBe(200);
-  expect((await response.json()).openapi).toMatch(/^3\./);
+	const response = await app.handle(new Request("http://localhost:4101/api/openapi.json"));
+	expect(response.status).toBe(200);
+	expect((await response.json()).openapi).toMatch(/^3\./);
 });
 
 test("requires documentation credentials when configured", async () => {
-  const response = await configuredApp.handle(new Request("http://localhost:4101/api/docs"));
-  expect(response.status).toBe(401);
-  expect(response.headers.get("www-authenticate")).toContain("Basic");
+	const response = await configuredApp.handle(new Request("http://localhost:4101/api/docs"));
+	expect(response.status).toBe(401);
+	expect(response.headers.get("www-authenticate")).toContain("Basic");
 });
 ```
 
@@ -98,9 +98,11 @@ Expected: FAIL with `404` because neither docs endpoint exists.
 
 ```ts
 export const openapiPlugin = openapi({
-  path: "/api/docs", specPath: "/api/openapi.json", provider: "scalar",
-  scalar: { url: "/api/openapi.json" },
-  documentation: { openapi: "3.0.3", info: { title: "API", version: "1.0.0" } },
+	path: "/api/docs",
+	specPath: "/api/openapi.json",
+	provider: "scalar",
+	scalar: { url: "/api/openapi.json" },
+	documentation: { openapi: "3.0.3", info: { title: "API", version: "1.0.0" } },
 });
 ```
 

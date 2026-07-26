@@ -33,7 +33,7 @@ import { expect, test } from "bun:test";
 import { jobNames } from "./jobs";
 
 test("starts with no product-domain job names", () => {
-  expect(jobNames).toEqual([]);
+	expect(jobNames).toEqual([]);
 });
 ```
 
@@ -73,9 +73,13 @@ import { expect, test } from "bun:test";
 import { registerHandlers } from "./handlers";
 
 test("registers no domain handlers in the generic baseline", async () => {
-  const registered: string[] = [];
-  await registerHandlers({ work: async (name: string) => { registered.push(name); } } as never);
-  expect(registered).toEqual([]);
+	const registered: string[] = [];
+	await registerHandlers({
+		work: async (name: string) => {
+			registered.push(name);
+		},
+	} as never);
+	expect(registered).toEqual([]);
 });
 ```
 
@@ -113,9 +117,13 @@ import { expect, test } from "bun:test";
 import { registerSchedules } from "./schedules";
 
 test("registers no product schedules in the generic baseline", async () => {
-  const scheduled: string[] = [];
-  await registerSchedules({ schedule: async (name: string) => { scheduled.push(name); } } as never);
-  expect(scheduled).toEqual([]);
+	const scheduled: string[] = [];
+	await registerSchedules({
+		schedule: async (name: string) => {
+			scheduled.push(name);
+		},
+	} as never);
+	expect(scheduled).toEqual([]);
 });
 ```
 

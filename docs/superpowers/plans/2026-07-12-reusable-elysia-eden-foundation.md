@@ -35,24 +35,24 @@ import { expect, test } from "bun:test";
 import { createApiConfig } from "./api";
 
 test("creates API config from scoped values", () => {
-  expect(
-    createApiConfig({
-      NODE_ENV: "test",
-      DATABASE_URL: "postgresql://db",
-      PORT: "4101",
-      CORS_ORIGIN: "http://localhost:4100",
-    }),
-  ).toMatchObject({ port: 4101, corsOrigin: "http://localhost:4100" });
+	expect(
+		createApiConfig({
+			NODE_ENV: "test",
+			DATABASE_URL: "postgresql://db",
+			PORT: "4101",
+			CORS_ORIGIN: "http://localhost:4100",
+		}),
+	).toMatchObject({ port: 4101, corsOrigin: "http://localhost:4100" });
 });
 
 test("rejects an API config without DATABASE_URL", () => {
-  expect(() =>
-    createApiConfig({
-      NODE_ENV: "test",
-      PORT: "4101",
-      CORS_ORIGIN: "http://localhost:4100",
-    }),
-  ).toThrow();
+	expect(() =>
+		createApiConfig({
+			NODE_ENV: "test",
+			PORT: "4101",
+			CORS_ORIGIN: "http://localhost:4100",
+		}),
+	).toThrow();
 });
 ```
 
@@ -96,8 +96,8 @@ import { expect, test } from "bun:test";
 import { prisma } from "./client";
 
 test("exports one Prisma client", () => {
-  expect(prisma).toBeDefined();
-  expect(typeof prisma.$connect).toBe("function");
+	expect(prisma).toBeDefined();
+	expect(typeof prisma.$connect).toBe("function");
 });
 ```
 
@@ -138,24 +138,20 @@ Add to `app.test.ts`:
 
 ```ts
 test("serves the API status contract under /api", async () => {
-  const response = await app.handle(
-    new Request("http://localhost:4101/api/status"),
-  );
-  expect(response.status).toBe(200);
-  expect(await response.json()).toEqual({
-    success: true,
-    data: { status: "ok" },
-  });
+	const response = await app.handle(new Request("http://localhost:4101/api/status"));
+	expect(response.status).toBe(200);
+	expect(await response.json()).toEqual({
+		success: true,
+		data: { status: "ok" },
+	});
 });
 
 test("uses the API failure envelope", async () => {
-  const response = await app.handle(
-    new Request("http://localhost:4101/api/missing"),
-  );
-  expect(await response.json()).toMatchObject({
-    success: false,
-    error: "NOT_FOUND",
-  });
+	const response = await app.handle(new Request("http://localhost:4101/api/missing"));
+	expect(await response.json()).toMatchObject({
+		success: false,
+		error: "NOT_FOUND",
+	});
 });
 ```
 
@@ -195,7 +191,7 @@ import { expect, test } from "bun:test";
 import { createApiClient } from "./client";
 
 test("builds an Eden treaty client from the configured URL", () => {
-  expect(createApiClient("http://localhost:4101")).toBeDefined();
+	expect(createApiClient("http://localhost:4101")).toBeDefined();
 });
 ```
 

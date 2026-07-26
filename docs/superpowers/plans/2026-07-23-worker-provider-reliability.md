@@ -41,4 +41,3 @@
 - [ ] Add a Bun test that producer kind is exactly `fanout-delivery.v1` and payload validation rejects missing parent/item identity.
 - [ ] Implement the TypeScript producer and document versioning rules, idempotency-key placement, and Elysia-only realtime boundary.
 - [ ] Run recipe Bun/Go tests, then `task quality`. Commit `docs(recipe): complete fanout provider contract`.
-

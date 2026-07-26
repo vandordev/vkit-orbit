@@ -21,16 +21,16 @@ route boundaries. The `_public` layout is pathless, so its index is `/`.
 
 ## Native naming tokens
 
-| Token | Meaning |
-| --- | --- |
-| `__root.tsx` | Required root route |
-| `index.tsx` | Directory index route |
-| `route.tsx` | Directory layout route, usually rendering `<Outlet />` |
-| `$userId` | Dynamic URL segment |
-| `$` | Final splat segment |
-| `_public` | Pathless layout; the name is absent from the URL |
-| `(admin)` | Organization-only route group |
-| `-components` | Ignored colocated code; never a route |
+| Token         | Meaning                                                |
+| ------------- | ------------------------------------------------------ |
+| `__root.tsx`  | Required root route                                    |
+| `index.tsx`   | Directory index route                                  |
+| `route.tsx`   | Directory layout route, usually rendering `<Outlet />` |
+| `$userId`     | Dynamic URL segment                                    |
+| `$`           | Final splat segment                                    |
+| `_public`     | Pathless layout; the name is absent from the URL       |
+| `(admin)`     | Organization-only route group                          |
+| `-components` | Ignored colocated code; never a route                  |
 
 Use `route.tsx` only when a directory needs shared UI, a loader, a guard, or a
 route policy. Do not invent `layout.tsx`, `page.tsx`, `loading.tsx`, or
@@ -91,8 +91,8 @@ For a future searchable UI route, define a Zod validator explicitly:
 
 ```tsx
 export const Route = createFileRoute("/users/")({
-  validateSearch: z.object({ q: z.string().optional() }),
-})
+	validateSearch: z.object({ q: z.string().optional() }),
+});
 ```
 
 For a dynamic resource, use `$userId/index.tsx` and call `notFound()` for a

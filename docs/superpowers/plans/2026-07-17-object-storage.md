@@ -29,10 +29,15 @@
 
 ```ts
 test("maps optional S3 variables without exposing them to clients", () => {
-  expect(createApiConfig({
-    DATABASE_URL: url, S3_BUCKET: "uploads", S3_REGION: "ap-southeast-1",
-    S3_ACCESS_KEY_ID: "id", S3_SECRET_ACCESS_KEY: "secret",
-  }).storage).toMatchObject({ bucket: "uploads", rootPrefix: "uploads" });
+	expect(
+		createApiConfig({
+			DATABASE_URL: url,
+			S3_BUCKET: "uploads",
+			S3_REGION: "ap-southeast-1",
+			S3_ACCESS_KEY_ID: "id",
+			S3_SECRET_ACCESS_KEY: "secret",
+		}).storage,
+	).toMatchObject({ bucket: "uploads", rootPrefix: "uploads" });
 });
 ```
 
@@ -45,12 +50,12 @@ Expected: FAIL because the storage schema and `storage` result do not exist.
 
 ```ts
 export const storageServer = {
-  S3_BUCKET: z.string().min(1).optional(),
-  S3_REGION: z.string().min(1).default("us-east-1"),
-  S3_ACCESS_KEY_ID: z.string().min(1).optional(),
-  S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
-  S3_ENDPOINT: z.string().url().optional(),
-  S3_ROOT_PREFIX: z.string().min(1).default("uploads"),
+	S3_BUCKET: z.string().min(1).optional(),
+	S3_REGION: z.string().min(1).default("us-east-1"),
+	S3_ACCESS_KEY_ID: z.string().min(1).optional(),
+	S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+	S3_ENDPOINT: z.string().url().optional(),
+	S3_ROOT_PREFIX: z.string().min(1).default("uploads"),
 } as const;
 ```
 
@@ -74,10 +79,10 @@ git commit -m "feat(config): add optional object storage settings"
 
 ```ts
 test("builds a key below the configured root", () => {
-  expect(buildObjectKey({ rootPrefix: "product-a", fileName: "résumé.pdf" })).toMatch(/^product-a\/uploads\//);
+	expect(buildObjectKey({ rootPrefix: "product-a", fileName: "résumé.pdf" })).toMatch(/^product-a\/uploads\//);
 });
 test("rejects a key outside the configured root", () => {
-  expect(() => assertObjectKey("product-a", "other/file.pdf")).toThrow("outside configured prefix");
+	expect(() => assertObjectKey("product-a", "other/file.pdf")).toThrow("outside configured prefix");
 });
 ```
 
@@ -89,14 +94,34 @@ Expected: FAIL because `@repo/storage` does not exist.
 - [ ] **Step 3: Implement the smallest package API**
 
 ```ts
-export type StorageConfig = { bucket: string; region: string; accessKeyId: string; secretAccessKey: string; endpoint?: string; rootPrefix: string };
+export type StorageConfig = {
+	bucket: string;
+	region: string;
+	accessKeyId: string;
+	secretAccessKey: string;
+	endpoint?: string;
+	rootPrefix: string;
+};
 export type PutObjectInput = { key: string; body: Uint8Array; contentType: string };
 
-export function createStorageClient(config: StorageConfig, client = new S3Client({ region: config.region, credentials: { accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey }, ...(config.endpoint ? { endpoint: config.endpoint, forcePathStyle: true } : {}) })) {
-  return {
-    async put(input: PutObjectInput) { assertObjectKey(config.rootPrefix, input.key); await client.send(new PutObjectCommand({ Bucket: config.bucket, Key: input.key, Body: input.body, ContentType: input.contentType })); },
-    async get(key: string) { assertObjectKey(config.rootPrefix, key); return client.send(new GetObjectCommand({ Bucket: config.bucket, Key: key })); },
-  };
+export function createStorageClient(
+	config: StorageConfig,
+	client = new S3Client({
+		region: config.region,
+		credentials: { accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey },
+		...(config.endpoint ? { endpoint: config.endpoint, forcePathStyle: true } : {}),
+	}),
+) {
+	return {
+		async put(input: PutObjectInput) {
+			assertObjectKey(config.rootPrefix, input.key);
+			await client.send(new PutObjectCommand({ Bucket: config.bucket, Key: input.key, Body: input.body, ContentType: input.contentType }));
+		},
+		async get(key: string) {
+			assertObjectKey(config.rootPrefix, key);
+			return client.send(new GetObjectCommand({ Bucket: config.bucket, Key: key }));
+		},
+	};
 }
 ```
 

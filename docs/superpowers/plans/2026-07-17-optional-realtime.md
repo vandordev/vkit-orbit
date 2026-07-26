@@ -29,11 +29,17 @@
 
 ```ts
 test("routes a resource event to resource and workspace rooms", () => {
-  const event = realtimeEventSchema.parse({ type: "resource.updated", eventId: crypto.randomUUID(), occurredAt: new Date().toISOString(), resourceId: "r1", workspaceId: "w1" });
-  expect(roomsForEvent(event)).toEqual(["resource:r1", "workspace:w1"]);
+	const event = realtimeEventSchema.parse({
+		type: "resource.updated",
+		eventId: crypto.randomUUID(),
+		occurredAt: new Date().toISOString(),
+		resourceId: "r1",
+		workspaceId: "w1",
+	});
+	expect(roomsForEvent(event)).toEqual(["resource:r1", "workspace:w1"]);
 });
 test("rejects an expired ticket", () => {
-  expect(() => verifyRealtimeTicket(expiredTicket, secret)).toThrow("Expired realtime ticket");
+	expect(() => verifyRealtimeTicket(expiredTicket, secret)).toThrow("Expired realtime ticket");
 });
 ```
 
@@ -45,9 +51,18 @@ Expected: FAIL because the package has not been created.
 - [ ] **Step 3: Implement contracts**
 
 ```ts
-export const realtimeEventSchema = z.object({ type: z.literal("resource.updated"), eventId: z.string().uuid(), occurredAt: z.string().datetime(), resourceId: z.string(), workspaceId: z.string() });
+export const realtimeEventSchema = z.object({
+	type: z.literal("resource.updated"),
+	eventId: z.string().uuid(),
+	occurredAt: z.string().datetime(),
+	resourceId: z.string(),
+	workspaceId: z.string(),
+});
 export const roomsForEvent = (event: RealtimeEvent) => [`resource:${event.resourceId}`, `workspace:${event.workspaceId}`];
-export const signRealtimeTicket = (claims: RealtimeClaims, secret: string) => `${base64url(JSON.stringify(claims))}.${createHmac("sha256", secret).update(base64url(JSON.stringify(claims))).digest("base64url")}`;
+export const signRealtimeTicket = (claims: RealtimeClaims, secret: string) =>
+	`${base64url(JSON.stringify(claims))}.${createHmac("sha256", secret)
+		.update(base64url(JSON.stringify(claims)))
+		.digest("base64url")}`;
 ```
 
 Implement `createRealtimePublisher` to validate before POSTing JSON with `x-realtime-api-key` to `/internal/events`, and throw for a non-2xx response.
@@ -70,12 +85,12 @@ git commit -m "feat(realtime): add validated event contracts"
 
 ```ts
 test("rejects an internal event without publisher credentials", async () => {
-  const response = await fetch(url("/internal/events"), { method: "POST", body: "{}" });
-  expect(response.status).toBe(401);
+	const response = await fetch(url("/internal/events"), { method: "POST", body: "{}" });
+	expect(response.status).toBe(401);
 });
 test("does not join an unauthorized workspace", async () => {
-  const result = await client.emitWithAck("join-workspace", "w1");
-  expect(result).toEqual({ ok: false });
+	const result = await client.emitWithAck("join-workspace", "w1");
+	expect(result).toEqual({ ok: false });
 });
 ```
 
@@ -88,15 +103,24 @@ Expected: FAIL because `createRealtimeServer` does not exist.
 
 ```ts
 export function createRealtimeServer(dependencies: Dependencies) {
-  const httpServer = createServer(/* health and authenticated event endpoint */);
-  const io = new Server(httpServer, { path: "/ws", addTrailingSlash: false });
-  io.use(async (socket, next) => { try { socket.data.subject = await dependencies.authenticate(String(socket.handshake.auth.ticket)); next(); } catch { next(new Error("unauthorized")); } });
-  io.on("connection", (socket) => socket.on("join-workspace", async (workspaceId, callback) => {
-    const ok = typeof workspaceId === "string" && await dependencies.authorizeWorkspace(socket.data.subject.id, workspaceId);
-    if (ok) socket.join(`workspace:${workspaceId}`);
-    callback?.({ ok });
-  }));
-  return { httpServer, io, listen, close };
+	const httpServer = createServer(/* health and authenticated event endpoint */);
+	const io = new Server(httpServer, { path: "/ws", addTrailingSlash: false });
+	io.use(async (socket, next) => {
+		try {
+			socket.data.subject = await dependencies.authenticate(String(socket.handshake.auth.ticket));
+			next();
+		} catch {
+			next(new Error("unauthorized"));
+		}
+	});
+	io.on("connection", (socket) =>
+		socket.on("join-workspace", async (workspaceId, callback) => {
+			const ok = typeof workspaceId === "string" && (await dependencies.authorizeWorkspace(socket.data.subject.id, workspaceId));
+			if (ok) socket.join(`workspace:${workspaceId}`);
+			callback?.({ ok });
+		}),
+	);
+	return { httpServer, io, listen, close };
 }
 ```
 

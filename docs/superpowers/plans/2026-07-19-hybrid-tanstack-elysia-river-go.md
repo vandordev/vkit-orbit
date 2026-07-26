@@ -30,6 +30,7 @@ repository README and AGENTS.md for the current operational source of truth.
 ### Task 1: Establish the mixed-runtime toolchain and command surface
 
 **Files:**
+
 - Create: `go.mod`, `dev/air/worker.toml`, `apps/migrate/main.go`, `apps/migrate/main_test.go`
 - Modify: `package.json`, `Taskfile.yml`, `turbo.json`, `.gitignore`, `.env.example`
 - Test: `apps/migrate/main_test.go`
@@ -143,6 +144,7 @@ git commit -m "build: add go river toolchain"
 ### Task 2: Replace Next.js/Mantine with TanStack Start and shadcn/Tailwind
 
 **Files:**
+
 - Delete: `apps/web/app/**`, `apps/web/components/query-provider.tsx`, `apps/web/next.config.mjs`, `apps/web/next.config.test.ts`, `apps/web/postcss.config.mjs`
 - Create: `apps/web/vite.config.ts`, `apps/web/src/router.tsx`, `apps/web/src/server.ts`, `apps/web/src/styles.css`, `apps/web/src/routes/__root.tsx`, `apps/web/src/routes/index.tsx`, `apps/web/src/components/query-provider.tsx`, `apps/web/src/components/ui/button.tsx`, `apps/web/src/lib/utils.ts`, `apps/web/components.json`
 - Modify: `apps/web/package.json`, `apps/web/tsconfig.json`, `apps/web/eslint.config.js`
@@ -152,15 +154,15 @@ git commit -m "build: add go river toolchain"
 
 ```ts
 test("uses TanStack Start with Bun Nitro output", async () => {
-  const source = await Bun.file(new URL("./vite.config.ts", import.meta.url)).text();
-  expect(source).toContain("tanstackStart");
-  expect(source).toContain('nitro({ preset: "bun" })');
+	const source = await Bun.file(new URL("./vite.config.ts", import.meta.url)).text();
+	expect(source).toContain("tanstackStart");
+	expect(source).toContain('nitro({ preset: "bun" })');
 });
 
 test("uses QueryProvider and does not retain Mantine", async () => {
-  const source = await Bun.file(new URL("./__root.tsx", import.meta.url)).text();
-  expect(source).toContain("QueryProvider");
-  expect(source).not.toContain("MantineProvider");
+	const source = await Bun.file(new URL("./__root.tsx", import.meta.url)).text();
+	expect(source).toContain("QueryProvider");
+	expect(source).not.toContain("MantineProvider");
 });
 ```
 
@@ -179,9 +181,9 @@ Mantine, and `@t3-oss/env-nextjs`. Use these scripts:
 
 ```json
 {
-  "dev": "bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun run vite --port 4100",
-  "build": "NODE_ENV=production bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun run vite build",
-  "start": "bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun .output/server/index.mjs"
+	"dev": "bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun run vite --port 4100",
+	"build": "NODE_ENV=production bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun run vite build",
+	"start": "bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun .output/server/index.mjs"
 }
 ```
 
@@ -214,6 +216,7 @@ git commit -m "feat(web): adopt tanstack start and shadcn baseline"
 ### Task 3: Embed Elysia in the TanStack Start API route and preserve Eden types
 
 **Files:**
+
 - Delete: `apps/web/lib/env.ts`, `apps/web/lib/api/client.ts`, `apps/web/lib/api/client.test.ts`, `apps/web/lib/api/server.ts`
 - Create: `apps/web/src/routes/api.$.ts`, `apps/web/src/routes/api.$.test.ts`, `apps/web/src/routes/health.ts`, `apps/web/src/routes/health.test.ts`, `apps/web/src/lib/api.ts`
 - Modify: `apps/api/src/app.ts`, `apps/api/src/app.test.ts`, `apps/api/package.json`, `apps/web/tsconfig.json`, `.agent/{architecture,api,web,config}.md`
@@ -222,20 +225,20 @@ git commit -m "feat(web): adopt tanstack start and shadcn baseline"
 
 ```ts
 test("delegates every supported method to Elysia", async () => {
-  const route = await import("./api.$");
-  const response = await route.Route.options.server.handlers.GET({
-    request: new Request("http://localhost:4100/api/status"),
-  } as never);
-  expect(response.status).toBe(200);
-  expect(await response.json()).toEqual({ success: true, data: { status: "ok" } });
+	const route = await import("./api.$");
+	const response = await route.Route.options.server.handlers.GET({
+		request: new Request("http://localhost:4100/api/status"),
+	} as never);
+	expect(response.status).toBe(200);
+	expect(await response.json()).toEqual({ success: true, data: { status: "ok" } });
 });
 
 test("serves Elysia health through the TanStack Start health route", async () => {
-  const route = await import("./health");
-  const response = await route.Route.options.server.handlers.GET({
-    request: new Request("http://localhost:4100/health"),
-  } as never);
-  expect(response.status).toBe(200);
+	const route = await import("./health");
+	const response = await route.Route.options.server.handlers.GET({
+		request: new Request("http://localhost:4100/health"),
+	} as never);
+	expect(response.status).toBe(200);
 });
 ```
 
@@ -290,6 +293,7 @@ git commit -m "feat(api): embed elysia in tanstack start"
 ### Task 4: Replace pg-boss with typed River producers and versioned contracts
 
 **Files:**
+
 - Delete: `packages/queue/src/client.ts`, `packages/queue/src/jobs.ts`, `packages/queue/src/{client,jobs}.test.ts`
 - Create: `packages/queue/src/contracts.ts`, `packages/queue/src/river.ts`, `packages/queue/src/river.test.ts`, `contracts/jobs/README.md`
 - Modify: `packages/queue/src/index.ts`, `packages/queue/package.json`, `apps/scheduler/src/{main,schedules,schedules.test}.ts`, `apps/scheduler/package.json`
@@ -300,17 +304,17 @@ git commit -m "feat(api): embed elysia in tanstack start"
 const contract = defineJob("example.v1", z.object({ resourceId: z.string().uuid() }));
 
 test("rejects invalid payload before it reaches River", async () => {
-  await expect(enqueue(client, contract, { resourceId: "bad" })).rejects.toThrow();
+	await expect(enqueue(client, contract, { resourceId: "bad" })).rejects.toThrow();
 });
 
 test("uses the stable kind and validated JSON payload", async () => {
-  await enqueue(client, contract, { resourceId: "b7fa9ad5-9c93-4cce-a83d-8d0438abef12" });
-  expect(inserted).toMatchObject({ kind: "example.v1", args: { resourceId: "b7fa9ad5-9c93-4cce-a83d-8d0438abef12" } });
+	await enqueue(client, contract, { resourceId: "b7fa9ad5-9c93-4cce-a83d-8d0438abef12" });
+	expect(inserted).toMatchObject({ kind: "example.v1", args: { resourceId: "b7fa9ad5-9c93-4cce-a83d-8d0438abef12" } });
 });
 
 test("forwards the Prisma transaction to River insert", async () => {
-  await enqueueInTransaction(transaction, client, contract, validPayload);
-  expect(insertOptions).toMatchObject({ tx: transaction });
+	await enqueueInTransaction(transaction, client, contract, validPayload);
+	expect(insertOptions).toMatchObject({ tx: transaction });
 });
 ```
 
@@ -354,6 +358,7 @@ git commit -m "feat(queue): enqueue river jobs from typescript"
 ### Task 5: Add the opt-in end-to-end realtime-notification example
 
 **Files:**
+
 - Create: `packages/queue/src/example-realtime-notification.ts`, `packages/queue/src/example-realtime-notification.test.ts`, `apps/api/src/routes/examples.ts`, `apps/api/src/routes/examples.test.ts`
 - Modify: `packages/queue/src/index.ts`, `apps/scheduler/src/{main,schedules,schedules.test}.ts`, `apps/api/src/app.ts`, `config/scheduler.yaml`, `packages/config/src/scheduler.ts`, `.env.example`, `README.md`
 
@@ -361,22 +366,25 @@ git commit -m "feat(queue): enqueue river jobs from typescript"
 
 ```ts
 test("enqueues the example job from Elysia", async () => {
-  const enqueue = mock(async () => ({ job: { id: 42 } }));
-  const app = createApp({ enqueueExample: enqueue, ...testDependencies });
-  const response = await app.fetch(new Request("http://localhost:4100/api/examples/realtime-notifications", {
-    method: "POST", headers: { "content-type": "application/json" },
-    body: JSON.stringify({ resourceId: "r1", workspaceId: "w1" }),
-  }));
-  expect(response.status).toBe(202);
-  expect(enqueue).toHaveBeenCalledWith({ resourceId: "r1", workspaceId: "w1" });
+	const enqueue = mock(async () => ({ job: { id: 42 } }));
+	const app = createApp({ enqueueExample: enqueue, ...testDependencies });
+	const response = await app.fetch(
+		new Request("http://localhost:4100/api/examples/realtime-notifications", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ resourceId: "r1", workspaceId: "w1" }),
+		}),
+	);
+	expect(response.status).toBe(202);
+	expect(enqueue).toHaveBeenCalledWith({ resourceId: "r1", workspaceId: "w1" });
 });
 
 test("does not register the example schedule unless enabled", async () => {
-  const enqueue = mock(async () => undefined);
-  const stop = registerSchedules({ enqueue }, { ENABLE_EXAMPLE_SCHEDULE: false });
-  await Bun.sleep(0);
-  expect(enqueue).not.toHaveBeenCalled();
-  stop();
+	const enqueue = mock(async () => undefined);
+	const stop = registerSchedules({ enqueue }, { ENABLE_EXAMPLE_SCHEDULE: false });
+	await Bun.sleep(0);
+	expect(enqueue).not.toHaveBeenCalled();
+	stop();
 });
 ```
 
@@ -392,8 +400,8 @@ In `packages/queue/src/example-realtime-notification.ts`, export exactly:
 
 ```ts
 export const exampleRealtimeNotificationJob = defineJob(
-  "example.realtime-notification.v1",
-  z.object({ resourceId: z.string().min(1), workspaceId: z.string().min(1) }),
+	"example.realtime-notification.v1",
+	z.object({ resourceId: z.string().min(1), workspaceId: z.string().min(1) }),
 );
 ```
 
@@ -435,6 +443,7 @@ git commit -m "feat: add opt-in realtime job producer example"
 ### Task 6: Add Go/River worker and authenticated Elysia notification client
 
 **Files:**
+
 - Create: `internal/river/client.go`, `internal/river/client_test.go`, `internal/notify/client.go`, `internal/notify/client_test.go`, `internal/worker/example_realtime_notification.go`, `internal/worker/example_realtime_notification_test.go`, `apps/worker/main.go`, `apps/worker/main_test.go`, `dev/air/worker.toml`
 - Delete: `apps/worker/src/**`, `apps/worker/package.json`, `apps/worker/tsconfig.json`, `apps/worker/eslint.config.js`
 - Modify: `.env.example`, `config/worker.yaml`, `README.md`, `.agent/worker.md`
@@ -521,6 +530,7 @@ git commit -m "feat(worker): add go river runtime"
 ### Task 7: Make Elysia the authenticated realtime gateway
 
 **Files:**
+
 - Create: `apps/api/src/lib/realtime-publisher.ts`, `apps/api/src/lib/realtime-publisher.test.ts`, `apps/api/src/routes/internal-notifications.ts`, `apps/api/src/routes/internal-notifications.test.ts`
 - Modify: `apps/api/src/app.ts`, `apps/api/src/lib/env.ts`, `packages/config/src/api.ts`, `config/api.yaml`, `.env.example`, `packages/realtime/src/events.ts`, `packages/realtime/src/publisher.ts`
 
@@ -528,26 +538,33 @@ git commit -m "feat(worker): add go river runtime"
 
 ```ts
 test("accepts an authenticated worker event and forwards it once", async () => {
-  const publish = mock(async () => undefined);
-  const app = createApp({ workerNotificationApiKey: "worker-key", publish });
-  const response = await app.fetch(new Request("http://localhost:4100/api/internal/worker-events", {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-worker-notification-key": "worker-key" },
-    body: JSON.stringify(validEvent),
-  }));
-  expect(response.status).toBe(202);
-  expect(publish).toHaveBeenCalledWith(validEvent);
+	const publish = mock(async () => undefined);
+	const app = createApp({ workerNotificationApiKey: "worker-key", publish });
+	const response = await app.fetch(
+		new Request("http://localhost:4100/api/internal/worker-events", {
+			method: "POST",
+			headers: { "content-type": "application/json", "x-worker-notification-key": "worker-key" },
+			body: JSON.stringify(validEvent),
+		}),
+	);
+	expect(response.status).toBe(202);
+	expect(publish).toHaveBeenCalledWith(validEvent);
 });
 
 test("rejects an invalid or unauthenticated worker event", async () => {
-  expect((await app.fetch(new Request("http://localhost:4100/api/internal/worker-events", { method: "POST" }))).status).toBe(401);
+	expect((await app.fetch(new Request("http://localhost:4100/api/internal/worker-events", { method: "POST" }))).status).toBe(401);
 });
 
 test("returns retryable failure when the realtime publisher is unavailable", async () => {
-  const app = createApp({ workerNotificationApiKey: "worker-key", publish: async () => { throw new Error("unavailable"); } });
-  const response = await app.fetch(authenticatedWorkerEventRequest(validEvent));
-  expect(response.status).toBe(503);
-  expect(await response.json()).toMatchObject({ success: false, error: "REALTIME_UNAVAILABLE" });
+	const app = createApp({
+		workerNotificationApiKey: "worker-key",
+		publish: async () => {
+			throw new Error("unavailable");
+		},
+	});
+	const response = await app.fetch(authenticatedWorkerEventRequest(validEvent));
+	expect(response.status).toBe(503);
+	expect(await response.json()).toMatchObject({ success: false, error: "REALTIME_UNAVAILABLE" });
 });
 ```
 
@@ -596,6 +613,7 @@ git commit -m "feat(realtime): relay worker events through elysia"
 ### Task 8: Harden the Socket.IO consumer contract and browser refetch hook
 
 **Files:**
+
 - Create: `apps/web/src/lib/realtime.ts`, `apps/web/src/lib/realtime.test.ts`, `apps/web/src/routes/examples/realtime.tsx`, `apps/web/src/routes/examples/realtime.test.tsx`
 - Modify: `apps/realtime/src/server.ts`, `apps/realtime/src/server.test.ts`, `apps/realtime/src/main.ts`, `apps/realtime/package.json`, `apps/web/package.json`, `apps/web/tsconfig.json`, `packages/realtime/src/events.ts`, `config/{web,realtime}.yaml`, `packages/config/src/realtime.ts`, `.env.example`, `README.md`
 
@@ -685,6 +703,7 @@ git commit -m "feat(realtime): refetch after socket notifications"
 ### Task 9: Containerize the five runtime topology and finish documentation
 
 **Files:**
+
 - Delete: `Dockerfile.web`, `Dockerfile.worker`, `Dockerfile.scheduler`
 - Create: `Dockerfile.web`, `Dockerfile.worker`, `Dockerfile.scheduler`, `Dockerfile.migrate`
 - Modify: `Dockerfile.realtime`, `docker-compose.yml`, `README.md`, `AGENTS.md`, `.agent/{architecture,config,scheduler,ui,web,worker}.md`, `Taskfile.yml`, `config/{base,web,worker,scheduler,realtime}.yaml`
@@ -694,12 +713,12 @@ git commit -m "feat(realtime): refetch after socket notifications"
 
 ```ts
 test("documents TanStack Start embedded Elysia and Go River worker", async () => {
-  const readme = await Bun.file("README.md").text();
-  expect(readme).toContain("TanStack Start");
-  expect(readme).toContain("embedded Elysia");
-  expect(readme).toContain("Go/River");
-  expect(readme).not.toContain("Next.js");
-  expect(readme).not.toContain("pg-boss");
+	const readme = await Bun.file("README.md").text();
+	expect(readme).toContain("TanStack Start");
+	expect(readme).toContain("embedded Elysia");
+	expect(readme).toContain("Go/River");
+	expect(readme).not.toContain("Next.js");
+	expect(readme).not.toContain("pg-boss");
 });
 ```
 
@@ -726,7 +745,7 @@ Rewrite README/AGENTS/agent documents with exact ownership, `task doctor`, `task
 `task dev -- web worker scheduler realtime`, Docker profile instructions, River
 cross-language contract rules, embedded Elysia route location, and Elysia's
 worker-notification gateway. Update all runtime YAML modules and `.env.example`
- with the three paired realtime API keys/URLs while keeping credentials server-only;
+with the three paired realtime API keys/URLs while keeping credentials server-only;
 `VITE_REALTIME_URL` and `REALTIME_CORS_ORIGIN` are the only browser/network
 origin values permitted to be public.
 
@@ -748,6 +767,7 @@ git commit -m "docs: document hybrid runtime operations"
 ### Task 10: Run end-to-end verification and record the template baseline
 
 **Files:**
+
 - Modify: `README.md` only if verification exposes an inaccurate command/result
 
 - [x] **Step 1: Run narrow tests in dependency order.**

@@ -16,6 +16,42 @@
 - Future TypeScript mutation routes call `@repo/application`; they do not import Prisma or mutate data directly.
 - Go owns worker usecases under root `internal/`; cross-language implementation duplication is allowed.
 
+### Task 0: Establish repository-wide formatting commands
+
+**Files:**
+
+- Create: `.prettierrc.json`, `.prettierignore`
+- Modify: `package.json`, `Taskfile.yml`
+
+- [ ] **Step 1: Define the command contract**
+
+The formatter contract is: `task format` writes TypeScript-side files with
+Prettier and formats Go with `gofmt`; `task format:check` runs Prettier check
+and `gofmt -l` without modifying files. Direct TypeScript commands are
+`bun run format` and `bun run format:check`.
+
+- [ ] **Step 2: Implement formatter commands**
+
+Use `prettier --write "**/*.{ts,tsx,md,json,yaml,yml}"` for TypeScript-side
+source/config/docs and `gofmt -w` over tracked Go files. Use `prettier --check`
+and fail when `gofmt -l` prints a file. Add `.prettierignore` for generated
+trees, build output, dependencies, and environment files.
+
+- [ ] **Step 3: Integrate verification**
+
+Run `task format:check` from `task quality` and `bun run format:check` from the
+TypeScript build path. Formatting is checked during build; build must not
+rewrite the worktree.
+
+- [ ] **Step 4: Run and commit**
+
+Run: `rtk task format && rtk task format:check`
+
+```bash
+git add .prettier* package.json Taskfile.yml
+git commit -m "chore: add repository format checks"
+```
+
 ## File Structure
 
 ```text
@@ -43,12 +79,12 @@ scripts/check-architecture.{ts,test.ts}
 
 ```ts
 test("creates v1 routes", async () => {
-  const app = createRoutes(1).get("/probe", () => ({ ok: true }));
-  expect((await app.handle(new Request("http://localhost/api/v1/probe"))).status).toBe(200);
+	const app = createRoutes(1).get("/probe", () => ({ ok: true }));
+	expect((await app.handle(new Request("http://localhost/api/v1/probe"))).status).toBe(200);
 });
 test("rejects invalid versions", () => {
-  expect(() => createRoutes(0)).toThrow("API version must be a positive integer");
-  expect(() => createRoutes(1.5)).toThrow("API version must be a positive integer");
+	expect(() => createRoutes(0)).toThrow("API version must be a positive integer");
+	expect(() => createRoutes(1.5)).toThrow("API version must be a positive integer");
 });
 ```
 
@@ -62,10 +98,10 @@ Expected: FAIL because the modules do not exist.
 
 ```ts
 export function createRoutes(version: number) {
-  if (!Number.isSafeInteger(version) || version < 1) {
-    throw new Error("API version must be a positive integer");
-  }
-  return new Elysia({ name: `api-v${version}`, prefix: `/api/v${version}` });
+	if (!Number.isSafeInteger(version) || version < 1) {
+		throw new Error("API version must be a positive integer");
+	}
+	return new Elysia({ name: `api-v${version}`, prefix: `/api/v${version}` });
 }
 ```
 
@@ -111,12 +147,15 @@ Expected: FAIL because v1 is not mounted.
 - [ ] **Step 3: Implement the collection**
 
 ```ts
-export const systemRoutes = new Elysia({ name: "v1-system", tags: ["System"] })
-  .get("/status", () => ({ success: true as const, data: { status: "ok" as const } }), {
-    response: successEnvelope(t.Object({ status: t.Literal("ok") })),
-  });
+export const systemRoutes = new Elysia({ name: "v1-system", tags: ["System"] }).get(
+	"/status",
+	() => ({ success: true as const, data: { status: "ok" as const } }),
+	{
+		response: successEnvelope(t.Object({ status: t.Literal("ok") })),
+	},
+);
 export function createV1Routes() {
-  return createRoutes(1).use(systemRoutes);
+	return createRoutes(1).use(systemRoutes);
 }
 ```
 
@@ -154,12 +193,13 @@ Expected: FAIL until the runtime module and renamed route exist.
 - [ ] **Step 3: Implement one-time runtime ownership**
 
 ```ts
-const publisher = env.REALTIME_INTERNAL_URL && env.REALTIME_PUBLISH_API_KEY
-  ? createRealtimePublisher({ baseUrl: env.REALTIME_INTERNAL_URL, apiKey: env.REALTIME_PUBLISH_API_KEY })
-  : undefined;
+const publisher =
+	env.REALTIME_INTERNAL_URL && env.REALTIME_PUBLISH_API_KEY
+		? createRealtimePublisher({ baseUrl: env.REALTIME_INTERNAL_URL, apiKey: env.REALTIME_PUBLISH_API_KEY })
+		: undefined;
 export const workerNotificationApiKey = env.WORKER_NOTIFICATION_API_KEY ?? "";
 export async function publishRealtimeEvent(event: RealtimeEvent) {
-  if (publisher) await publisher(event);
+	if (publisher) await publisher(event);
 }
 ```
 
@@ -202,9 +242,14 @@ Use `new Elysia({ name: "..." })` for blocked-path protection, docs authorizatio
 
 ```ts
 export const app = new Elysia({ name: "api" })
-  .use(blockedPathsPlugin).use(documentationAuthPlugin)
-  .use(requestContextPlugin).use(openapiPlugin).use(errorEnvelopePlugin)
-  .use(healthRoutes).use(createV1Routes()).use(workerEventRoutes);
+	.use(blockedPathsPlugin)
+	.use(documentationAuthPlugin)
+	.use(requestContextPlugin)
+	.use(openapiPlugin)
+	.use(errorEnvelopePlugin)
+	.use(healthRoutes)
+	.use(createV1Routes())
+	.use(workerEventRoutes);
 ```
 
 - [ ] **Step 4: Verify and commit**

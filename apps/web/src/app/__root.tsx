@@ -12,7 +12,10 @@ import appCss from "@/styles.css?url";
 export const Route = createRootRoute({
 	head: () => {
 		const metadata = createMetadata({ title: appConfig.defaultTitle, description: appConfig.defaultDescription });
-		return { meta: [{ charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" }, ...metadata.meta], links: [{ rel: "stylesheet", href: appCss }, { rel: "icon", href: appConfig.favicon }, ...metadata.links] };
+		return {
+			meta: [{ charSet: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" }, ...metadata.meta],
+			links: [{ rel: "stylesheet", href: appCss }, { rel: "icon", href: appConfig.favicon }, ...metadata.links],
+		};
 	},
 	shellComponent: RootDocument,
 	errorComponent: GlobalError,
@@ -21,5 +24,15 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: ReactNode }) {
-	return <html lang="en"><head><HeadContent /></head><body className="min-h-screen bg-background text-foreground"><QueryProvider>{children}</QueryProvider><Scripts /></body></html>;
+	return (
+		<html lang="en">
+			<head>
+				<HeadContent />
+			</head>
+			<body className="min-h-screen bg-background text-foreground">
+				<QueryProvider>{children}</QueryProvider>
+				<Scripts />
+			</body>
+		</html>
+	);
 }

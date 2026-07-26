@@ -5,17 +5,17 @@ import { createRealtimeServer } from "./server";
 
 const config = createRealtimeConfig(process.env);
 const runtime = createRealtimeServer({
-  publishApiKey: config.REALTIME_PUBLISH_API_KEY,
-  authenticate: createTicketAuthenticator(config.REALTIME_TICKET_SECRET),
-  authorizeWorkspace: async () => false,
-  corsOrigin: config.REALTIME_CORS_ORIGIN,
+	publishApiKey: config.REALTIME_PUBLISH_API_KEY,
+	authenticate: createTicketAuthenticator(config.REALTIME_TICKET_SECRET),
+	authorizeWorkspace: async () => false,
+	corsOrigin: config.REALTIME_CORS_ORIGIN,
 });
 
 await runtime.listen(config.port, "0.0.0.0");
 
 async function shutdown() {
-  await runtime.close();
-  process.exit(0);
+	await runtime.close();
+	process.exit(0);
 }
 
 process.once("SIGINT", shutdown);

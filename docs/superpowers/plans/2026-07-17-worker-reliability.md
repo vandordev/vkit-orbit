@@ -29,12 +29,17 @@
 
 ```ts
 test("forwards local concurrency when registering a worker", async () => {
-  const calls: unknown[] = [];
-  const queue = createQueue("postgres://test", () => fakeBoss({
-    work: (_name, options) => { calls.push(options); return Promise.resolve("id"); },
-  }));
-  await queue.work("example", async () => undefined, { localConcurrency: 2 });
-  expect(calls).toEqual([{ localConcurrency: 2 }]);
+	const calls: unknown[] = [];
+	const queue = createQueue("postgres://test", () =>
+		fakeBoss({
+			work: (_name, options) => {
+				calls.push(options);
+				return Promise.resolve("id");
+			},
+		}),
+	);
+	await queue.work("example", async () => undefined, { localConcurrency: 2 });
+	expect(calls).toEqual([{ localConcurrency: 2 }]);
 });
 ```
 
@@ -75,8 +80,8 @@ git commit -m "feat(queue): support per-worker concurrency"
 
 ```ts
 const update = await db.outbox.updateMany({
-  where: { id: row.id, state: "PROCESSING", availableAt: { lt: now } },
-  data: { state: "PENDING", availableAt: now, lastError: "Processing lease expired" },
+	where: { id: row.id, state: "PROCESSING", availableAt: { lt: now } },
+	data: { state: "PENDING", availableAt: now, lastError: "Processing lease expired" },
 });
 if (update.count === 1) await queue.send("feature-publish", { id: row.id });
 

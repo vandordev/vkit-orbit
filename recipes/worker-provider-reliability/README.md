@@ -6,13 +6,13 @@ and adapt the repository boundary to the consumer's PostgreSQL schema.
 
 ## State model
 
-| Item state | Meaning | Next states |
-| --- | --- | --- |
-| `PENDING` | eligible for a short claim transaction | `PROCESSING` |
-| `PROCESSING` | claimed; provider call is outside the transaction | `SENT`, `FAILED`, `UNKNOWN`, `PENDING` |
-| `SENT` | provider accepted the item | terminal |
-| `FAILED` | known terminal provider failure | terminal |
-| `UNKNOWN` | timeout/indeterminate result requiring reconciliation | terminal until reconciled |
+| Item state   | Meaning                                               | Next states                            |
+| ------------ | ----------------------------------------------------- | -------------------------------------- |
+| `PENDING`    | eligible for a short claim transaction                | `PROCESSING`                           |
+| `PROCESSING` | claimed; provider call is outside the transaction     | `SENT`, `FAILED`, `UNKNOWN`, `PENDING` |
+| `SENT`       | provider accepted the item                            | terminal                               |
+| `FAILED`     | known terminal provider failure                       | terminal                               |
+| `UNKNOWN`    | timeout/indeterminate result requiring reconciliation | terminal until reconciled              |
 
 Retryable provider failures transition `PROCESSING → PENDING`. A timeout is
 `UNKNOWN`, never an automatic success. The parent aggregate is `COMPLETED`,

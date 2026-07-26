@@ -14,8 +14,8 @@ The baseline installs no job contracts by default. The opt-in
 
 ```json
 {
-  "resourceId": "example-resource",
-  "workspaceId": "example-workspace"
+	"resourceId": "example-resource",
+	"workspaceId": "example-workspace"
 }
 ```
 

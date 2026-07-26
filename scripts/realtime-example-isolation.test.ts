@@ -1,11 +1,7 @@
 import { expect, test } from "bun:test";
 
 test("baseline has no example schedule or route", async () => {
-	const sources = await Promise.all([
-		Bun.file("README.md").text(),
-		Bun.file("AGENTS.md").text(),
-		Bun.file("config/scheduler.yaml").text(),
-	]);
+	const sources = await Promise.all([Bun.file("README.md").text(), Bun.file("AGENTS.md").text(), Bun.file("config/scheduler.yaml").text()]);
 	const combined = sources.join("\n");
 
 	expect(combined).not.toContain("ENABLE_EXAMPLE_SCHEDULE");

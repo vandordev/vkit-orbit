@@ -1,6 +1,11 @@
 import { exampleRealtimeNotificationJob, type ExampleRealtimeNotificationPayload, type JobContract } from "@repo/queue";
 
-type ScheduleDependencies = { enqueue(contract: JobContract<typeof exampleRealtimeNotificationJob.schema>, payload: ExampleRealtimeNotificationPayload): Promise<unknown> };
+type ScheduleDependencies = {
+	enqueue(
+		contract: JobContract<typeof exampleRealtimeNotificationJob.schema>,
+		payload: ExampleRealtimeNotificationPayload,
+	): Promise<unknown>;
+};
 type ScheduleConfig = { intervalMs: number };
 
 const examplePayload = { resourceId: "example-resource", workspaceId: "example-workspace" } satisfies ExampleRealtimeNotificationPayload;

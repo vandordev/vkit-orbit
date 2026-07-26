@@ -17,6 +17,7 @@
 ### Task 1: Expose the configured OpenAPI server URL
 
 **Files:**
+
 - Modify: `packages/config/src/api.ts`
 - Modify: `packages/config/src/api.test.ts`
 - Modify: `apps/api/src/openapi.ts`
@@ -49,10 +50,10 @@ return { ...parsed, openapiServerUrl: parsed.OPENAPI_SERVER_URL };
 
 ```ts
 export function createOpenapiPlugin(serverUrl: string) {
-  return openapi({
-    // existing paths and Scalar configuration
-    documentation: { servers: [{ url: serverUrl }] },
-  });
+	return openapi({
+		// existing paths and Scalar configuration
+		documentation: { servers: [{ url: serverUrl }] },
+	});
 }
 ```
 

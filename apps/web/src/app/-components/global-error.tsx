@@ -13,8 +13,12 @@ export function GlobalError({ reset }: ErrorComponentProps) {
 					<p className="text-muted-foreground">The page could not complete that request. Try again or return to the starting point.</p>
 				</div>
 				<div className="flex flex-wrap justify-center gap-3">
-					<Button type="button" onClick={() => reset()}>Try again</Button>
-					<Button asChild variant="outline"><Link to="/">Back to home</Link></Button>
+					<Button type="button" onClick={() => reset()}>
+						Try again
+					</Button>
+					<Button asChild variant="outline">
+						<Link to="/">Back to home</Link>
+					</Button>
 				</div>
 			</section>
 		</main>

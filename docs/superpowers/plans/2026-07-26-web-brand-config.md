@@ -21,10 +21,12 @@
 ### Task 1: Add the typed web brand config
 
 **Files:**
+
 - Create: `apps/web/src/lib/config.ts`
 - Create: `apps/web/src/lib/config.test.ts`
 
 **Interfaces:**
+
 - Produces `appConfig` with `appName`, `defaultTitle`, `defaultDescription`, `favicon`, and `repositoryUrl` string fields.
 
 - [ ] **Step 1: Write the failing test**
@@ -35,15 +37,15 @@ import { describe, expect, test } from "bun:test";
 import { appConfig } from "./config";
 
 describe("web app config", () => {
-  test("exposes the default brand configuration", () => {
-    expect(appConfig).toEqual({
-      appName: "Vkit Orbit",
-      defaultTitle: "Vkit Orbit",
-      defaultDescription: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers.",
-      favicon: "/favicon.ico",
-      repositoryUrl: "https://github.com/vandordev/vx",
-    });
-  });
+	test("exposes the default brand configuration", () => {
+		expect(appConfig).toEqual({
+			appName: "Vkit Orbit",
+			defaultTitle: "Vkit Orbit",
+			defaultDescription: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers.",
+			favicon: "/favicon.ico",
+			repositoryUrl: "https://github.com/vandordev/vx",
+		});
+	});
 });
 ```
 
@@ -55,11 +57,11 @@ Run `bun test ./apps/web/src/lib/config.test.ts` from the repository root. It mu
 
 ```ts
 export const appConfig = {
-  appName: "Vkit Orbit",
-  defaultTitle: "Vkit Orbit",
-  defaultDescription: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers.",
-  favicon: "/favicon.ico",
-  repositoryUrl: "https://github.com/vandordev/vx",
+	appName: "Vkit Orbit",
+	defaultTitle: "Vkit Orbit",
+	defaultDescription: "A domain-neutral boilerplate for TanStack Start, embedded Elysia, Prisma, River, and Go workers.",
+	favicon: "/favicon.ico",
+	repositoryUrl: "https://github.com/vandordev/vx",
 } as const;
 ```
 
@@ -77,6 +79,7 @@ git commit -m "feat(web): add centralized app config"
 ### Task 2: Replace hard-coded web brand values
 
 **Files:**
+
 - Modify: `apps/web/src/lib/metadata.ts`
 - Modify: `apps/web/src/lib/metadata.test.ts`
 - Modify: `apps/web/src/app/__root.tsx`
@@ -86,6 +89,7 @@ git commit -m "feat(web): add centralized app config"
 - Modify: `apps/web/src/app/_public/-components/public-header.tsx`
 
 **Interfaces:**
+
 - `createMetadata` uses `appConfig.appName` as the brand suffix and accepts the existing route-specific metadata input.
 - Root metadata uses `appConfig.defaultTitle`, `appConfig.defaultDescription`, and `appConfig.favicon`.
 - Landing copy and repository CTA use `appConfig.appName`, `appConfig.defaultDescription`, and `appConfig.repositoryUrl`.
@@ -116,6 +120,7 @@ git commit -m "refactor(web): consume centralized app config"
 ### Task 3: Document web configuration ownership
 
 **Files:**
+
 - Modify: `.agent/web/README.md`
 - Modify: `.agent/web/routing.md`
 - Modify: `README.md`

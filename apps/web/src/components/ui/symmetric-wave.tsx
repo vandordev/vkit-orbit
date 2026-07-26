@@ -3,19 +3,14 @@ import { cn } from "@/lib/utils";
 const SYMMETRIC_WAVE_PHASES = [1, 2, 3, 4, 5, 5, 4, 3, 2, 1] as const;
 
 type SymmetricWaveProps = React.ComponentProps<"span"> & {
-  block?: string;
-  track?: string;
+	block?: string;
+	track?: string;
 };
 
-function SymmetricWave({
-  className,
-  block = "█",
-  track = "░",
-  ...props
-}: SymmetricWaveProps) {
-  return (
-    <>
-      <style>{`
+function SymmetricWave({ className, block = "█", track = "░", ...props }: SymmetricWaveProps) {
+	return (
+		<>
+			<style>{`
         @keyframes loading-ui-symmetric-wave-1 {
           0%,
           100% {
@@ -140,35 +135,31 @@ function SymmetricWave({
           }
         }
       `}</style>
-      <span
-        role="status"
-        className={cn(
-          "relative inline-flex h-[1em] w-[10ch] overflow-hidden font-mono text-xl leading-none text-current select-none",
-          className,
-        )}
-        {...props}
-      >
-        {SYMMETRIC_WAVE_PHASES.map((phase, index) => (
-          <span
-            key={index}
-            aria-hidden="true"
-            className="relative flex h-full w-[1ch] items-center justify-center"
-          >
-            <span className="opacity-30">{track}</span>
-            <span
-              className="absolute inset-0 flex items-center justify-center"
-              style={{
-                animation: `loading-ui-symmetric-wave-${phase} var(--duration, 2s) linear infinite`,
-              }}
-            >
-              {block}
-            </span>
-          </span>
-        ))}
-        <span className="sr-only">Loading</span>
-      </span>
-    </>
-  );
+			<span
+				role="status"
+				className={cn(
+					"relative inline-flex h-[1em] w-[10ch] overflow-hidden font-mono text-xl leading-none text-current select-none",
+					className,
+				)}
+				{...props}
+			>
+				{SYMMETRIC_WAVE_PHASES.map((phase, index) => (
+					<span key={index} aria-hidden="true" className="relative flex h-full w-[1ch] items-center justify-center">
+						<span className="opacity-30">{track}</span>
+						<span
+							className="absolute inset-0 flex items-center justify-center"
+							style={{
+								animation: `loading-ui-symmetric-wave-${phase} var(--duration, 2s) linear infinite`,
+							}}
+						>
+							{block}
+						</span>
+					</span>
+				))}
+				<span className="sr-only">Loading</span>
+			</span>
+		</>
+	);
 }
 
 export { SymmetricWave };

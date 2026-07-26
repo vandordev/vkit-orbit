@@ -28,28 +28,28 @@
 
 - [ ] **Step 1: Write the failing Dockerfile tests**
 
-~~~ts
+```ts
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "bun:test";
 
 const root = join(import.meta.dir, "..");
 for (const [file, workspace] of [
-  ["Dockerfile.api", "@repo/api"],
-  ["Dockerfile.worker", "@repo/worker"],
-  ["Dockerfile.scheduler", "@repo/scheduler"],
+	["Dockerfile.api", "@repo/api"],
+	["Dockerfile.worker", "@repo/worker"],
+	["Dockerfile.scheduler", "@repo/scheduler"],
 ] as const) {
-  test(file + " prunes and ships only production dependencies", () => {
-    const dockerfile = readFileSync(join(root, file), "utf8");
-    expect(dockerfile).toContain("turbo@2.8.1 prune " + workspace + " --docker");
-    expect(dockerfile).toContain("bun install --production --frozen-lockfile --ignore-scripts");
-    expect(dockerfile).not.toContain("COPY --from=builder /app/node_modules ./node_modules");
-  });
+	test(file + " prunes and ships only production dependencies", () => {
+		const dockerfile = readFileSync(join(root, file), "utf8");
+		expect(dockerfile).toContain("turbo@2.8.1 prune " + workspace + " --docker");
+		expect(dockerfile).toContain("bun install --production --frozen-lockfile --ignore-scripts");
+		expect(dockerfile).not.toContain("COPY --from=builder /app/node_modules ./node_modules");
+	});
 }
 test("Dockerfile.web builds from a pruned graph", () => {
-  expect(readFileSync(join(root, "Dockerfile.web"), "utf8")).toContain("turbo@2.8.1 prune web --docker");
+	expect(readFileSync(join(root, "Dockerfile.web"), "utf8")).toContain("turbo@2.8.1 prune web --docker");
 });
-~~~
+```
 
 - [ ] **Step 2: Run RED**
 
@@ -66,14 +66,14 @@ Confirm each failure cites the missing expected prune command rather than a test
 
 - [ ] **Step 1: Write the failing web-specific assertion**
 
-~~~ts
+```ts
 test("Dockerfile.web uses cache mounts and a non-root standalone runner", () => {
-  const dockerfile = readFileSync(join(root, "Dockerfile.web"), "utf8");
-  expect(dockerfile).toContain("--mount=type=cache,id=bun-web-install");
-  expect(dockerfile).toContain("--mount=type=cache,id=next-web-build");
-  expect(dockerfile).toContain("USER nextjs");
+	const dockerfile = readFileSync(join(root, "Dockerfile.web"), "utf8");
+	expect(dockerfile).toContain("--mount=type=cache,id=bun-web-install");
+	expect(dockerfile).toContain("--mount=type=cache,id=next-web-build");
+	expect(dockerfile).toContain("USER nextjs");
 });
-~~~
+```
 
 - [ ] **Step 2: Run RED**
 
@@ -82,7 +82,7 @@ Expected: FAIL because the current web Dockerfile has no pruned build or BuildKi
 
 - [ ] **Step 3: Replace the web Dockerfile with a pruned build**
 
-~~~dockerfile
+```dockerfile
 # syntax=docker/dockerfile:1.11
 FROM oven/bun:1.1.45-alpine AS base
 WORKDIR /app
@@ -94,13 +94,13 @@ FROM base AS deps
 COPY --from=prepare /app/out/json/ ./
 RUN --mount=type=cache,id=bun-web-install,target=/root/.bun/install/cache \
     bun install --frozen-lockfile --ignore-scripts
-~~~
+```
 
 Continue the existing Next standalone runner: use pruned full source, generate Prisma, mount next-web-build at /app/apps/web/.next/cache, and retain the existing nextjs user, port, and command.
 
 - [ ] **Step 4: Add the context boundary**
 
-~~~gitignore
+```gitignore
 .git
 node_modules
 **/node_modules
@@ -111,17 +111,17 @@ coverage
 .env*
 !.env*.example
 *.log
-~~~
+```
 
 - [ ] **Step 5: Run GREEN and commit**
 
 Run: bun test scripts/dockerfiles.test.ts  
 Expected: PASS.
 
-~~~bash
+```bash
 git add scripts/dockerfiles.test.ts .dockerignore Dockerfile.web
 git commit -m "build(web): prune Docker build context"
-~~~
+```
 
 ### Task 3: Prune API and job runtime images
 
@@ -129,13 +129,13 @@ git commit -m "build(web): prune Docker build context"
 
 - [ ] **Step 1: Add failing API Prisma output assertions**
 
-~~~ts
+```ts
 test("API and worker copy generated Prisma artifacts into their runners", () => {
-  for (const file of ["Dockerfile.api", "Dockerfile.worker"]) {
-    expect(readFileSync(join(root, file), "utf8")).toContain("COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma");
-  }
+	for (const file of ["Dockerfile.api", "Dockerfile.worker"]) {
+		expect(readFileSync(join(root, file), "utf8")).toContain("COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma");
+	}
 });
-~~~
+```
 
 - [ ] **Step 2: Run RED**
 
@@ -144,7 +144,7 @@ Expected: FAIL because API and worker lack the production-dependency/pruned cont
 
 - [ ] **Step 3: Use the four-stage non-web pattern**
 
-~~~dockerfile
+```dockerfile
 FROM oven/bun:1.1.45-alpine AS base
 WORKDIR /app
 FROM base AS pruner
@@ -156,7 +156,7 @@ RUN bun install --frozen-lockfile --ignore-scripts
 FROM base AS prod-deps
 COPY --from=pruner /app/out/json/ ./
 RUN bun install --production --frozen-lockfile --ignore-scripts
-~~~
+```
 
 For API and worker, generate Prisma in the builder and copy node_modules/.prisma from builder to runner. For scheduler, omit both Prisma commands. Each runner copies node_modules only from prod-deps, then the built app, packages, and root manifest; retain the current compiled entrypoint command.
 
@@ -165,10 +165,10 @@ For API and worker, generate Prisma in the builder and copy node_modules/.prisma
 Run: bun test scripts/dockerfiles.test.ts  
 Expected: PASS.
 
-~~~bash
+```bash
 git add Dockerfile.api Dockerfile.worker Dockerfile.scheduler scripts/dockerfiles.test.ts
 git commit -m "build: prune API and job runtime images"
-~~~
+```
 
 ### Task 4: Apply the pattern to the future realtime runtime
 
@@ -176,9 +176,9 @@ git commit -m "build: prune API and job runtime images"
 
 - [ ] **Step 1: Extend the contract test only after apps/realtime exists**
 
-~~~ts
+```ts
 ["Dockerfile.realtime", "@repo/realtime-server"],
-~~~
+```
 
 - [ ] **Step 2: Run RED**
 
@@ -187,14 +187,14 @@ Expected: FAIL because no realtime Dockerfile exists before the optional realtim
 
 - [ ] **Step 3: Add the production-only realtime image**
 
-~~~dockerfile
+```dockerfile
 FROM base AS pruner
 COPY . .
 RUN bunx turbo@2.8.1 prune @repo/realtime-server --docker
 FROM base AS prod-deps
 COPY --from=pruner /app/out/json/ ./
 RUN bun install --production --frozen-lockfile --ignore-scripts
-~~~
+```
 
 Use a build-deps/builder pair to compile apps/realtime, copy production dependencies and compiled output to the runner, run as a non-root user, expose port 4102, and execute apps/realtime/dist/main.js.
 
@@ -203,10 +203,10 @@ Use a build-deps/builder pair to compile apps/realtime, copy production dependen
 Run: bun test scripts/dockerfiles.test.ts  
 Expected: PASS.
 
-~~~bash
+```bash
 git add Dockerfile.realtime scripts/dockerfiles.test.ts
 git commit -m "build(realtime): add optimized runtime image"
-~~~
+```
 
 ### Task 5: Verify images and document the deployment boundary
 
@@ -214,11 +214,11 @@ git commit -m "build(realtime): add optimized runtime image"
 
 - [ ] **Step 1: Add explicit image build tasks**
 
-~~~yaml
+```yaml
 docker:build:api:
   desc: Build the standalone API image
   cmds: [docker buildx build --load --platform=linux/amd64 --file Dockerfile.api --tag vkit-rapid-api:local .]
-~~~
+```
 
 Add equivalent docker:build:web, docker:build:worker, docker:build:scheduler, and docker:build:realtime tasks. The realtime task is documented as available only after its optional runtime has been enabled.
 
@@ -242,7 +242,7 @@ Document that Dockerfiles build images only; image registry push, deployment, an
 Run: task quality && task build && git diff --check  
 Expected: all commands exit 0.
 
-~~~bash
+```bash
 git add Taskfile.yml README.md
 git commit -m "docs: describe optimized runtime images"
-~~~
+```

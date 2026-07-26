@@ -23,8 +23,7 @@ export function HeroText({ text = "VKIT-ORBIT", className = "" }: HeroTextProps)
 			<div
 				className="pointer-events-none absolute inset-0 opacity-[0.05] dark:opacity-[0.15]"
 				style={{
-					backgroundImage:
-						"linear-gradient(to right, #888 1px, transparent 1px), linear-gradient(to bottom, #888 1px, transparent 1px)",
+					backgroundImage: "linear-gradient(to right, #888 1px, transparent 1px), linear-gradient(to bottom, #888 1px, transparent 1px)",
 					backgroundSize: "clamp(20px, 5vw, 60px) clamp(20px, 5vw, 60px)",
 				}}
 			/>
@@ -89,9 +88,7 @@ export function HeroText({ text = "VKIT-ORBIT", className = "" }: HeroTextProps)
 				>
 					<RefreshCw size={24} aria-hidden="true" />
 				</motion.button>
-				<p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-400 dark:text-zinc-500">
-					Click to re-shutter
-				</p>
+				<p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-400 dark:text-zinc-500">Click to re-shutter</p>
 			</div>
 
 			<div className="absolute left-8 top-8 h-12 w-12 border-l border-t border-zinc-200 dark:border-zinc-800" />

@@ -17,7 +17,11 @@ export function waitForTermination(): Promise<void> {
 	});
 }
 
-export async function runScheduler({ register = () => () => {}, waitForShutdown = waitForTermination, disconnect }: SchedulerRuntimeInput): Promise<void> {
+export async function runScheduler({
+	register = () => () => {},
+	waitForShutdown = waitForTermination,
+	disconnect,
+}: SchedulerRuntimeInput): Promise<void> {
 	const cleanup = register();
 	try {
 		await waitForShutdown();

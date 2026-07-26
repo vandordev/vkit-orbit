@@ -27,6 +27,7 @@
 ### Task 1: Add configuration modules and one environment contract
 
 **Files:**
+
 - Create: `config/base.yaml`
 - Create: `config/api.yaml`
 - Create: `config/web.yaml`
@@ -46,10 +47,10 @@
 
 ```ts
 expect(loadConfig({ configDirectory, modules: ["base", "api", "web"], environment })).toMatchObject({
-  NODE_ENV: "test",
-  DATABASE_URL: "postgresql://db",
-  PORT: 4101,
-  NEXT_PUBLIC_APP_URL: "http://localhost:4100",
+	NODE_ENV: "test",
+	DATABASE_URL: "postgresql://db",
+	PORT: 4101,
+	NEXT_PUBLIC_APP_URL: "http://localhost:4100",
 });
 ```
 
@@ -82,6 +83,7 @@ git commit -m "feat(config): add committed YAML configuration modules"
 ### Task 2: Implement strict YAML loading, merge, and interpolation
 
 **Files:**
+
 - Modify: `packages/config/package.json`
 - Modify: `packages/config/src/index.ts`
 - Create: `packages/config/src/loader.ts`
@@ -92,15 +94,15 @@ git commit -m "feat(config): add committed YAML configuration modules"
 
 ```ts
 expect(loadConfig({ configDirectory, modules: ["base", "override"], environment: {} })).toEqual({
-  http: { host: "127.0.0.1", port: 4101 },
-  queues: ["critical"],
+	http: { host: "127.0.0.1", port: 4101 },
+	queues: ["critical"],
 });
 
 expect(() => loadConfig({ configDirectory, modules: ["missing"], environment: {} })).toThrow(
-  'Configuration module "missing" was not found',
+	'Configuration module "missing" was not found',
 );
 expect(() => loadConfig({ configDirectory, modules: ["required-secret"], environment: {} })).toThrow(
-  'Missing configuration environment variable "DATABASE_URL"',
+	'Missing configuration environment variable "DATABASE_URL"',
 );
 expect(loadConfig({ configDirectory, modules: ["defaults"], environment: {} })).toEqual({ port: "4101" });
 ```
@@ -119,9 +121,9 @@ Install `yaml` as a direct dependency of `@repo/config` with Bun. Implement and 
 
 ```ts
 export type LoadConfigOptions = {
-  configDirectory?: string;
-  modules: readonly string[];
-  environment: Record<string, string | undefined>;
+	configDirectory?: string;
+	modules: readonly string[];
+	environment: Record<string, string | undefined>;
 };
 
 export function loadConfig(options: LoadConfigOptions): Record<string, unknown>;
@@ -145,6 +147,7 @@ git commit -m "feat(config): load composable YAML modules"
 ### Task 3: Add the command wrapper and retain Zod validation
 
 **Files:**
+
 - Create: `packages/config/src/run.ts`
 - Create: `packages/config/src/run.test.ts`
 - Modify: `packages/config/src/common.ts`
@@ -158,14 +161,14 @@ git commit -m "feat(config): load composable YAML modules"
 
 ```ts
 const result = await runConfiguredCommand({
-  modules: ["base", "api"],
-  environment: { DATABASE_URL: "postgresql://db" },
-  command: [process.execPath, fixturePath],
+	modules: ["base", "api"],
+	environment: { DATABASE_URL: "postgresql://db" },
+	command: [process.execPath, fixturePath],
 });
 expect(result.stdout).toContain('"PORT":"4101"');
 
 expect(() => createApiConfig(loadConfig({ modules: ["base", "api"], environment: {} }))).toThrow(
-  'Missing configuration environment variable "DATABASE_URL"',
+	'Missing configuration environment variable "DATABASE_URL"',
 );
 ```
 
@@ -199,6 +202,7 @@ git commit -m "feat(config): run processes from resolved YAML configuration"
 ### Task 4: Migrate every runtime and protect Next.js public values
 
 **Files:**
+
 - Modify: `apps/web/package.json`
 - Modify: `apps/api/package.json`
 - Modify: `apps/worker/package.json`
@@ -247,6 +251,7 @@ git commit -m "feat(config): run every runtime from YAML modules"
 ### Task 5: Update containers, Compose, and project documentation
 
 **Files:**
+
 - Modify: `Dockerfile.web`
 - Modify: `Dockerfile.api`
 - Modify: `Dockerfile.worker`

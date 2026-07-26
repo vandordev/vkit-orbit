@@ -99,6 +99,7 @@ tasks:
   quality:
     desc: Run tests, lint, typechecks, and Go vet
     cmds:
+      - task format:check
       - task test
       - bun run lint
       - bun run check-types
@@ -109,6 +110,18 @@ tasks:
     cmds:
       - bun run build
       - task build:go
+
+  format:
+    desc: Format TypeScript, Markdown, and Go sources
+    cmds:
+      - bun run format
+      - git ls-files -z '*.go' | xargs -0 gofmt -w
+
+  format:check:
+    desc: Check TypeScript, Markdown, and Go formatting
+    cmds:
+      - bun run format:check
+      - test -z "$(gofmt -l $(git ls-files '*.go'))"
 
   build:go:
     desc: Build the Go worker and migration runtime

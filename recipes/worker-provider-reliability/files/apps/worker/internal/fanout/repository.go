@@ -3,24 +3,33 @@ package fanout
 import "context"
 
 type ItemState string
+
 const (
-	StatePending ItemState = "PENDING"
+	StatePending    ItemState = "PENDING"
 	StateProcessing ItemState = "PROCESSING"
-	StateSent ItemState = "SENT"
-	StateFailed ItemState = "FAILED"
-	StateUnknown ItemState = "UNKNOWN"
+	StateSent       ItemState = "SENT"
+	StateFailed     ItemState = "FAILED"
+	StateUnknown    ItemState = "UNKNOWN"
 )
 
 type ParentState string
+
 const (
-	ParentRunning ParentState = "RUNNING"
-	ParentCompleted ParentState = "COMPLETED"
-	ParentFailed ParentState = "FAILED"
+	ParentRunning         ParentState = "RUNNING"
+	ParentCompleted       ParentState = "COMPLETED"
+	ParentFailed          ParentState = "FAILED"
 	ParentPartiallyFailed ParentState = "PARTIALLY_FAILED"
 )
 
-type Item struct { ParentID, ID, IdempotencyKey string; State ItemState }
-type Outcome struct { ParentID, ItemID, IdempotencyKey string; State ItemState; ErrorMessage string }
+type Item struct {
+	ParentID, ID, IdempotencyKey string
+	State                        ItemState
+}
+type Outcome struct {
+	ParentID, ItemID, IdempotencyKey string
+	State                            ItemState
+	ErrorMessage                     string
+}
 
 type Repository interface {
 	ClaimNext(context.Context, string) (*Item, error)
@@ -30,7 +39,9 @@ type Repository interface {
 }
 
 func AggregateStates(states []ItemState) ParentState {
-	if len(states) == 0 { return ParentRunning }
+	if len(states) == 0 {
+		return ParentRunning
+	}
 	hasSent, hasFailure := false, false
 	for _, state := range states {
 		switch state {
@@ -42,8 +53,12 @@ func AggregateStates(states []ItemState) ParentState {
 			hasFailure = true
 		}
 	}
-	if hasSent && hasFailure { return ParentPartiallyFailed }
-	if hasFailure { return ParentFailed }
+	if hasSent && hasFailure {
+		return ParentPartiallyFailed
+	}
+	if hasFailure {
+		return ParentFailed
+	}
 	return ParentCompleted
 }
 

@@ -3,7 +3,7 @@
 The River `kind` is exactly `fanout-delivery.v1`. Its JSON payload is:
 
 ```json
-{"parentId":"run-1","itemId":"item-1","idempotencyKey":"run-1:item-1"}
+{ "parentId": "run-1", "itemId": "item-1", "idempotencyKey": "run-1:item-1" }
 ```
 
 `parentId`, `itemId`, and `idempotencyKey` are non-empty strings. The

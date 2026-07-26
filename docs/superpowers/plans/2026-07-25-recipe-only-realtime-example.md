@@ -32,6 +32,7 @@
 ### Task 1: Make the scheduler an idle long-running runtime
 
 **Files:**
+
 - Create: `apps/scheduler/src/runtime.ts`
 - Create: `apps/scheduler/src/runtime.test.ts`
 - Modify: `apps/scheduler/src/main.ts`
@@ -42,6 +43,7 @@
 - Modify: `config/scheduler.yaml`
 
 **Interfaces:**
+
 - Produces: `runScheduler(input: { register?: () => () => void; waitForShutdown?: () => Promise<void>; disconnect: () => Promise<void> }): Promise<void>`.
 - Consumes: a recipe-installed `register` callback only; baseline calls no registration callback.
 
@@ -49,18 +51,23 @@
 
 ```ts
 test("keeps an idle scheduler alive until shutdown and then cleans up", async () => {
-  let resolveShutdown!: () => void;
-  let cleaned = false;
-  const running = runScheduler({
-    register: () => () => { cleaned = true; },
-    waitForShutdown: () => new Promise<void>((resolve) => { resolveShutdown = resolve; }),
-    disconnect: async () => {},
-  });
-  await Bun.sleep(0);
-  expect(cleaned).toBe(false);
-  resolveShutdown();
-  await running;
-  expect(cleaned).toBe(true);
+	let resolveShutdown!: () => void;
+	let cleaned = false;
+	const running = runScheduler({
+		register: () => () => {
+			cleaned = true;
+		},
+		waitForShutdown: () =>
+			new Promise<void>((resolve) => {
+				resolveShutdown = resolve;
+			}),
+		disconnect: async () => {},
+	});
+	await Bun.sleep(0);
+	expect(cleaned).toBe(false);
+	resolveShutdown();
+	await running;
+	expect(cleaned).toBe(true);
 });
 ```
 
@@ -76,13 +83,13 @@ Expected: FAIL because `runScheduler` does not exist and scheduler config still 
 
 ```ts
 export async function runScheduler({ register = () => () => {}, waitForShutdown = waitForTermination, disconnect }: SchedulerRuntimeInput) {
-  const cleanup = register();
-  try {
-    await waitForShutdown();
-  } finally {
-    cleanup();
-    await disconnect();
-  }
+	const cleanup = register();
+	try {
+		await waitForShutdown();
+	} finally {
+		cleanup();
+		await disconnect();
+	}
 }
 ```
 
@@ -105,11 +112,13 @@ git commit -m "fix(scheduler): keep idle runtime alive"
 ### Task 2: Remove example behavior from baseline queue, API, worker, and web
 
 **Files:**
+
 - Modify: `apps/worker/main.go`, `apps/worker/main_test.go`, `apps/api/src/app.ts`, `apps/api/src/app.test.ts`, `apps/api/src/routes/index.ts`, `packages/queue/src/index.ts`
 - Delete: `internal/worker/example_realtime_notification.go`, `internal/worker/example_realtime_notification_test.go`, `apps/api/src/routes/examples.ts`, `apps/api/src/routes/examples.test.ts`, `packages/queue/src/example-realtime-notification.ts`, `packages/queue/src/example-realtime-notification.test.ts`, `apps/web/src/routes/examples/realtime.tsx`, `apps/web/src/routes/examples/realtime.test.tsx`
 - Modify: `apps/web/src/routeTree.gen.ts`
 
 **Interfaces:**
+
 - Consumes: `NewWorkerClient(database, nil)` builds a valid River client with zero registered example handlers.
 - Produces: `createApp()` exposes only generic health, status, and internal notification routes.
 
@@ -117,9 +126,9 @@ git commit -m "fix(scheduler): keep idle runtime alive"
 
 ```ts
 test("baseline API and queue do not expose the realtime example", async () => {
-  expect(await Bun.file("apps/api/src/app.ts").text()).not.toContain("exampleRealtimeNotificationJob");
-  expect(await Bun.file("packages/queue/src/index.ts").text()).not.toContain("example-realtime-notification");
-  expect(await Bun.file("apps/web/src/routeTree.gen.ts").text()).not.toContain("/examples/realtime");
+	expect(await Bun.file("apps/api/src/app.ts").text()).not.toContain("exampleRealtimeNotificationJob");
+	expect(await Bun.file("packages/queue/src/index.ts").text()).not.toContain("example-realtime-notification");
+	expect(await Bun.file("apps/web/src/routeTree.gen.ts").text()).not.toContain("/examples/realtime");
 });
 ```
 
@@ -152,6 +161,7 @@ git commit -m "refactor(baseline): remove realtime example behavior"
 ### Task 3: Package the executable realtime walkthrough as a recipe
 
 **Files:**
+
 - Create: `recipes/realtime-notification/README.md`
 - Create: `recipes/realtime-notification/files/contracts/jobs/example.realtime-notification.v1.md`
 - Create: `recipes/realtime-notification/files/packages/queue/src/example-realtime-notification.ts`
@@ -163,6 +173,7 @@ git commit -m "refactor(baseline): remove realtime example behavior"
 - Create: `recipes/realtime-notification/tests/{contract,installation,isolation}.test.ts`
 
 **Interfaces:**
+
 - Produces: `exampleRealtimeNotificationJob` with kind `example.realtime-notification.v1` and `{ resourceId, workspaceId }` payload.
 - Produces: `registerSchedules(dependencies, { intervalMs })` whose cleanup clears the recipe timer.
 - Consumes: consumer-provided notifier credentials, realtime ticket, queue client, and explicit route/worker registration.
@@ -171,17 +182,24 @@ git commit -m "refactor(baseline): remove realtime example behavior"
 
 ```ts
 test("recipe documents every deliberate integration point", async () => {
-  const readme = await Bun.file("recipes/realtime-notification/README.md").text();
-  for (const section of ["Queue contract", "API registration", "Scheduler registration", "Worker registration", "Web route registration", "Removal"]) {
-    expect(readme).toContain(section);
-  }
+	const readme = await Bun.file("recipes/realtime-notification/README.md").text();
+	for (const section of [
+		"Queue contract",
+		"API registration",
+		"Scheduler registration",
+		"Worker registration",
+		"Web route registration",
+		"Removal",
+	]) {
+		expect(readme).toContain(section);
+	}
 });
 
 test("recipe keeps the versioned example payload", async () => {
-  const source = await Bun.file("recipes/realtime-notification/files/packages/queue/src/example-realtime-notification.ts").text();
-  expect(source).toContain('"example.realtime-notification.v1"');
-  expect(source).toContain("resourceId");
-  expect(source).toContain("workspaceId");
+	const source = await Bun.file("recipes/realtime-notification/files/packages/queue/src/example-realtime-notification.ts").text();
+	expect(source).toContain('"example.realtime-notification.v1"');
+	expect(source).toContain("resourceId");
+	expect(source).toContain("workspaceId");
 });
 ```
 
@@ -197,8 +215,8 @@ Copy the former example code into `files/` with imports targeted at the consumer
 
 ```ts
 await runScheduler({
-  register: () => registerSchedules({ enqueue: (contract, payload) => enqueue(river, contract, payload) }, { intervalMs: 300_000 }),
-  disconnect: () => prisma.$disconnect(),
+	register: () => registerSchedules({ enqueue: (contract, payload) => enqueue(river, contract, payload) }, { intervalMs: 300_000 }),
+	disconnect: () => prisma.$disconnect(),
 });
 ```
 
@@ -220,23 +238,21 @@ git commit -m "feat(recipe): add realtime notification walkthrough"
 ### Task 4: Update baseline guidance and final isolation checks
 
 **Files:**
+
 - Modify: `README.md`, `AGENTS.md`, `contracts/jobs/README.md`, `scripts/taskfile.test.ts`
 - Create: `scripts/realtime-example-isolation.test.ts`
 
 **Interfaces:**
+
 - Produces: baseline documentation that advertises no default job/schedule and points consumers to `recipes/realtime-notification/`.
 
 - [ ] **Step 1: Write failing documentation/isolation test**
 
 ```ts
 test("baseline has no example schedule or route", async () => {
-  const sources = await Promise.all([
-    Bun.file("README.md").text(),
-    Bun.file("AGENTS.md").text(),
-    Bun.file("config/scheduler.yaml").text(),
-  ]);
-  expect(sources.join("\n")).not.toContain("ENABLE_EXAMPLE_SCHEDULE");
-  expect(sources.join("\n")).toContain("recipes/realtime-notification");
+	const sources = await Promise.all([Bun.file("README.md").text(), Bun.file("AGENTS.md").text(), Bun.file("config/scheduler.yaml").text()]);
+	expect(sources.join("\n")).not.toContain("ENABLE_EXAMPLE_SCHEDULE");
+	expect(sources.join("\n")).toContain("recipes/realtime-notification");
 });
 ```
 

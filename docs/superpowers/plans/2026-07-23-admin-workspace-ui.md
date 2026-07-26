@@ -35,4 +35,3 @@
 - [ ] Add tests/docs assertions that root `apps/web/package.json` is unchanged and no baseline route imports recipe files.
 - [ ] Document Animate UI as an optional sidebar enhancement and Niko Table as a separately installed advanced-data-grid option, including its large maintenance cost.
 - [ ] Add a static example page only under the recipe, never baseline routes. Run recipe tests plus `bun test apps/web`; expect PASS. Commit `docs(recipe): document optional dashboard extensions`.
-

@@ -3,10 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { resolvedConfigEnvironment } from "../../../packages/config/src/run";
 
 async function getApp() {
-	Object.assign(
-		process.env,
-		resolvedConfigEnvironment(["base", "api"], { DATABASE_URL: "postgresql://db", NODE_ENV: "test" }),
-	);
+	Object.assign(process.env, resolvedConfigEnvironment(["base", "api"], { DATABASE_URL: "postgresql://db", NODE_ENV: "test" }));
 	return (await import("./app")).app;
 }
 

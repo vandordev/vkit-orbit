@@ -72,10 +72,10 @@ Every business endpoint returns one response envelope:
 ```ts
 type ApiSuccess<T> = { success: true; data: T };
 type ApiFailure = {
-  success: false;
-  error: string;
-  message: string;
-  requestId?: string;
+	success: false;
+	error: string;
+	message: string;
+	requestId?: string;
 };
 ```
 

@@ -8,7 +8,9 @@ export function GlobalNotFound() {
 			<section className="max-w-lg space-y-6 text-center">
 				<h1 className="text-3xl font-semibold tracking-tight">Page not found</h1>
 				<p className="text-muted-foreground">That route is not part of this workspace.</p>
-				<Button asChild><Link to="/">Back to home</Link></Button>
+				<Button asChild>
+					<Link to="/">Back to home</Link>
+				</Button>
 			</section>
 		</main>
 	);

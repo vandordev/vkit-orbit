@@ -26,11 +26,8 @@ it explicitly through the baseline runtime:
 
 ```ts
 await runScheduler({
-  register: () => registerSchedules(
-    { enqueue: (contract, payload) => enqueue(river, contract, payload) },
-    { intervalMs: 300_000 },
-  ),
-  disconnect: () => prisma.$disconnect(),
+	register: () => registerSchedules({ enqueue: (contract, payload) => enqueue(river, contract, payload) }, { intervalMs: 300_000 }),
+	disconnect: () => prisma.$disconnect(),
 });
 ```
 

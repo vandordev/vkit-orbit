@@ -44,4 +44,3 @@
 - [ ] Add a baseline fixture assertion that no baseline route imports recipe paths and no Vite environment type contains auth secrets.
 - [ ] Run baseline API/web tests plus recipe tests; expect PASS.
 - [ ] Document role/capability hooks as consumer-owned interfaces, not default enum values. Commit `test(recipe): enforce opt-in auth isolation`.
-

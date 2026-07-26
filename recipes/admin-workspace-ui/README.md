@@ -18,11 +18,11 @@ optional `visible` predicate. `AdminShellProps` requires `navigation`,
 
 ## Dependency tiers
 
-| Tier | Contents | Cost |
-| --- | --- | --- |
-| Core | shell, command menu, user menu, strict context, descriptors | existing React/Tailwind/shadcn |
-| Optional | Animate UI sidebar enhancement | additional animation dependency and maintenance |
-| Advanced | Niko Table data-grid package | large vendored surface, filtering/virtualisation/columns trade-offs |
+| Tier     | Contents                                                    | Cost                                                                |
+| -------- | ----------------------------------------------------------- | ------------------------------------------------------------------- |
+| Core     | shell, command menu, user menu, strict context, descriptors | existing React/Tailwind/shadcn                                      |
+| Optional | Animate UI sidebar enhancement                              | additional animation dependency and maintenance                     |
+| Advanced | Niko Table data-grid package                                | large vendored surface, filtering/virtualisation/columns trade-offs |
 
 Animate UI and Niko Table are deliberately not copied into the baseline or
 this core template. Install Niko Table only when spreadsheet-like interaction,

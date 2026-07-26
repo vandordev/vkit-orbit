@@ -13,12 +13,23 @@ export function defineJob<T extends z.ZodTypeAny>(kind: string, schema: T): JobC
 	return { kind, schema };
 }
 
-export async function enqueue<T extends z.ZodTypeAny>(client: RiverInsertClient, contract: JobContract<T>, payload: z.input<T>, options?: InsertOpts) {
+export async function enqueue<T extends z.ZodTypeAny>(
+	client: RiverInsertClient,
+	contract: JobContract<T>,
+	payload: z.input<T>,
+	options?: InsertOpts,
+) {
 	const parsed = contract.schema.parse(payload);
 	return client.insert(new JobArgsObject(contract.kind, parsed), options);
 }
 
-export async function enqueueInTransaction<TTx, T extends z.ZodTypeAny>(tx: TTx, client: RiverInsertClient<TTx>, contract: JobContract<T>, payload: z.input<T>, options?: InsertOpts) {
+export async function enqueueInTransaction<TTx, T extends z.ZodTypeAny>(
+	tx: TTx,
+	client: RiverInsertClient<TTx>,
+	contract: JobContract<T>,
+	payload: z.input<T>,
+	options?: InsertOpts,
+) {
 	const parsed = contract.schema.parse(payload);
 	return client.insert(new JobArgsObject(contract.kind, parsed), { ...options, tx });
 }
