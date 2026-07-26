@@ -34,10 +34,11 @@ or other credentials to browser code. Use the YAML/config loaders rather than
 reading `process.env` in feature code.
 
 River `kind` and JSON payloads are cross-language contracts. Breaking changes
-use a new versioned kind. Go workers must not duplicate TypeScript usecases.
-Workers notify Elysia only after successful job completion; Elysia alone talks
-to Socket.IO. Realtime payloads are invalidation signals, not source-of-truth
-data.
+use a new versioned kind. Go workers may implement equivalent usecases under
+root `internal/`; they must keep invariants, idempotency, concurrency, and
+versioned contracts aligned with TypeScript behavior. Workers notify Elysia
+only after successful job completion; Elysia alone talks to Socket.IO.
+Realtime payloads are invalidation signals, not source-of-truth data.
 
 The baseline has no installed product/example job, schedule, route, credential,
 or product model. The executable `example.realtime-notification.v1` walkthrough

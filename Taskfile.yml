@@ -99,6 +99,7 @@ tasks:
   quality:
     desc: Run tests, lint, typechecks, and Go vet
     cmds:
+      - bun run check:architecture
       - task format:check
       - task test
       - bun run lint
