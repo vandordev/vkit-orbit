@@ -8,12 +8,15 @@ export const systemRoutes = new Elysia({ name: "api-v1-system", tags: ["System"]
 	() => ({ success: true as const, data: { status: "ok" as const } }),
 	{
 		response: successEnvelope(
-			t.Object({
-				status: t.Literal("ok", {
-					description: "Current availability status of the versioned public API.",
-					examples: ["ok"],
-				}),
-			}),
+			t.Object(
+				{
+					status: t.Literal("ok", {
+						description: "Current availability status of the versioned public API.",
+						examples: ["ok"],
+					}),
+				},
+				{ description: "Versioned public API status data.", examples: [{ status: "ok" }] },
+			),
 			{
 				description: "Successful API status response.",
 				example: { success: true, data: { status: "ok" } },

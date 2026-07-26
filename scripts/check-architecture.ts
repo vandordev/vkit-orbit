@@ -30,6 +30,11 @@ export function checkArchitecture(root = process.cwd()): string[] {
 			if (content.includes("@repo/database")) violations.push(`${label}: versioned routes must not import @repo/database`);
 			if (prismaWritePattern.test(content)) violations.push(`${label}: versioned routes must not perform Prisma writes`);
 		}
+		if (label.startsWith("apps/api/src/routes/") && /\.(get|post|put|patch|delete)\s*\(/.test(content)) {
+			if (!content.includes("apiOperation") || !content.includes("apiOperation(")) {
+				violations.push(`${label}: Elysia handlers must use apiOperation`);
+			}
+		}
 		if (label.startsWith("apps/web/src/")) {
 			if (content.includes("@repo/database")) violations.push(`${label}: web must not import @repo/database`);
 			if (content.includes("@repo/application")) violations.push(`${label}: web must not import @repo/application`);

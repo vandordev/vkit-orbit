@@ -22,20 +22,26 @@ export const healthRoutes = new Elysia({ prefix: "/health", tags: ["Health"] })
 						description: "Whether the liveness check completed successfully.",
 						examples: [true],
 					}),
-					data: t.Object({
-						status: t.Literal("healthy", {
-							description: "Current liveness status of this process.",
-							examples: ["healthy"],
-						}),
-						timestamp: t.String({
-							description: "ISO 8601 timestamp when the liveness response was generated.",
-							examples: ["2026-07-26T00:00:00.000Z"],
-						}),
-						uptime: t.Number({
-							description: "Process uptime in seconds.",
-							examples: [3600.5],
-						}),
-					}),
+					data: t.Object(
+						{
+							status: t.Literal("healthy", {
+								description: "Current liveness status of this process.",
+								examples: ["healthy"],
+							}),
+							timestamp: t.String({
+								description: "ISO 8601 timestamp when the liveness response was generated.",
+								examples: ["2026-07-26T00:00:00.000Z"],
+							}),
+							uptime: t.Number({
+								description: "Process uptime in seconds.",
+								examples: [3600.5],
+							}),
+						},
+						{
+							description: "Liveness information for this process.",
+							examples: [{ status: "healthy", timestamp: "2026-07-26T00:00:00.000Z", uptime: 3600.5 }],
+						},
+					),
 				},
 				{
 					description: "Successful liveness response.",
@@ -75,14 +81,20 @@ export const healthRoutes = new Elysia({ prefix: "/health", tags: ["Health"] })
 			response: {
 				200: t.Object(
 					{
-						success: t.Literal(true),
-						data: t.Object({
-							status: t.Literal("ready", { description: "Current readiness status of the process.", examples: ["ready"] }),
-							timestamp: t.String({
-								description: "ISO 8601 timestamp when the readiness response was generated.",
-								examples: ["2026-07-26T00:00:00.000Z"],
-							}),
-						}),
+						success: t.Literal(true, { description: "Whether the readiness check completed successfully.", examples: [true] }),
+						data: t.Object(
+							{
+								status: t.Literal("ready", { description: "Current readiness status of the process.", examples: ["ready"] }),
+								timestamp: t.String({
+									description: "ISO 8601 timestamp when the readiness response was generated.",
+									examples: ["2026-07-26T00:00:00.000Z"],
+								}),
+							},
+							{
+								description: "Readiness information for this process.",
+								examples: [{ status: "ready", timestamp: "2026-07-26T00:00:00.000Z" }],
+							},
+						),
 					},
 					{
 						description: "Successful readiness response.",
@@ -91,7 +103,7 @@ export const healthRoutes = new Elysia({ prefix: "/health", tags: ["Health"] })
 				),
 				503: t.Object(
 					{
-						success: t.Literal(false),
+						success: t.Literal(false, { description: "Whether the readiness check completed successfully.", examples: [false] }),
 						error: t.Literal("NOT_READY", { description: "Machine-readable readiness failure code.", examples: ["NOT_READY"] }),
 						message: t.String({ description: "Human-readable explanation of the readiness failure.", examples: ["Database is not ready"] }),
 						timestamp: t.String({
