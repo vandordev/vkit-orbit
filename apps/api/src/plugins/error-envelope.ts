@@ -19,7 +19,7 @@ export const errorEnvelopePlugin = new Elysia({ name: "error-envelope" })
 			};
 		}
 		if (code === "VALIDATION") {
-			set.status = 400;
+			set.status = 422;
 			return { success: false, error: "VALIDATION_ERROR", message: "Validation failed", ...(requestId ? { requestId } : {}) };
 		}
 		if (code === "NOT_FOUND") {
