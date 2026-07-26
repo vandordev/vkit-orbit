@@ -4,6 +4,7 @@ import { Elysia, t } from "elysia";
 import { realtimeEventSchema, type RealtimeEvent } from "@repo/realtime";
 
 import { publishRealtimeEvent, workerNotificationApiKey } from "../../runtime";
+import { apiOperation } from "../../openapi/operation";
 import { failureEnvelope, successEnvelope } from "../../schemas/envelope";
 
 function matchesSecret(expected: string, actual: string | null) {
@@ -38,10 +39,18 @@ export const workerEventRoutes = new Elysia({ prefix: "/api/internal", tags: ["I
 		// Authentication must run before body validation so malformed unauthenticated requests remain 401.
 		body: t.Any(),
 		response: {
-			202: successEnvelope(t.Object({ accepted: t.Literal(true) }), {
-				description: "Accepted worker-event notification response.",
-				example: { success: true, data: { accepted: true } },
-			}),
+			202: successEnvelope(
+				t.Object({
+					accepted: t.Literal(true, {
+						description: "Whether the worker-event notification was accepted for publishing.",
+						examples: [true],
+					}),
+				}),
+				{
+					description: "Accepted worker-event notification response.",
+					example: { success: true, data: { accepted: true } },
+				},
+			),
 			400: failureEnvelope({
 				description: "Malformed worker-event notification response.",
 				example: { success: false, error: "VALIDATION_ERROR", message: "Validation failed" },
@@ -63,6 +72,12 @@ export const workerEventRoutes = new Elysia({ prefix: "/api/internal", tags: ["I
 				},
 			}),
 		},
-		detail: { hide: true },
+		detail: apiOperation({
+			summary: "Publish a worker event",
+			description:
+				"Accepts an authenticated worker event for private realtime publication. The raw API-key header and body remain unvalidated until authentication completes so unauthenticated malformed requests consistently receive 401; this operation is hidden from public OpenAPI.",
+			tags: ["Internal"],
+			hide: true,
+		}),
 	},
 );

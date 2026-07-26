@@ -17,6 +17,13 @@ function authenticatedRequest(body: unknown = validEvent) {
 }
 
 describe("worker notification gateway", () => {
+	test("hides its documented operation from public OpenAPI", async () => {
+		const source = await Bun.file(new URL("./worker-events.ts", import.meta.url)).text();
+
+		expect(source).toContain("apiOperation(");
+		expect(source).toContain("hide: true");
+	});
+
 	test("accepts an authenticated worker event and forwards it once", async () => {
 		const publishRealtimeEvent = mock(async () => undefined);
 		mock.module("../../runtime", () => ({ workerNotificationApiKey: "worker-key", publishRealtimeEvent }));

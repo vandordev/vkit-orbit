@@ -23,6 +23,24 @@ test("serves generated OpenAPI JSON", async () => {
 	expect(document.paths["/api/internal/worker-events"]).toBeUndefined();
 });
 
+test("documents every visible baseline handler", async () => {
+	const app = await getApp();
+	const response = await app.handle(new Request("http://localhost:4100/api/openapi.json"));
+	const document = await response.json();
+	const operations = [document.paths["/api/v1/status"].get, document.paths["/health/"].get, document.paths["/health/ready"].get];
+
+	for (const operation of operations) {
+		expect(operation.operationId).toEqual(expect.any(String));
+		expect(operation.summary).toEqual(expect.any(String));
+		expect(operation.description).toEqual(expect.any(String));
+		expect(operation.tags).toEqual(expect.any(Array));
+	}
+
+	const statusResponse = document.paths["/api/v1/status"].get.responses["200"];
+	expect(statusResponse.description).toEqual(expect.any(String));
+	expect(statusResponse.content["application/json"].schema.examples).toEqual([{ success: true, data: { status: "ok" } }]);
+});
+
 test("serves Scalar documentation", async () => {
 	const app = await getApp();
 	const response = await app.handle(new Request("http://localhost:4101/api/docs"));
