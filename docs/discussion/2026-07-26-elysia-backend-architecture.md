@@ -277,6 +277,28 @@ relatif canonical `self`, `next`, dan `prev` ke success envelope. Validation
 schema, termasuk cursor yang tidak valid atau tidak kompatibel, mengembalikan
 failure envelope HTTP 422.
 
+### Dokumentasi handler sebagai kontrak
+
+Setiap handler Elysia, termasuk health dan handler internal yang disembunyikan,
+memiliki `summary`, `description`, dan tag berbahasa Inggris melalui helper
+`apiOperation`. Summary menyebut operasi, sementara description menjelaskan
+hasil, cakupan, serta alasan keputusan transport yang tidak lazim. `operationId`
+tidak ditulis manual: plugin OpenAPI Elysia menghasilkannya dari HTTP method dan
+path endpoint.
+
+OpenAPI adalah kontrak yang diuji, bukan artefak best-effort. Semua parameter,
+field payload, dan field respons memiliki description serta example; setiap
+status respons yang dideklarasikan memiliki description dan contoh JSON.
+Factory envelope menerima description/example respons supaya pola tersebut
+seragam. Validator atas dokumen OpenAPI hasil generasi memeriksa operasi public
+dan guard source memeriksa semua file route, termasuk handler `hide: true`.
+
+Pengecualian `t.Any()` bersifat lokal dan harus dijelaskan dalam description
+operasi. Contohnya, gateway worker mengautentikasi header sebelum memvalidasi
+body agar payload malformed tanpa credential tetap menghasilkan 401, bukan 422.
+Aturan ini menjaga keamanan behavior sekaligus membuat pengecualian terlihat
+jelas pada source code.
+
 ## Guidance dan guard yang akan ditambahkan
 
 Saat implementasi dimulai, aturan ini akan dipindahkan ke guidance yang
