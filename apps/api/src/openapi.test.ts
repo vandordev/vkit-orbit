@@ -15,6 +15,8 @@ test("serves generated OpenAPI JSON", async () => {
 	const document = await response.json();
 	expect(document.openapi).toMatch(/^3\./);
 	expect(document.servers).toEqual([{ url: "http://localhost:4100" }]);
+	expect(document.paths["/api/v1/status"]).toBeDefined();
+	expect(document.paths["/api/internal/worker-events"]).toBeUndefined();
 });
 
 test("serves Scalar documentation", async () => {

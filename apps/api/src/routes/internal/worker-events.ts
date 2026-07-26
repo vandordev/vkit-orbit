@@ -33,5 +33,5 @@ export const workerEventRoutes = new Elysia({ prefix: "/api/internal", tags: ["I
 		set.status = 202;
 		return { success: true as const, data: { accepted: true as const } };
 	},
-	{ body: t.Any() },
+	{ body: t.Any(), detail: { hide: true } },
 );
