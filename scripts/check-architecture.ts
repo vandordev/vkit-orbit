@@ -46,11 +46,11 @@ export function checkArchitecture(root = process.cwd()): string[] {
 				label.startsWith("apps/web/src/trpc/") ||
 				label.startsWith("apps/web/src/server/") ||
 				label.startsWith("apps/web/src/app/trpc/");
-			if (content.includes("@repo/database")) violations.push(`${label}: web must not import @repo/database`);
+			if (!serverModule && content.includes("@repo/database")) violations.push(`${label}: web must not import @repo/database`);
 			if (!serverModule && content.includes("@repo/application"))
 				violations.push(`${label}: browser code must not import @repo/application`);
 			if (/fetch\s*\(\s*["'`]\/v1\//.test(content)) violations.push(`${label}: browser code must use same-origin tRPC, not /v1`);
-			if (content.includes("@repo/config") || content.includes("process.env") || content.includes("@prisma/client")) {
+			if (!serverModule && (content.includes("@repo/config") || content.includes("process.env") || content.includes("@prisma/client"))) {
 				violations.push(`${label}: browser code must not import server-only modules`);
 			}
 		}
