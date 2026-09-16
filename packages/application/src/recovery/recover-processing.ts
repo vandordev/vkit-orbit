@@ -17,6 +17,10 @@ export async function recoverProcessing(input: { limit?: number }, db: any = pri
 					: run.status === "ANALYZING"
 						? "document.analyze.v1"
 						: "document.finalize.v1";
+		await db.queueOutbox.updateMany({
+			where: { workspaceId: run.workspaceId, businessId: run.id, revision: run.stageRevision, status: "PUBLISHED" },
+			data: { status: "PENDING", availableAt: new Date(), claimedAt: null, publishedAt: null },
+		});
 		await enqueueIntent(
 			{
 				workspaceId: run.workspaceId,

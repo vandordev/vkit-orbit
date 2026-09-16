@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { createQueue, documentAnalyzeV1, createJobId } from "@repo/queue";
+import { submitProcessingRun, recoverProcessing } from "@repo/application";
+import { withPostgres } from "../../../../packages/database/test/integration/harness";
+import { runOutboxRelay } from "../../src/relay/relay";
 import Redis from "ioredis";
 
 const container = `dph-redis-test-${process.pid}`;
@@ -30,16 +33,31 @@ afterAll(() => {
 	run(["rm", "-f", container]);
 }, 30_000);
 
-test("reconstructs a deterministic job after a complete Redis flush and restart", async () => {
+test("reconstructs a persisted run after a complete Redis flush and restart", async () => {
 	const queue = createQueue("documents", config);
 	const redis = new Redis(config.url);
-	const jobId = createJobId(documentAnalyzeV1, "run_recovery", 1);
-	await queue.client;
-	await queue.add(documentAnalyzeV1.name, { workspaceId: "ws", runId: "run_recovery", revision: 1 }, { jobId });
-	await redis.flushall();
-	run(["restart", container]);
-	await queue.add(documentAnalyzeV1.name, { workspaceId: "ws", runId: "run_recovery", revision: 1 }, { jobId });
-	expect(await queue.getJob(jobId)).not.toBeNull();
+	await withPostgres(async (db) => {
+		await db.workspace.create({ data: { id: "recovery_ws", name: "Recovery", slug: "recovery" } });
+		await db.document.create({
+			data: { id: "recovery_doc", workspaceId: "recovery_ws", title: "Recovery", contentType: "text/plain", byteSize: 4, status: "READY" },
+		});
+		const processingRun = await submitProcessingRun(
+			{ workspaceId: "recovery_ws", principalId: "system" },
+			{ documentId: "recovery_doc", idempotencyKey: "recovery-submit" },
+			db,
+		);
+		await runOutboxRelay({ db, queue });
+		await db.processingRun.update({
+			where: { workspaceId_id: { workspaceId: "recovery_ws", id: processingRun.id } },
+			data: { status: "ANALYZING", leaseExpiresAt: new Date(Date.now() - 1_000) },
+		});
+		await redis.flushall();
+		run(["restart", container]);
+		await recoverProcessing({ limit: 100 }, db);
+		await runOutboxRelay({ db, queue });
+		const jobId = createJobId(documentAnalyzeV1, processingRun.id, processingRun.stageRevision);
+		expect(await queue.getJob(jobId)).not.toBeNull();
+	});
 	await queue.close();
 	await redis.quit();
-});
+}, 60_000);
