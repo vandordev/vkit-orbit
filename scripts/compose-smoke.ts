@@ -41,6 +41,9 @@ try {
 		await health(url, deadline);
 	if ((await command(["bunx", "playwright", "test", "--config", "apps/web/playwright.config.ts"])) !== 0)
 		throw new Error("Playwright scenario failed or was SKIPPED");
+	if ((await command(["docker", "compose", "restart", "worker"])) !== 0) throw new Error("worker restart scenario failed");
+	if ((await command(["docker", "compose", "exec", "-T", "worker", "bun", "apps/worker/src/compose-system-smoke.ts"])) !== 0)
+		throw new Error("real public API, storage, worker, or authorization scenario failed");
 	if ((await command(["bun", "run", "scripts/redis-recovery-smoke.ts"])) !== 0)
 		throw new Error("Redis recovery scenario failed or was skipped");
 	await cleanup();

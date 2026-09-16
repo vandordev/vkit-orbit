@@ -1,10 +1,11 @@
 import { Elysia, t } from "elysia";
-import { createDocumentUpload } from "@repo/application";
+import { createDocumentUpload, executeIdempotent } from "@repo/application";
 import { createStorageClient } from "@repo/storage";
 import { env } from "../../../lib/env";
 import { apiOperation } from "../../../openapi/operation";
 import { successEnvelope } from "../../../schemas/envelope";
 import { authenticatedPrincipal, requireApiScope } from "../../../plugins/api-key";
+import { AppError } from "../../../lib/errors";
 
 const body = t.Object(
 	{
@@ -24,7 +25,15 @@ export const createDocumentUploadHandler = new Elysia().post(
 	async ({ body: input, request }) => {
 		const principal = await authenticatedPrincipal(request);
 		requireApiScope(principal, "documents:write");
-		const result = await createDocumentUpload({ workspaceId: principal!.workspaceId, principalId: principal!.userId }, input);
+		const idempotencyKey = request.headers.get("idempotency-key");
+		if (!idempotencyKey) throw new AppError("IDEMPOTENCY_KEY_REQUIRED", "Idempotency-Key header is required", 422);
+		const result = await executeIdempotent(
+			{ workspaceId: principal!.workspaceId, principalId: principal!.userId },
+			"document-upload",
+			idempotencyKey,
+			input,
+			(db) => createDocumentUpload({ workspaceId: principal!.workspaceId, principalId: principal!.userId }, input, db),
+		);
 		if (!env.storage) throw new Error("storage is not configured");
 		const storage = createStorageClient(env.storage);
 		return {
@@ -44,6 +53,9 @@ export const createDocumentUploadHandler = new Elysia().post(
 	},
 	{
 		body,
+		headers: t.Object({
+			"idempotency-key": t.String({ minLength: 8, description: "Stable key for safely replaying this command.", examples: ["upload-1"] }),
+		}),
 		response: successEnvelope(
 			t.Object(
 				{

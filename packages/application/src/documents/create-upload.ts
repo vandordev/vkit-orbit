@@ -11,7 +11,7 @@ export async function createDocumentUpload(
 	assertSupportedUpload(input.contentType, input.byteSize);
 	const documentId = input.documentId ?? `doc_${crypto.randomUUID()}`;
 	const artifactId = input.artifactId ?? `art_${crypto.randomUUID()}`;
-	return db.$transaction(async (tx: any) => {
+	const create = async (tx: any) => {
 		const document = await tx.document.create({
 			data: {
 				id: documentId,
@@ -43,5 +43,6 @@ export async function createDocumentUpload(
 			tx,
 		);
 		return { document, artifact };
-	});
+	};
+	return typeof db.$transaction === "function" ? db.$transaction(create) : create(db);
 }

@@ -27,12 +27,13 @@ export function createStorageClient(
 	return {
 		async createUploadUrl(input: UploadUrlInput) {
 			const key = sourceObjectKey(input);
-			assertObjectKey(config.rootPrefix, `${config.rootPrefix}/${key}`);
+			const objectKey = key.startsWith(`${config.rootPrefix.replace(/^\/+|\/+$/g, "")}/`) ? key : `${config.rootPrefix}/${key}`;
+			assertObjectKey(config.rootPrefix, objectKey);
 			return presigner(
 				client,
 				new PutObjectCommand({
 					Bucket: config.bucket,
-					Key: `${config.rootPrefix}/${key}`,
+					Key: objectKey,
 					ContentType: input.contentType,
 					ContentLength: input.contentLength,
 				}),

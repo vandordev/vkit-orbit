@@ -3,6 +3,7 @@ import { Elysia } from "elysia";
 import { env } from "../lib/env";
 import { AppError } from "../lib/errors";
 import { logger } from "../lib/logger";
+import { IdempotencyConflictError } from "@repo/application";
 
 export const errorEnvelopePlugin = new Elysia({ name: "error-envelope" })
 	.onError((context) => {
@@ -17,6 +18,10 @@ export const errorEnvelopePlugin = new Elysia({ name: "error-envelope" })
 				...(error.details ? { details: error.details } : {}),
 				...(requestId ? { requestId } : {}),
 			};
+		}
+		if (error instanceof IdempotencyConflictError) {
+			set.status = 409;
+			return { success: false, error: error.code, message: error.message, ...(requestId ? { requestId } : {}) };
 		}
 		if (code === "VALIDATION") {
 			set.status = 422;

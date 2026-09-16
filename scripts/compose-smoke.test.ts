@@ -3,7 +3,18 @@ import { readFileSync } from "node:fs";
 
 test("compose smoke is a fail-closed real-stack gate", () => {
 	const script = readFileSync("scripts/compose-smoke.ts", "utf8");
-	for (const required of ["trap", "health", "timeout", "process.exit(1)", "SKIPPED", "playwright"]) expect(script).toContain(required);
+	for (const required of [
+		"trap",
+		"health",
+		"timeout",
+		"process.exit(1)",
+		"SKIPPED",
+		"playwright",
+		"compose-system-smoke.ts",
+		"restart",
+		"real public API",
+	])
+		expect(script).toContain(required);
 });
 
 test("compose publishes only the three public ports and durable Redis", () => {
