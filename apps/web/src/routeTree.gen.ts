@@ -17,7 +17,11 @@ import { Route as HealthIndexRouteImport } from './app/health/index'
 import { Route as TrpcSplatRouteImport } from './app/trpc/$'
 import { Route as PublicRegisterIndexRouteImport } from './app/_public/register/index'
 import { Route as PublicSignInIndexRouteImport } from './app/_public/sign-in/index'
+import { Route as AuthenticatedAppDocumentsIndexRouteImport } from './app/_authenticated/app/documents/index'
 import { Route as AuthenticatedAppOverviewIndexRouteImport } from './app/_authenticated/app/overview/index'
+import { Route as AuthenticatedAppDocumentsDocumentIdIndexRouteImport } from './app/_authenticated/app/documents/$documentId/index'
+import { Route as AuthenticatedAppDocumentsNewIndexRouteImport } from './app/_authenticated/app/documents/new/index'
+import { Route as AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRouteImport } from './app/_authenticated/app/documents/$documentId/runs/$runId/index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -57,10 +61,34 @@ const PublicSignInIndexRoute = PublicSignInIndexRouteImport.update({
   path: '/sign-in/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const AuthenticatedAppDocumentsIndexRoute =
+  AuthenticatedAppDocumentsIndexRouteImport.update({
+    id: '/documents/',
+    path: '/documents/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
 const AuthenticatedAppOverviewIndexRoute =
   AuthenticatedAppOverviewIndexRouteImport.update({
     id: '/overview/',
     path: '/overview/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppDocumentsDocumentIdIndexRoute =
+  AuthenticatedAppDocumentsDocumentIdIndexRouteImport.update({
+    id: '/documents/$documentId/',
+    path: '/documents/$documentId/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppDocumentsNewIndexRoute =
+  AuthenticatedAppDocumentsNewIndexRouteImport.update({
+    id: '/documents/new/',
+    path: '/documents/new/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute =
+  AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRouteImport.update({
+    id: '/documents/$documentId/runs/$runId/',
+    path: '/documents/$documentId/runs/$runId/',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
 
@@ -71,7 +99,11 @@ export interface FileRoutesByFullPath {
   '/health/': typeof HealthIndexRoute
   '/register/': typeof PublicRegisterIndexRoute
   '/sign-in/': typeof PublicSignInIndexRoute
+  '/app/documents/': typeof AuthenticatedAppDocumentsIndexRoute
   '/app/overview/': typeof AuthenticatedAppOverviewIndexRoute
+  '/app/documents/$documentId/': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
+  '/app/documents/new/': typeof AuthenticatedAppDocumentsNewIndexRoute
+  '/app/documents/$documentId/runs/$runId/': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
@@ -80,7 +112,11 @@ export interface FileRoutesByTo {
   '/health': typeof HealthIndexRoute
   '/register': typeof PublicRegisterIndexRoute
   '/sign-in': typeof PublicSignInIndexRoute
+  '/app/documents': typeof AuthenticatedAppDocumentsIndexRoute
   '/app/overview': typeof AuthenticatedAppOverviewIndexRoute
+  '/app/documents/$documentId': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
+  '/app/documents/new': typeof AuthenticatedAppDocumentsNewIndexRoute
+  '/app/documents/$documentId/runs/$runId': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,7 +128,11 @@ export interface FileRoutesById {
   '/health/': typeof HealthIndexRoute
   '/_public/register/': typeof PublicRegisterIndexRoute
   '/_public/sign-in/': typeof PublicSignInIndexRoute
+  '/_authenticated/app/documents/': typeof AuthenticatedAppDocumentsIndexRoute
   '/_authenticated/app/overview/': typeof AuthenticatedAppOverviewIndexRoute
+  '/_authenticated/app/documents/$documentId/': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
+  '/_authenticated/app/documents/new/': typeof AuthenticatedAppDocumentsNewIndexRoute
+  '/_authenticated/app/documents/$documentId/runs/$runId/': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -103,7 +143,11 @@ export interface FileRouteTypes {
     | '/health/'
     | '/register/'
     | '/sign-in/'
+    | '/app/documents/'
     | '/app/overview/'
+    | '/app/documents/$documentId/'
+    | '/app/documents/new/'
+    | '/app/documents/$documentId/runs/$runId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -112,7 +156,11 @@ export interface FileRouteTypes {
     | '/health'
     | '/register'
     | '/sign-in'
+    | '/app/documents'
     | '/app/overview'
+    | '/app/documents/$documentId'
+    | '/app/documents/new'
+    | '/app/documents/$documentId/runs/$runId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -123,7 +171,11 @@ export interface FileRouteTypes {
     | '/health/'
     | '/_public/register/'
     | '/_public/sign-in/'
+    | '/_authenticated/app/documents/'
     | '/_authenticated/app/overview/'
+    | '/_authenticated/app/documents/$documentId/'
+    | '/_authenticated/app/documents/new/'
+    | '/_authenticated/app/documents/$documentId/runs/$runId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -191,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicSignInIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_authenticated/app/documents/': {
+      id: '/_authenticated/app/documents/'
+      path: '/documents'
+      fullPath: '/app/documents/'
+      preLoaderRoute: typeof AuthenticatedAppDocumentsIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
     '/_authenticated/app/overview/': {
       id: '/_authenticated/app/overview/'
       path: '/overview'
@@ -198,15 +257,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppOverviewIndexRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
+    '/_authenticated/app/documents/$documentId/': {
+      id: '/_authenticated/app/documents/$documentId/'
+      path: '/documents/$documentId'
+      fullPath: '/app/documents/$documentId/'
+      preLoaderRoute: typeof AuthenticatedAppDocumentsDocumentIdIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/documents/new/': {
+      id: '/_authenticated/app/documents/new/'
+      path: '/documents/new'
+      fullPath: '/app/documents/new/'
+      preLoaderRoute: typeof AuthenticatedAppDocumentsNewIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/documents/$documentId/runs/$runId/': {
+      id: '/_authenticated/app/documents/$documentId/runs/$runId/'
+      path: '/documents/$documentId/runs/$runId'
+      fullPath: '/app/documents/$documentId/runs/$runId/'
+      preLoaderRoute: typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAppRouteRouteChildren {
+  AuthenticatedAppDocumentsIndexRoute: typeof AuthenticatedAppDocumentsIndexRoute
   AuthenticatedAppOverviewIndexRoute: typeof AuthenticatedAppOverviewIndexRoute
+  AuthenticatedAppDocumentsDocumentIdIndexRoute: typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
+  AuthenticatedAppDocumentsNewIndexRoute: typeof AuthenticatedAppDocumentsNewIndexRoute
+  AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute: typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
 }
 
 const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
+  AuthenticatedAppDocumentsIndexRoute: AuthenticatedAppDocumentsIndexRoute,
   AuthenticatedAppOverviewIndexRoute: AuthenticatedAppOverviewIndexRoute,
+  AuthenticatedAppDocumentsDocumentIdIndexRoute:
+    AuthenticatedAppDocumentsDocumentIdIndexRoute,
+  AuthenticatedAppDocumentsNewIndexRoute:
+    AuthenticatedAppDocumentsNewIndexRoute,
+  AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute:
+    AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute,
 }
 
 const AuthenticatedAppRouteRouteWithChildren =
