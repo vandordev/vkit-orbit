@@ -18,7 +18,12 @@ function sourceFiles(root: string, directory: string): string[] {
 
 export function checkArchitecture(root = process.cwd()): string[] {
 	const violations: string[] = [];
-	const files = [join(root, "apps/api/src/app.ts"), ...sourceFiles(root, "apps/api/src/routes"), ...sourceFiles(root, "apps/web/src")];
+	const files = [
+		join(root, "apps/api/src/app.ts"),
+		...sourceFiles(root, "apps/api/src/routes"),
+		...sourceFiles(root, "apps/web/src"),
+		...sourceFiles(root, "packages"),
+	];
 
 	for (const file of files) {
 		const content = readFileSync(file, "utf8");
@@ -42,6 +47,12 @@ export function checkArchitecture(root = process.cwd()): string[] {
 			if (content.includes("@repo/config") || content.includes("process.env") || content.includes("@prisma/client")) {
 				violations.push(`${label}: browser code must not import server-only modules`);
 			}
+		}
+		if (!label.startsWith("packages/database/") && content.includes("@prisma/client")) {
+			violations.push(`${label}: Prisma imports belong only to packages/database`);
+		}
+		if (label.startsWith("apps/api/src/routes/") && (content.match(/export\s+(?:async\s+)?function\s+\w+Handler/g) ?? []).length > 1) {
+			violations.push(`${label}: Elysia operation files must export one handler`);
 		}
 	}
 

@@ -130,6 +130,7 @@
       "name": "@repo/application",
       "version": "0.1.0",
       "devDependencies": {
+        "@repo/database": "*",
         "@repo/typescript-config": "*",
         "typescript": "5.9.2",
       },

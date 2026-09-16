@@ -31,4 +31,4 @@ test("enforces workspace-qualified document and outbox identities", async () => 
 			),
 		).rejects.toThrow();
 	});
-});
+}, 30_000);

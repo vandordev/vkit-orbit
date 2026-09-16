@@ -6,3 +6,51 @@ export function pageInput(input: PageInput): PageInput {
 	if (input.after && input.before) throw new Error("after and before are mutually exclusive");
 	return input;
 }
+
+export type DocumentDto = {
+	id: string;
+	workspaceId: string;
+	title: string;
+	contentType: string;
+	byteSize: number;
+	status: string;
+	createdAt: string;
+	updatedAt: string;
+};
+export async function getDocument(scope: WorkspaceScope, documentId: string): Promise<DocumentDto | null> {
+	const { prisma } = await import("@repo/database");
+	const document = await prisma.document.findFirst({ where: { workspaceId: scope.workspaceId, id: documentId } });
+	return document ? { ...document, createdAt: document.createdAt.toISOString(), updatedAt: document.updatedAt.toISOString() } : null;
+}
+export async function listDocuments(scope: WorkspaceScope, page: PageInput) {
+	pageInput(page);
+	const { prisma } = await import("@repo/database");
+	const rows = await prisma.document.findMany({
+		where: { workspaceId: scope.workspaceId },
+		orderBy: { id: "asc" },
+		take: page.size + 1,
+		...(page.after ? { cursor: { id: page.after }, skip: 1 } : {}),
+	});
+	return rows
+		.slice(0, page.size)
+		.map((row) => ({ ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() }));
+}
+export async function getProcessingRun(scope: WorkspaceScope, runId: string) {
+	const { prisma } = await import("@repo/database");
+	const run = await prisma.processingRun.findFirst({ where: { workspaceId: scope.workspaceId, id: runId } });
+	return run
+		? {
+				...run,
+				createdAt: run.createdAt.toISOString(),
+				updatedAt: run.updatedAt.toISOString(),
+				leaseExpiresAt: run.leaseExpiresAt?.toISOString() ?? null,
+			}
+		: null;
+}
+export async function listAuditLogs(scope: WorkspaceScope, page: PageInput) {
+	pageInput(page);
+	const { prisma } = await import("@repo/database");
+	return prisma.auditLog
+		.findMany({ where: { workspaceId: scope.workspaceId }, orderBy: { createdAt: "desc" }, take: page.size })
+		.then((rows) => rows.map((row) => ({ ...row, createdAt: row.createdAt.toISOString() })));
+}
