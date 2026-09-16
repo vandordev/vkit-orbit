@@ -9,14 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './app/__root'
+import { Route as AuthenticatedRouteRouteImport } from './app/_authenticated/route'
 import { Route as PublicRouteRouteImport } from './app/_public/route'
+import { Route as AuthenticatedAppRouteRouteImport } from './app/_authenticated/app/route'
 import { Route as PublicIndexRouteImport } from './app/_public/index'
 import { Route as HealthIndexRouteImport } from './app/health/index'
 import { Route as TrpcSplatRouteImport } from './app/trpc/$'
+import { Route as PublicRegisterIndexRouteImport } from './app/_public/register/index'
+import { Route as PublicSignInIndexRouteImport } from './app/_public/sign-in/index'
+import { Route as AuthenticatedAppOverviewIndexRouteImport } from './app/_authenticated/app/overview/index'
 
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAppRouteRoute = AuthenticatedAppRouteRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
@@ -33,33 +47,87 @@ const TrpcSplatRoute = TrpcSplatRouteImport.update({
   path: '/trpc/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicRegisterIndexRoute = PublicRegisterIndexRouteImport.update({
+  id: '/register/',
+  path: '/register/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicSignInIndexRoute = PublicSignInIndexRouteImport.update({
+  id: '/sign-in/',
+  path: '/sign-in/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const AuthenticatedAppOverviewIndexRoute =
+  AuthenticatedAppOverviewIndexRouteImport.update({
+    id: '/overview/',
+    path: '/overview/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
+  '/app': typeof AuthenticatedAppRouteRouteWithChildren
   '/trpc/$': typeof TrpcSplatRoute
   '/health/': typeof HealthIndexRoute
+  '/register/': typeof PublicRegisterIndexRoute
+  '/sign-in/': typeof PublicSignInIndexRoute
+  '/app/overview/': typeof AuthenticatedAppOverviewIndexRoute
 }
 export interface FileRoutesByTo {
-  '/trpc/$': typeof TrpcSplatRoute
   '/': typeof PublicIndexRoute
+  '/app': typeof AuthenticatedAppRouteRouteWithChildren
+  '/trpc/$': typeof TrpcSplatRoute
   '/health': typeof HealthIndexRoute
+  '/register': typeof PublicRegisterIndexRoute
+  '/sign-in': typeof PublicSignInIndexRoute
+  '/app/overview': typeof AuthenticatedAppOverviewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
+  '/_authenticated/app': typeof AuthenticatedAppRouteRouteWithChildren
   '/trpc/$': typeof TrpcSplatRoute
   '/_public/': typeof PublicIndexRoute
   '/health/': typeof HealthIndexRoute
+  '/_public/register/': typeof PublicRegisterIndexRoute
+  '/_public/sign-in/': typeof PublicSignInIndexRoute
+  '/_authenticated/app/overview/': typeof AuthenticatedAppOverviewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/trpc/$' | '/health/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/trpc/$'
+    | '/health/'
+    | '/register/'
+    | '/sign-in/'
+    | '/app/overview/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/trpc/$' | '/' | '/health'
-  id: '__root__' | '/_public' | '/trpc/$' | '/_public/' | '/health/'
+  to:
+    | '/'
+    | '/app'
+    | '/trpc/$'
+    | '/health'
+    | '/register'
+    | '/sign-in'
+    | '/app/overview'
+  id:
+    | '__root__'
+    | '/_authenticated'
+    | '/_public'
+    | '/_authenticated/app'
+    | '/trpc/$'
+    | '/_public/'
+    | '/health/'
+    | '/_public/register/'
+    | '/_public/sign-in/'
+    | '/_authenticated/app/overview/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   TrpcSplatRoute: typeof TrpcSplatRoute
   HealthIndexRoute: typeof HealthIndexRoute
@@ -67,12 +135,26 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public': {
       id: '/_public'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_public/': {
       id: '/_public/'
@@ -95,15 +177,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrpcSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public/register/': {
+      id: '/_public/register/'
+      path: '/register'
+      fullPath: '/register/'
+      preLoaderRoute: typeof PublicRegisterIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/sign-in/': {
+      id: '/_public/sign-in/'
+      path: '/sign-in'
+      fullPath: '/sign-in/'
+      preLoaderRoute: typeof PublicSignInIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_authenticated/app/overview/': {
+      id: '/_authenticated/app/overview/'
+      path: '/overview'
+      fullPath: '/app/overview/'
+      preLoaderRoute: typeof AuthenticatedAppOverviewIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
   }
 }
 
+interface AuthenticatedAppRouteRouteChildren {
+  AuthenticatedAppOverviewIndexRoute: typeof AuthenticatedAppOverviewIndexRoute
+}
+
+const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
+  AuthenticatedAppOverviewIndexRoute: AuthenticatedAppOverviewIndexRoute,
+}
+
+const AuthenticatedAppRouteRouteWithChildren =
+  AuthenticatedAppRouteRoute._addFileChildren(
+    AuthenticatedAppRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppRouteRoute: typeof AuthenticatedAppRouteRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppRouteRoute: AuthenticatedAppRouteRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 interface PublicRouteRouteChildren {
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicRegisterIndexRoute: typeof PublicRegisterIndexRoute
+  PublicSignInIndexRoute: typeof PublicSignInIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicIndexRoute: PublicIndexRoute,
+  PublicRegisterIndexRoute: PublicRegisterIndexRoute,
+  PublicSignInIndexRoute: PublicSignInIndexRoute,
 }
 
 const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
@@ -111,6 +242,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
   TrpcSplatRoute: TrpcSplatRoute,
   HealthIndexRoute: HealthIndexRoute,
