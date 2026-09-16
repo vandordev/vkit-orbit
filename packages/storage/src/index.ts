@@ -1,3 +1,3 @@
 export * from "./keys";
 export * from "./client";
-export type { PutObjectInput, StorageConfig } from "./types";
+export type { DownloadUrlInput, PutObjectInput, StorageConfig, UploadUrlInput } from "./types";

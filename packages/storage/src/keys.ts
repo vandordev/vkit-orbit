@@ -20,5 +20,19 @@ export function buildObjectKey(input: { rootPrefix: string; fileName: string }):
 
 export function assertObjectKey(rootPrefix: string, key: string): void {
 	const prefix = `${normalizePrefix(rootPrefix)}/`;
-	if (!key.startsWith(prefix) || key.split("/").includes("..")) throw new Error("Object key is outside configured prefix");
+	if (!key.startsWith(prefix) || key.split("/").some((segment) => segment === ".." || segment === ""))
+		throw new Error("Object key is outside configured prefix");
+}
+
+function identifier(value: string, name: string): string {
+	if (!value || value.includes("/") || value.includes("\\") || value === "." || value === "..") throw new Error(`${name} is invalid`);
+	return value;
+}
+
+export function sourceObjectKey(input: { workspaceId: string; documentId: string; artifactId: string }): string {
+	return `uploads/workspaces/${identifier(input.workspaceId, "workspaceId")}/documents/${identifier(input.documentId, "documentId")}/source/${identifier(input.artifactId, "artifactId")}`;
+}
+
+export function resultObjectKey(input: { workspaceId: string; documentId: string; runId: string; artifactId: string }): string {
+	return `uploads/workspaces/${identifier(input.workspaceId, "workspaceId")}/documents/${identifier(input.documentId, "documentId")}/runs/${identifier(input.runId, "runId")}/results/${identifier(input.artifactId, "artifactId")}.json`;
 }
