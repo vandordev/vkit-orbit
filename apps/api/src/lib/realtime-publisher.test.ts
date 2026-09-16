@@ -13,10 +13,11 @@ test("publishes a validated event to the private realtime runtime", async () => 
 		},
 	});
 	await publisher({
-		type: "resource.updated",
+		type: "document.processing.updated",
 		eventId: "b7fa9ad5-9c93-4cce-a83d-8d0438abef12",
 		occurredAt: "2026-07-19T00:00:00.000Z",
-		resourceId: "r1",
+		documentId: "d1",
+		runId: "r1",
 		workspaceId: "w1",
 	});
 	expect(request?.url).toBe("http://realtime:4102/internal/events");
