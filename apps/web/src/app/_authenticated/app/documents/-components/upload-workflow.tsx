@@ -1,23 +1,50 @@
 import { useState } from "react";
+import { trpc } from "../../../../../trpc/client";
+const documentApi = trpc as any;
 export function UploadWorkflow() {
+	const workspaceId =
+		typeof window === "undefined" ? undefined : (new URLSearchParams(window.location.search).get("workspaceId") ?? undefined);
 	const [stage, setStage] = useState<"idle" | "uploading" | "analyzing">("idle");
 	const [report, setReport] = useState<{ title: string; headings: string[]; words: number; lines: number; sha256: string; json: string }>();
 	async function confirm() {
 		const input = document.querySelector<HTMLInputElement>('input[type="file"]');
-		const text = await input?.files?.[0]?.text();
-		if (!text) return setStage("analyzing");
-		const lines = text.split(/\r?\n/);
-		const title =
-			lines
-				.find((line) => line.startsWith("# "))
-				?.slice(2)
-				.trim() ?? "Untitled";
-		const headings = lines.filter((line) => /^#{1,6} /.test(line)).map((line) => line.replace(/^#+ /, "").trim());
-		const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-		const sha256 = [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-		const value = { title, headings, wordCount: text.trim().split(/\s+/).filter(Boolean).length, lineCount: lines.length, sha256 };
-		setReport({ title, headings, words: value.wordCount, lines: value.lineCount, sha256, json: JSON.stringify(value) });
+		const file = input?.files?.[0];
+		if (!file || !workspaceId) return;
+		const created = await documentApi.documents.createUpload.mutate({
+			workspaceId,
+			title: file.name,
+			contentType: file.type === "text/markdown" ? "text/markdown" : "text/plain",
+			byteSize: file.size,
+		});
+		await fetch(created.uploadUrl, {
+			method: "PUT",
+			headers: { "content-type": file.type, "content-length": String(file.size) },
+			body: file,
+		});
+		await documentApi.documents.confirmUpload.mutate({ workspaceId, documentId: created.document.id });
+		const run = await documentApi.documents.submit.mutate({
+			workspaceId,
+			documentId: created.document.id,
+			idempotencyKey: `e2e-${created.document.id}`,
+		});
 		setStage("analyzing");
+		for (let attempt = 0; attempt < 30; attempt++) {
+			const current = await documentApi.processingRuns.detail.query({ workspaceId, runId: run.id });
+			if (current?.status === "COMPLETED" && current.result) {
+				const value = current.result as { title: string; headings: string[]; wordCount: number; lineCount: number; sha256: string };
+				setReport({
+					title: value.title,
+					headings: value.headings,
+					words: value.wordCount,
+					lines: value.lineCount,
+					sha256: value.sha256,
+					json: JSON.stringify(value),
+				});
+				return;
+			}
+			await new Promise((resolve) => setTimeout(resolve, 500));
+		}
+		throw new Error("processing timeout");
 	}
 	return (
 		<section className="rounded-xl border border-border bg-white p-6">

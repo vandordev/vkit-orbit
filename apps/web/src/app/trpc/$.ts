@@ -11,6 +11,7 @@ const handle = ({ request }: { request: Request }) => {
 		req: request,
 		router: appRouter,
 		createContext: ({ req }) => createTRPCContext({ req }),
+		responseMeta: ({ ctx }) => ({ headers: ctx?.responseHeaders }),
 	});
 };
 export const Route = createFileRoute("/trpc/$")({ server: { handlers: { GET: handle, POST: handle, OPTIONS: handle } } });

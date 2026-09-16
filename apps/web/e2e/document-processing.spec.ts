@@ -10,7 +10,12 @@ Review the recovery exercise.
 `;
 
 test("processes the exact Quarterly Notes fixture and downloads its report", async ({ page }) => {
-	await page.goto("/app/documents/new");
+	await page.goto("/register");
+	await page.getByLabel("Email address").fill(`document-${Date.now()}@example.test`);
+	await page.getByLabel("Password").fill("correct horse battery staple");
+	await page.getByLabel("Your name").fill("Document User");
+	await page.getByRole("button", { name: "Create account" }).click();
+	await page.waitForURL(/\/app\/documents\/new\?workspaceId=ws_/);
 	await page
 		.getByLabel("Choose a .txt or .md document")
 		.setInputFiles({ name: "quarterly-notes.md", mimeType: "text/markdown", buffer: Buffer.from(quarterlyNotes) });

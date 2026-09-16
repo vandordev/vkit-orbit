@@ -11,7 +11,7 @@ export async function createTRPCContext(input: { req: Request }) {
 			session = null;
 		}
 	}
-	return { req: input.req, session };
+	return { req: input.req, session, responseHeaders: new Headers() };
 }
 
 export type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>;
