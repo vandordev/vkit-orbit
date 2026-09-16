@@ -6,3 +6,258 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum WorkspaceMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+enum DocumentStatus {
+  UPLOADING
+  READY
+}
+enum ProcessingStatus {
+  QUEUED
+  VALIDATING
+  ANALYZING
+  FINALIZING
+  COMPLETED
+  FAILED
+  CANCELED
+}
+enum QueueOutboxStatus {
+  PENDING
+  CLAIMED
+  PUBLISHED
+  FAILED
+}
+enum ArtifactKind {
+  SOURCE
+  RESULT
+}
+enum WebhookDeliveryStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+model Workspace {
+  id String @id
+  name String
+  slug String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members WorkspaceMember[]
+  documents Document[]
+  artifacts DocumentArtifact[]
+  runs ProcessingRun[]
+  apiKeys ApiKey[]
+  webhooks WebhookEndpoint[]
+  auditLogs AuditLog[]
+  idempotencyRecords IdempotencyRecord[]
+  outbox QueueOutbox[]
+  @@unique([id, slug])
+}
+
+model User {
+  id String @id
+  email String @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  memberships WorkspaceMember[]
+  sessions Session[]
+  apiKeys ApiKey[]
+}
+
+model WorkspaceMember {
+  workspaceId String
+  userId String
+  role WorkspaceMemberRole @default(MEMBER)
+  createdAt DateTime @default(now())
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([workspaceId, userId])
+  @@index([userId])
+}
+
+model Session {
+  id String @id
+  userId String
+  tokenHash String @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, expiresAt])
+}
+
+model ApiKey {
+  id String @id
+  workspaceId String
+  userId String
+  name String
+  secretHash String @unique
+  scopes Json
+  expiresAt DateTime?
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+  lastUsedAt DateTime?
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([workspaceId, id])
+  @@index([workspaceId, createdAt])
+}
+
+model Document {
+  id String @id
+  workspaceId String
+  title String
+  contentType String
+  byteSize Int
+  status DocumentStatus @default(UPLOADING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  runs ProcessingRun[]
+  artifacts DocumentArtifact[]
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status, createdAt])
+}
+
+model ProcessingRun {
+  id String @id
+  workspaceId String
+  documentId String
+  revision Int
+  status ProcessingStatus @default(QUEUED)
+  stageRevision Int @default(1)
+  leaseExpiresAt DateTime?
+  errorCode String?
+  result Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [workspaceId, documentId], references: [workspaceId, id], onDelete: Cascade)
+  attempts ProcessingAttempt[]
+  artifacts DocumentArtifact[]
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, documentId, revision])
+  @@index([workspaceId, status, createdAt])
+  @@index([status, leaseExpiresAt])
+}
+
+model ProcessingAttempt {
+  id String @id
+  workspaceId String
+  processingRunId String
+  stage String
+  attemptNumber Int
+  status String
+  startedAt DateTime @default(now())
+  finishedAt DateTime?
+  error Json?
+  run ProcessingRun @relation(fields: [workspaceId, processingRunId], references: [workspaceId, id], onDelete: Cascade)
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, processingRunId, stage, attemptNumber])
+}
+
+model DocumentArtifact {
+  id String @id
+  workspaceId String
+  documentId String
+  processingRunId String?
+  kind ArtifactKind
+  objectKey String
+  contentType String
+  byteSize Int
+  checksum String?
+  createdAt DateTime @default(now())
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [workspaceId, documentId], references: [workspaceId, id], onDelete: Cascade)
+  run ProcessingRun? @relation(fields: [workspaceId, processingRunId], references: [workspaceId, id], onDelete: Cascade)
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, objectKey])
+  @@index([workspaceId, documentId, createdAt])
+}
+
+model WebhookEndpoint {
+  id String @id
+  workspaceId String
+  url String
+  secretHash String
+  events Json
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  deliveries WebhookDelivery[]
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, url])
+}
+
+model WebhookDelivery {
+  id String @id
+  workspaceId String
+  endpointId String
+  eventId String
+  requestBody Bytes
+  signatureInput String
+  status WebhookDeliveryStatus @default(PENDING)
+  attempts Int @default(0)
+  nextAttemptAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  endpoint WebhookEndpoint @relation(fields: [workspaceId, endpointId], references: [workspaceId, id], onDelete: Cascade)
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, endpointId, eventId])
+  @@index([status, nextAttemptAt])
+}
+
+model AuditLog {
+  id String @id
+  workspaceId String
+  principalId String
+  action String
+  resourceType String
+  resourceId String?
+  metadata Json?
+  createdAt DateTime @default(now())
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@unique([workspaceId, id])
+  @@index([workspaceId, createdAt])
+}
+
+model IdempotencyRecord {
+  id String @id
+  workspaceId String
+  principalId String
+  operation String
+  key String
+  requestHash String
+  response Json
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@unique([workspaceId, operation, key])
+}
+
+model QueueOutbox {
+  id String @id
+  workspaceId String
+  contract String
+  businessId String
+  revision Int
+  payload Json
+  status QueueOutboxStatus @default(PENDING)
+  availableAt DateTime @default(now())
+  claimedAt DateTime?
+  publishedAt DateTime?
+  createdAt DateTime @default(now())
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, contract, businessId, revision])
+  @@index([status, availableAt])
+}
