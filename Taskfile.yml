@@ -48,7 +48,7 @@ tasks:
     cmds: [bun run start:migrate]
   test:
     desc: Run TypeScript tests
-    cmds: [bun test apps packages scripts]
+    cmds: [bun test apps packages scripts --path-ignore-patterns=apps/web/e2e]
   quality:
     desc: Run tests, lint, and typechecks
     cmds:
