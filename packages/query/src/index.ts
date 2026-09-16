@@ -1,5 +1,6 @@
 export type PageInput = { size: number; after?: string; before?: string };
 export type WorkspaceScope = { workspaceId: string; principalId: string };
+import type { DatabaseClient } from "@repo/database";
 
 export function pageInput(input: PageInput): PageInput {
 	if (!Number.isInteger(input.size) || input.size < 1 || input.size > 100) throw new Error("page size must be 1..100");
@@ -17,8 +18,8 @@ export type DocumentDto = {
 	createdAt: string;
 	updatedAt: string;
 };
-export async function getDocument(scope: WorkspaceScope, documentId: string): Promise<DocumentDto | null> {
-	const { prisma } = await import("@repo/database");
+export async function getDocument(scope: WorkspaceScope, documentId: string, db?: DatabaseClient): Promise<DocumentDto | null> {
+	const prisma = db ?? (await import("@repo/database")).prisma;
 	const document = await prisma.document.findFirst({ where: { workspaceId: scope.workspaceId, id: documentId } });
 	return document ? { ...document, createdAt: document.createdAt.toISOString(), updatedAt: document.updatedAt.toISOString() } : null;
 }
