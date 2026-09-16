@@ -12,7 +12,7 @@ export function createWorkerRuntime(input: {
 			if (!handler) throw new Error(`unknown job: ${job.name}`);
 			return handler(job);
 		},
-		{ connection: createWorkerConnection(input.config) },
+		{ connection: createWorkerConnection(input.config), prefix: input.config?.keyPrefix ?? "dph:" },
 	);
 	return worker;
 }

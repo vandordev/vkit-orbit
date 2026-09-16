@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 export type Stage = "VALIDATING" | "ANALYZING" | "FINALIZING";
 export type StageOutcome = "SUCCESS" | "NO_OP" | "RETRYABLE" | "TERMINAL" | "UNKNOWN";
 
@@ -8,6 +10,7 @@ export type DocumentReport = {
 	headings: string[];
 	title: string;
 	readingTimeMinutes: number;
+	sha256: string;
 };
 
 export function buildDocumentReport(content: string): DocumentReport {
@@ -23,5 +26,6 @@ export function buildDocumentReport(content: string): DocumentReport {
 		headings,
 		title,
 		readingTimeMinutes: Math.max(1, Math.ceil(words / 200)),
+		sha256: createHash("sha256").update(content).digest("hex"),
 	};
 }
