@@ -28,6 +28,7 @@
     "*.go": "gofmt -w"
   },
   "devDependencies": {
+    "@playwright/test": "1.56.1",
     "concurrently": "^9.2.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.2.0",

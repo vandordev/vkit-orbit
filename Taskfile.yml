@@ -88,3 +88,6 @@ tasks:
   compose:down:
     desc: Stop Compose stack
     cmds: [docker compose down]
+  compose:smoke:
+    desc: Run the complete real-stack Compose and browser acceptance gate
+    cmds: [bun run scripts/compose-smoke.ts]

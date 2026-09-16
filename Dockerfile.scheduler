@@ -6,7 +6,7 @@ COPY . .
 RUN bunx turbo@2.10.4 prune @repo/scheduler --docker
 FROM base AS deps
 COPY --from=prune /app/out/json/ ./
-RUN bun install --frozen-lockfile --ignore-scripts
+RUN bun install --ignore-scripts
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=prune /app/out/full/ ./

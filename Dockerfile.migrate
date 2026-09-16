@@ -4,9 +4,9 @@ COPY package.json bun.lock ./
 COPY apps/migrate/package.json apps/migrate/package.json
 COPY packages/database/package.json packages/database/package.json
 COPY packages/typescript-config/package.json packages/typescript-config/package.json
-RUN bun install --frozen-lockfile --ignore-scripts --filter @repo/migrate
+RUN bun install --ignore-scripts --filter @repo/migrate
 COPY apps/migrate apps/migrate
 COPY packages/database packages/database
 COPY config /app/config
-RUN bun install --frozen-lockfile --ignore-scripts --filter @repo/database
+RUN bun install --ignore-scripts --filter @repo/database
 CMD ["bun", "run", "apps/migrate/src/main.ts"]

@@ -3,7 +3,8 @@ WORKDIR /app
 COPY package.json bun.lock ./
 COPY apps apps
 COPY packages packages
+COPY config config
 RUN bun install --ignore-scripts
 RUN bun run --cwd packages/database db:generate
-COPY config /app/config
-CMD ["bun", "run", "packages/config/src/run.ts", "--modules", "base,worker,storage", "--", "bun", "apps/worker/src/main.ts"]
+EXPOSE 4101
+CMD ["bun", "run", "packages/config/src/run.ts", "--modules", "base,api,storage", "--", "bun", "apps/api/src/server.ts"]

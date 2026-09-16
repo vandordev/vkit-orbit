@@ -4,11 +4,17 @@ import { expect, test } from "bun:test";
 
 const root = join(import.meta.dir, "..");
 
-test("ships the five runtime Dockerfiles without a standalone API image", () => {
-	for (const file of ["Dockerfile.web", "Dockerfile.scheduler", "Dockerfile.realtime", "Dockerfile.worker", "Dockerfile.migrate"]) {
+test("ships every production runtime Dockerfile", () => {
+	for (const file of [
+		"Dockerfile.web",
+		"Dockerfile.api",
+		"Dockerfile.scheduler",
+		"Dockerfile.realtime",
+		"Dockerfile.worker",
+		"Dockerfile.migrate",
+	]) {
 		expect(readFileSync(join(root, file), "utf8")).toContain("FROM");
 	}
-	expect(() => readFileSync(join(root, "Dockerfile.api"), "utf8")).toThrow();
 });
 
 test("uses Bun 1.3.14 runtime bases", () => {

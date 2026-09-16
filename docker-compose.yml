@@ -15,9 +15,10 @@ services:
 
   redis:
     image: redis:7.4-alpine
-    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--maxmemory-policy", "noeviction"]
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     volumes:
       - redis-data:/data
+      - ./deploy/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -25,12 +26,17 @@ services:
       retries: 10
 
   minio:
-    image: minio/minio:RELEASE.2025-02-18T16-25-55Z
+    image: quay.io/minio/minio:RELEASE.2025-02-28T09-55-16Z
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
     volumes: [minio-data:/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   migrate:
     build:
@@ -61,7 +67,11 @@ services:
       VITE_REALTIME_URL: ${VITE_REALTIME_URL:-http://localhost:4102}
     ports: ["4100:4100"]
     healthcheck:
-      test: ["CMD-SHELL", "bun -e \"fetch('http://127.0.0.1:4100/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      test:
+        [
+          "CMD-SHELL",
+          'bun -e "fetch(''http://127.0.0.1:4100/health'').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"',
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -70,35 +80,74 @@ services:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file: [.env]
+    environment:
+      NODE_ENV: production
+      PORT: 4101
+      DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
+      REALTIME_INTERNAL_URL: http://realtime:4102
+      REALTIME_PUBLISH_API_KEY: ${REALTIME_PUBLISH_API_KEY:-local-realtime-key}
+      WORKER_NOTIFICATION_API_KEY: ${WORKER_NOTIFICATION_API_KEY:-local-worker-key}
+    ports: ["4101:4101"]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'bun -e "fetch(''http://127.0.0.1:4101/health/live'').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
   worker:
-    profiles: [jobs]
     build:
       context: .
       dockerfile: Dockerfile.worker
     env_file: [.env]
     environment:
       DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
-      WORKER_NOTIFICATION_URL: http://web:4100/api/internal/worker-events
+      REDIS_URL: redis://redis:6379
+      S3_BUCKET: documents
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY_ID: minio
+      S3_SECRET_ACCESS_KEY: minio123
+      WORKER_NOTIFICATION_URL: http://api:4101/internal/worker-events
       WORKER_NOTIFICATION_API_KEY: ${WORKER_NOTIFICATION_API_KEY:-local-worker-key}
     depends_on:
       migrate:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      api:
+        condition: service_healthy
 
   scheduler:
-    profiles: [jobs]
     build:
       context: .
       dockerfile: Dockerfile.scheduler
     env_file: [.env]
     environment:
       DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
+      REDIS_URL: redis://redis:6379
     depends_on:
       migrate:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   realtime:
-    profiles: [realtime]
     build:
       context: .
       dockerfile: Dockerfile.realtime
@@ -109,6 +158,15 @@ services:
       REALTIME_PUBLISH_API_KEY: ${REALTIME_PUBLISH_API_KEY:-local-realtime-key}
       REALTIME_CORS_ORIGIN: ${REALTIME_CORS_ORIGIN:-http://localhost:4100}
     ports: ["4102:4102"]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'bun -e "fetch(''http://127.0.0.1:4102/health'').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
   postgres-data:
