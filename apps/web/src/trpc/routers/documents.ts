@@ -31,6 +31,19 @@ export const documentsRouter = router({
 				}),
 			};
 		}),
+	uploadSource: workspaceProcedure
+		.input(z.object({ workspaceId: z.string(), objectKey: z.string(), contentType: z.string(), content: z.string() }))
+		.mutation(async ({ input }) => {
+			const config = createStorageConfig(process.env);
+			if (!config) throw new Error("storage is not configured");
+			await createStorageClient(config).put({
+				key: input.objectKey,
+				contentType: input.contentType,
+				body: Buffer.from(input.content, "base64"),
+				contentLength: Buffer.byteLength(input.content, "base64"),
+			});
+			return { uploaded: true };
+		}),
 	confirmUpload: workspaceProcedure
 		.input(z.object({ workspaceId: z.string(), documentId: z.string() }))
 		.mutation(async ({ input, ctx }) => {

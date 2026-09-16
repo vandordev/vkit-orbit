@@ -16,10 +16,12 @@ export function UploadWorkflow() {
 			contentType: file.type === "text/markdown" ? "text/markdown" : "text/plain",
 			byteSize: file.size,
 		});
-		await fetch(created.uploadUrl, {
-			method: "PUT",
-			headers: { "content-type": file.type, "content-length": String(file.size) },
-			body: file,
+		const content = btoa(String.fromCharCode(...new Uint8Array(await file.arrayBuffer())));
+		await documentApi.documents.uploadSource.mutate({
+			workspaceId,
+			objectKey: created.artifact.objectKey,
+			contentType: file.type,
+			content,
 		});
 		await documentApi.documents.confirmUpload.mutate({ workspaceId, documentId: created.document.id });
 		const run = await documentApi.documents.submit.mutate({
