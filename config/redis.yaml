@@ -1,0 +1,4 @@
+redis:
+  url: ${REDIS_URL:-redis://localhost:6379}
+  keyPrefix: ${REDIS_KEY_PREFIX:-dph:}
+  connectTimeoutMs: ${REDIS_CONNECT_TIMEOUT_MS:-5000}

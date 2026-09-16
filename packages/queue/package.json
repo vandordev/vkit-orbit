@@ -11,9 +11,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@riverqueue/driver-prisma": "0.1.0",
-    "@repo/database": "*",
-    "riverqueue": "0.1.0",
+    "bullmq": "^5.58.0",
+    "@repo/config": "*",
     "zod": "^3.25.0"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 # vkit-orbit
 
-Domain-neutral hybrid boilerplate for TanStack Start, embedded Elysia, Prisma,
-Bun/River producers, a Go/River worker, and optional Socket.IO realtime.
+Document Processing Hub runtime with a TypeScript worker for TanStack Start, embedded Elysia, Prisma,
+BullMQ/Redis workers, and optional Socket.IO realtime.
 
 ## Runtime topology
 
@@ -22,16 +22,16 @@ public brand copy.
 ```text
 Browser -- same-origin /api/* --> TanStack Start + embedded Elysia --> Prisma --> PostgreSQL
 Browser ----------------------> Socket.IO (optional apps/realtime)
-apps/scheduler -- River TypeScript insert --------------------------> PostgreSQL
-apps/worker ---- Go/River consume --> POST Elysia worker gateway --> Socket.IO
-apps/migrate -- Prisma deploy, then River migrations -------------> PostgreSQL
+apps/scheduler -- BullMQ schedules ---------------------------------> Redis
+apps/worker ---- TypeScript consume --------------------------------> PostgreSQL
+apps/migrate -- Prisma deploy -------------------------------------> PostgreSQL
 ```
 
 Workspace ownership is explicit: `apps/web` owns routes and browser clients;
 `apps/api` owns Elysia validation/envelopes and the worker notification gateway;
 `packages/application` owns TypeScript business rules; `packages/database` owns
-Prisma; `packages/queue` owns River TypeScript contracts/producers;
-`apps/scheduler` only schedules/enqueues; `apps/worker` owns Go/River handlers;
+Prisma; `packages/queue` owns BullMQ contracts/producers;
+`apps/scheduler` only schedules/enqueues; `apps/worker` owns TypeScript handlers;
 `apps/realtime` owns Socket.IO ticket/room authorization and its private
 publisher endpoint; `apps/migrate` owns one-shot migration orchestration.
 
@@ -75,14 +75,14 @@ walkthrough, copy and wire the files in
 invalidation signals, sends successful worker events to Elysia, and leaves
 Socket.IO publishing to Elysia.
 
-River kinds and JSON payloads are cross-language contracts documented in
+BullMQ job kinds and JSON payloads are contracts documented in
 `contracts/jobs/README.md`; breaking changes use a new `.vN` kind.
 
 ## Commands
 
 ```text
 task doctor                              Verify tools, env, and migration test
-task migrate                             Prisma migrations, then River migrations
+task migrate                             Prisma migrations
 task dev                                 Web, Go worker, and scheduler
 task dev -- web worker scheduler realtime Selected runtimes
 task quality                             TypeScript tests/lint/types + Go vet

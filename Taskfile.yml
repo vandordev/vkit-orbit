@@ -1,191 +1,90 @@
 version: "3"
-
 tasks:
   default:
     desc: Show available commands
-    cmds:
-      - task --list
-
+    cmds: [task --list]
   install:
-    desc: Install Bun and Go dependencies
-    cmds:
-      - bun install --ignore-scripts
-      - go mod download
-
+    desc: Install Bun dependencies
+    cmds: [bun install --ignore-scripts]
   doctor:
     desc: Verify required tools and local runtime configuration
     cmds:
-      - |
-        proxy test -f .env || { proxy echo "missing .env; run: cp .env.example .env" >&2; exit 1; }
-        go version >/dev/null
-        bun --version >/dev/null
-        task --version >/dev/null
-        docker compose version >/dev/null
-        go test ./apps/migrate -run TestRunAppliesPrismaBeforeRiver -count=1
-
+      - test -f .env
+      - bun --version >/dev/null
+      - task --version >/dev/null
+      - docker compose version >/dev/null
   dev:
-    desc: Run TanStack Start with embedded Elysia
-    cmds:
-      - bun run dev:web
-
-  dev:bg:
-    desc: Run worker, scheduler, and realtime in the foreground with interleaved logs
-    deps:
-      - dev:worker
-      - dev:scheduler
-      - dev:realtime
-
+    desc: Run the web runtime
+    cmds: [bun run dev:web]
   dev:web:
-    desc: Run TanStack Start with embedded Elysia
-    cmds:
-      - bun run dev:web
-
+    desc: Run TanStack Start
+    cmds: [bun run dev:web]
   dev:worker:
-    desc: Run the Go River worker with Air
-    cmds:
-      - go tool air -c dev/air/worker.toml
-
+    desc: Run the TypeScript worker
+    cmds: [bun run --cwd apps/worker dev]
   dev:scheduler:
-    desc: Run the Bun River scheduler
-    cmds:
-      - bun run dev:scheduler
-
+    desc: Run the scheduler
+    cmds: [bun run dev:scheduler]
   dev:realtime:
-    desc: Run the Socket.IO runtime
-    cmds:
-      - bun run dev:realtime
-
+    desc: Run realtime
+    cmds: [bun run dev:realtime]
   start:
-    desc: Start the built web app
-    cmds:
-      - bun run start:web
-
-  start:jobs:
-    desc: Start the Go worker and Bun scheduler
-    cmds:
-      - task --parallel --output=interleaved start:worker start:scheduler
-
+    desc: Start web
+    cmds: [bun run start:web]
   start:worker:
-    desc: Start the built Go worker
-    cmds:
-      - go run ./apps/worker
-
+    desc: Start worker
+    cmds: [bun run start:worker]
   start:scheduler:
-    desc: Start the built Bun scheduler
-    cmds:
-      - bun run start:scheduler
-
+    desc: Start scheduler
+    cmds: [bun run start:scheduler]
   start:realtime:
-    desc: Start the built Socket.IO runtime
-    cmds:
-      - bun run start:realtime
-
+    desc: Start realtime
+    cmds: [bun run start:realtime]
+  start:migrate:
+    desc: Apply Prisma migrations
+    cmds: [bun run start:migrate]
   migrate:
-    desc: Apply Prisma and River migrations
-    cmds:
-      - bun --env-file=.env run packages/config/src/run.ts --modules base -- go run ./apps/migrate
-
+    desc: Apply Prisma migrations
+    cmds: [bun run start:migrate]
   test:
-    desc: Run TypeScript and Go tests
-    cmds:
-      - bun test apps/api apps/web apps/scheduler apps/realtime packages
-      - go test ./... -count=1
-
-  test:go:
-    desc: Run Go tests
-    cmds:
-      - go test ./... -count=1
-
+    desc: Run TypeScript tests
+    cmds: [bun test apps packages scripts]
   quality:
-    desc: Run tests, lint, typechecks, and Go vet
+    desc: Run tests, lint, and typechecks
     cmds:
       - bun run check:architecture
-      - task format:check
+      - bun run format:check
       - task test
       - bun run lint
       - bun run check-types
-      - go vet ./...
-
   build:
-    desc: Build TypeScript and Go runtimes
-    cmds:
-      - bun run build
-      - task build:go
-
+    desc: Build TypeScript runtimes
+    cmds: [bun run build]
   format:
-    desc: Format TypeScript, Markdown, and Go sources
-    cmds:
-      - bun run format
-      - git ls-files -z '*.go' | xargs -0 gofmt -w
-
+    desc: Format TypeScript and Markdown
+    cmds: [bun run format]
   format:check:
-    desc: Check TypeScript, Markdown, and Go formatting
-    cmds:
-      - bun run format:check
-      - test -z "$(gofmt -l $(git ls-files '*.go'))"
-
-  build:go:
-    desc: Build the Go worker and migration runtime
-    cmds:
-      - go build ./apps/worker ./apps/migrate
-
+    desc: Check formatting
+    cmds: [bun run format:check]
   lint:
-    desc: Lint all TypeScript workspaces
-    cmds:
-      - bun run lint
-
+    desc: Lint TypeScript
+    cmds: [bun run lint]
   check-types:
-    desc: Typecheck all TypeScript workspaces
-    cmds:
-      - bun run check-types
-
+    desc: Typecheck TypeScript
+    cmds: [bun run check-types]
   db:generate:
-    desc: Generate the Prisma client
+    desc: Generate Prisma client
     dir: packages/database
-    cmds:
-      - bun run db:generate
-
+    cmds: [bun run db:generate]
   db:migrate:
-    desc: Apply Prisma migrations through the migration runtime
-    cmds:
-      - task migrate
-
-  web:health:
-    desc: Check the embedded Elysia health endpoint
-    cmds:
-      - curl --fail http://localhost:4100/health
-
-  api:status:
-    desc: Check the embedded Elysia status endpoint
-    cmds:
-      - curl --fail http://localhost:4100/api/v1/status
-
+    desc: Apply Prisma migrations
+    cmds: [task migrate]
   compose:up:
-    desc: Build and run db, migrate, and web
-    cmds:
-      - docker compose up --build
-
+    desc: Run Compose stack
+    cmds: [docker compose up --build]
   compose:up:detached:
-    desc: Build and run the default stack in the background
-    cmds:
-      - docker compose up --build -d
-
-  compose:jobs:
-    desc: Build and run optional Go worker and Bun scheduler
-    cmds:
-      - docker compose --profile jobs up --build
-
-  compose:realtime:
-    desc: Build and run optional Socket.IO runtime
-    cmds:
-      - docker compose --profile realtime up --build
-
+    desc: Run Compose stack in background
+    cmds: [docker compose up --build -d]
   compose:down:
-    desc: Stop the Compose stack
-    cmds:
-      - docker compose down
-
-  compose:logs:
-    desc: Follow Compose logs
-    cmds:
-      - docker compose logs -f
+    desc: Stop Compose stack
+    cmds: [docker compose down]

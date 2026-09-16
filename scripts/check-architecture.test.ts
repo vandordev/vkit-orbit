@@ -51,3 +51,16 @@ test("requires operation documentation for every Elysia route source", async () 
 
 	expect(checkArchitecture(root)).toEqual([]);
 });
+
+test("rejects forbidden runtime and browser boundaries", async () => {
+	const root = await fixture();
+	await mkdir(join(root, "apps/worker"), { recursive: true });
+	await writeFile(join(root, "apps/worker/main.go"), "package main");
+	await writeFile(join(root, "apps/web/src/bad-client.ts"), 'fetch("/v1/status"); import "@repo/database";');
+
+	expect(checkArchitecture(root)).toEqual([
+		"apps/web/src/bad-client.ts: browser code must use same-origin tRPC, not /v1",
+		"apps/web/src/bad-client.ts: web must not import @repo/database",
+		"apps/worker/main.go: Go worker runtime files are forbidden",
+	]);
+});

@@ -8,6 +8,8 @@
     "start": "bun run start:web",
     "start:web": "cd apps/web && bun run start",
     "start:scheduler": "cd apps/scheduler && bun run start",
+    "start:worker": "cd apps/worker && bun run start",
+    "start:migrate": "cd apps/migrate && bun run start",
     "start:realtime": "cd apps/realtime && bun run start",
     "dev:web": "turbo run dev --filter=web",
     "dev:scheduler": "turbo run dev --filter=@repo/scheduler",

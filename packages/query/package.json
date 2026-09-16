@@ -1,0 +1,11 @@
+{
+  "name": "@repo/query",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "check-types": "tsc --noEmit", "clean": "rm -rf dist" },
+  "dependencies": { "@repo/database": "*" },
+  "devDependencies": { "@repo/typescript-config": "*", "typescript": "5.9.2" }
+}

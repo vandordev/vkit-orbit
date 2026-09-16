@@ -8,6 +8,8 @@ export { createRealtimeConfig } from "./realtime";
 export type { RealtimeConfig } from "./realtime";
 export { createWorkerConfig } from "./worker";
 export type { WorkerConfig } from "./worker";
+export { createRedisConfig } from "./redis";
+export type { RedisConfig } from "./redis";
 export { createStorageConfig, storageServer } from "./storage";
 export { loadConfig } from "./loader";
 export type { LoadConfigOptions } from "./loader";
