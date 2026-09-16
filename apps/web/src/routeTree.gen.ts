@@ -11,8 +11,8 @@
 import { Route as rootRouteImport } from './app/__root'
 import { Route as PublicRouteRouteImport } from './app/_public/route'
 import { Route as PublicIndexRouteImport } from './app/_public/index'
-import { Route as ApiSplatRouteImport } from './app/api/$'
 import { Route as HealthIndexRouteImport } from './app/health/index'
+import { Route as TrpcSplatRouteImport } from './app/trpc/$'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -23,45 +23,45 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HealthIndexRoute = HealthIndexRouteImport.update({
   id: '/health/',
   path: '/health/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrpcSplatRoute = TrpcSplatRouteImport.update({
+  id: '/trpc/$',
+  path: '/trpc/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
-  '/api/$': typeof ApiSplatRoute
+  '/trpc/$': typeof TrpcSplatRoute
   '/health/': typeof HealthIndexRoute
 }
 export interface FileRoutesByTo {
-  '/api/$': typeof ApiSplatRoute
+  '/trpc/$': typeof TrpcSplatRoute
   '/': typeof PublicIndexRoute
   '/health': typeof HealthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_public': typeof PublicRouteRouteWithChildren
-  '/api/$': typeof ApiSplatRoute
+  '/trpc/$': typeof TrpcSplatRoute
   '/_public/': typeof PublicIndexRoute
   '/health/': typeof HealthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/$' | '/health/'
+  fullPaths: '/' | '/trpc/$' | '/health/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/api/$' | '/' | '/health'
-  id: '__root__' | '/_public' | '/api/$' | '/_public/' | '/health/'
+  to: '/trpc/$' | '/' | '/health'
+  id: '__root__' | '/_public' | '/trpc/$' | '/_public/' | '/health/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
-  ApiSplatRoute: typeof ApiSplatRoute
+  TrpcSplatRoute: typeof TrpcSplatRoute
   HealthIndexRoute: typeof HealthIndexRoute
 }
 
@@ -81,18 +81,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/health/': {
       id: '/health/'
       path: '/health'
       fullPath: '/health/'
       preLoaderRoute: typeof HealthIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trpc/$': {
+      id: '/trpc/$'
+      path: '/trpc/$'
+      fullPath: '/trpc/$'
+      preLoaderRoute: typeof TrpcSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -112,7 +112,7 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   PublicRouteRoute: PublicRouteRouteWithChildren,
-  ApiSplatRoute: ApiSplatRoute,
+  TrpcSplatRoute: TrpcSplatRoute,
   HealthIndexRoute: HealthIndexRoute,
 }
 export const routeTree = rootRouteImport
