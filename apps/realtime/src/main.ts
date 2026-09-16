@@ -2,6 +2,7 @@ import { createRealtimeConfig } from "@repo/config";
 
 import { createTicketAuthenticator } from "./auth";
 import { createRealtimeServer } from "./server";
+import { log } from "./logger";
 
 const config = createRealtimeConfig(process.env);
 const runtime = createRealtimeServer({
@@ -12,6 +13,7 @@ const runtime = createRealtimeServer({
 });
 
 await runtime.listen(config.port, "0.0.0.0");
+log("info", { service: "realtime", environment: process.env.NODE_ENV ?? "development" }, "realtime started");
 
 async function shutdown() {
 	await runtime.close();

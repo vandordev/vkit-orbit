@@ -1,15 +1,13 @@
 # vkit-orbit
 
-Document Processing Hub runtime with a TypeScript worker for TanStack Start, embedded Elysia, Prisma,
-BullMQ/Redis workers, and optional Socket.IO realtime.
+Document Processing Hub runtime with TanStack Start, standalone Elysia `/v1`,
+Prisma, BullMQ/Redis workers, MinIO, and Socket.IO invalidation events.
 
 ## Runtime topology
 
-`apps/web` is the only public application server. TanStack Start mounts the
-Elysia app directly through `apps/web/src/app/api/$.ts`; there is no API
-proxy or separate API process in the default Compose topology. `/health` is the
-only non-`/api` Elysia mount at `apps/web/src/app/health/index.ts`. Web uses
-Tailwind CSS and shadcn/ui primitives.
+`apps/web` serves the dashboard and same-origin tRPC. `apps/api` is the
+standalone public Elysia `/v1` server, not a browser proxy. Web uses Tailwind
+CSS and shadcn/ui primitives.
 
 Web routing is directory-first under `apps/web/src/app`; see
 [.agent/web/routing.md](.agent/web/routing.md) for native TanStack tokens,
@@ -20,8 +18,9 @@ Web brand defaults are centralized in `apps/web/src/lib/config.ts`; see the
 public brand copy.
 
 ```text
-Browser -- same-origin /api/* --> TanStack Start + embedded Elysia --> Prisma --> PostgreSQL
-Browser ----------------------> Socket.IO (optional apps/realtime)
+Browser -- same-origin /trpc --> TanStack Start --> PostgreSQL
+External clients -------- /v1 --> standalone Elysia --> PostgreSQL
+Browser ----------------------> Socket.IO invalidation (apps/realtime)
 apps/scheduler -- BullMQ schedules ---------------------------------> Redis
 apps/worker ---- TypeScript consume --------------------------------> PostgreSQL
 apps/migrate -- Prisma deploy -------------------------------------> PostgreSQL
@@ -37,7 +36,7 @@ publisher endpoint; `apps/migrate` owns one-shot migration orchestration.
 
 ## Quick start
 
-Prerequisites: Bun 1.3.14, Go 1.25.7, Task, Docker, and PostgreSQL (or Compose).
+Prerequisites: Bun 1.3.14, Task, Docker, and PostgreSQL (or Compose).
 
 ```bash
 task install
@@ -66,14 +65,12 @@ Realtime credentials are paired across the boundaries:
 - realtime: `REALTIME_PUBLISH_API_KEY`, `REALTIME_CORS_ORIGIN`, and ticket secret;
 - web: public `VITE_REALTIME_URL` only.
 
-## Optional realtime recipe
+## Operations and realtime
 
-The baseline has no product/example job, schedule, API route, or web walkthrough
-installed by default. To add the executable `example.realtime-notification.v1`
-walkthrough, copy and wire the files in
-`recipes/realtime-notification/README.md`. The recipe keeps payloads as
-invalidation signals, sends successful worker events to Elysia, and leaves
-Socket.IO publishing to Elysia.
+The product runtime is installed by default. Realtime carries invalidation
+signals only; clients refetch authoritative tRPC data. Structured logs use
+bounded correlation context and redact credentials, URLs, cookies, and content.
+Actionable recovery procedures are in `docs/runbooks/`.
 
 BullMQ job kinds and JSON payloads are contracts documented in
 `contracts/jobs/README.md`; breaking changes use a new `.vN` kind.
@@ -83,21 +80,20 @@ BullMQ job kinds and JSON payloads are contracts documented in
 ```text
 task doctor                              Verify tools, env, and migration test
 task migrate                             Prisma migrations
-task dev                                 Web, Go worker, and scheduler
+task dev                                 Web, worker, and scheduler
 task dev -- web worker scheduler realtime Selected runtimes
-task quality                             TypeScript tests/lint/types + Go vet
-task build                               TypeScript build + Go binaries
+task quality                             TypeScript tests/lint/types
+task build                               TypeScript builds
 task compose:up:detached                 Default db+migrate+web stack
 task compose:jobs                        Optional worker and scheduler profile
 task compose:realtime                    Optional Socket.IO profile
 ```
 
-Compose exposes only web `4100` and realtime `4102`; the one-shot `migrate`
-service must complete before web or optional jobs start.
+Compose exposes only web `4100`, API `4101`, and realtime `4102`; the one-shot
+`migrate` service must complete before dependent services start.
 
 ## Scope rules
 
-No auth system, product/domain model, Redis, multi-node Socket.IO adapter, or
-default product schedule is included. Add product rules in the owning boundary,
-write a failing focused test first, and run `task quality` and `task build`
-before handoff.
+Initial support is `.txt` and `.md`; OCR, PDF/DOCX, AI, and compatibility layers
+are excluded. Add product rules in the owning boundary, write a failing focused
+test first, and run `task quality`, `task build`, and Compose smoke before handoff.

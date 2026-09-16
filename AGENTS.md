@@ -8,41 +8,36 @@ changed, the plan/spec, and run
 
 ## Repository shape
 
-- `apps/web`: TanStack Start, Tailwind/shadcn UI, Eden clients, and the thin
-  embedded Elysia adapters at `src/routes/api.$.ts` and `src/routes/health.ts`.
+- `apps/web`: TanStack Start, Tailwind/shadcn UI, and same-origin tRPC.
 - `apps/api`: Elysia factory, validation, envelopes, usecase transport, and the
   authenticated `/api/internal/worker-events` gateway.
 - `packages/database`: the only Prisma client owner and migration source.
 - `packages/application`: TypeScript business rules and transactions.
-- `packages/queue`: River TypeScript producer and versioned JSON contracts.
+- `packages/queue`: BullMQ producer and versioned JSON contracts.
 - `apps/scheduler`: Bun lifecycle and consumer-installed enqueue-only schedules;
   no Prisma business reads.
-- `apps/worker`: long-running Go/River runtime plus consumer-installed handlers,
-  retries, idempotency, and Elysia notifier.
+- `apps/worker`: long-running TypeScript/BullMQ runtime plus consumer-installed
+  handlers, retries, idempotency, and Elysia notifier.
 - `apps/realtime`: Socket.IO auth, room authorization, and private publisher.
-- `apps/migrate`: Prisma deploy first, River migration second.
+- `apps/migrate`: Prisma deploy first.
 
 ## Architecture rules
 
-The web process is the only default public HTTP server. Do not add a network
-API proxy or second business transport. Elysia owns `/api`; process health is
-under `/health`. Server loaders may call embedded Elysia directly; browser code
-uses the same-origin route and typed Eden.
+The web process hosts the dashboard and same-origin tRPC. `apps/api` is the
+standalone public Elysia `/v1` server, not a proxy. Process health is exposed
+by each runtime's health endpoint.
 
 Only `packages/database` creates Prisma clients. Do not expose `DATABASE_URL`
 or other credentials to browser code. Use the YAML/config loaders rather than
 reading `process.env` in feature code.
 
-River `kind` and JSON payloads are cross-language contracts. Breaking changes
-use a new versioned kind. Go workers may implement equivalent usecases under
-root `internal/`; they must keep invariants, idempotency, concurrency, and
-versioned contracts aligned with TypeScript behavior. Workers notify Elysia
-only after successful job completion; Elysia alone talks to Socket.IO.
+BullMQ job names and JSON payloads are cross-runtime contracts. Breaking
+changes use a new versioned kind. Workers notify Elysia only after successful
+job completion; Elysia alone talks to Socket.IO.
 Realtime payloads are invalidation signals, not source-of-truth data.
 
-The baseline has no installed product/example job, schedule, route, credential,
-or product model. The executable `example.realtime-notification.v1` walkthrough
-is an opt-in copy/install recipe in `recipes/realtime-notification/`.
+The product runtime is installed by default; no compatibility recipe is part of
+the active architecture.
 
 ## Workflow
 

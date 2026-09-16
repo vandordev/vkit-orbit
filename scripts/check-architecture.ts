@@ -42,7 +42,10 @@ export function checkArchitecture(root = process.cwd()): string[] {
 		}
 		if (label.startsWith("apps/web/src/")) {
 			const serverModule =
-				label.startsWith("apps/web/src/trpc/") || label.startsWith("apps/web/src/server/") || label.startsWith("apps/web/src/app/trpc/");
+				label === "apps/web/src/server.ts" ||
+				label.startsWith("apps/web/src/trpc/") ||
+				label.startsWith("apps/web/src/server/") ||
+				label.startsWith("apps/web/src/app/trpc/");
 			if (content.includes("@repo/database")) violations.push(`${label}: web must not import @repo/database`);
 			if (!serverModule && content.includes("@repo/application"))
 				violations.push(`${label}: browser code must not import @repo/application`);

@@ -31,3 +31,6 @@ export * from "./webhooks/record-attempt";
 export * from "./recovery/recover-processing";
 export * from "./recovery/recover-webhooks";
 export * from "./recovery/cleanup-documents";
+export * from "./observability/fields";
+export * from "./observability/redaction";
+export * from "./observability/metrics";

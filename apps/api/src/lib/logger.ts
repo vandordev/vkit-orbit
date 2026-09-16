@@ -1,4 +1,5 @@
 import pino from "pino";
+import { redact, safeLogContext } from "@repo/application";
 
 import { env } from "./env";
 
@@ -16,8 +17,13 @@ export const logger = pino({
 					ignore: "pid,hostname",
 				},
 			},
-	redact: ["req.headers.x-api-key"],
+	serializers: { obj: (value: unknown) => redact(value) },
+	redact: ["req.headers.authorization", "req.headers.cookie", "req.headers.x-api-key", "*.databaseUrl", "*.redisUrl"],
 	timestamp: pino.stdTimeFunctions.isoTime,
 });
 
 export default logger;
+
+export function logContext(input: Record<string, unknown>) {
+	return redact(safeLogContext(input));
+}

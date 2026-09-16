@@ -7,5 +7,5 @@ test("baseline has no example schedule or route", async () => {
 	expect(combined).not.toContain("ENABLE_EXAMPLE_SCHEDULE");
 	expect(combined).not.toContain("EXAMPLE_SCHEDULE_INTERVAL_MS");
 	expect(combined).not.toContain("/examples/realtime");
-	expect(combined).toContain("recipes/realtime-notification");
+	expect(combined).toContain("product runtime is installed by default");
 });

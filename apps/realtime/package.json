@@ -12,6 +12,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@repo/application": "*",
     "@repo/config": "*",
     "@repo/realtime": "*",
     "socket.io": "^4.8.1"

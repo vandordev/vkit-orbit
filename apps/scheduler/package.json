@@ -12,6 +12,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@repo/application": "*",
     "@repo/config": "*",
     "@repo/database": "*",
     "@repo/queue": "*"

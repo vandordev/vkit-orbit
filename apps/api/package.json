@@ -14,6 +14,7 @@
 		"clean": "rm -rf dist"
 	},
 	"dependencies": {
+		"@repo/application": "*",
 		"@elysiajs/cors": "^1.3.5",
 		"@elysiajs/openapi": "^1.4.15",
 		"@repo/config": "*",
