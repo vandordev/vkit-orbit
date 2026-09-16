@@ -129,6 +129,9 @@
     "packages/application": {
       "name": "@repo/application",
       "version": "0.1.0",
+      "dependencies": {
+        "@repo/storage": "*",
+      },
       "devDependencies": {
         "@repo/database": "*",
         "@repo/typescript-config": "*",

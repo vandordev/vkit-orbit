@@ -12,5 +12,8 @@
     "@repo/database": "*",
     "@repo/typescript-config": "*",
     "typescript": "5.9.2"
+  },
+  "dependencies": {
+    "@repo/storage": "*"
   }
 }
