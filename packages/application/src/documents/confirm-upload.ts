@@ -1,5 +1,6 @@
 import { prisma } from "@repo/database";
 import { writeAuditLog } from "../audit/write-audit-log";
+import { NotFoundError } from "../shared/errors";
 export async function confirmDocumentUpload(
 	scope: { workspaceId: string; principalId: string },
 	input: { documentId: string; revision?: number },
@@ -8,7 +9,7 @@ export async function confirmDocumentUpload(
 ) {
 	return db.$transaction(async (tx: any) => {
 		const document = await tx.document.findFirst({ where: { workspaceId: scope.workspaceId, id: input.documentId } });
-		if (!document) throw new Error("document not found");
+		if (!document) throw new NotFoundError("document not found");
 		if (input.revision !== undefined && input.revision !== 1) throw new Error("stale revision");
 		if (document.status !== "UPLOADING") throw new Error("invalid document state");
 		const artifact = await tx.documentArtifact.findFirst({

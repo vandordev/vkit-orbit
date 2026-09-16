@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 import { env } from "../lib/env";
 import { AppError } from "../lib/errors";
 import { logger } from "../lib/logger";
-import { IdempotencyConflictError } from "@repo/application";
+import { ForbiddenError, IdempotencyConflictError, NotFoundError, UnauthorizedError } from "@repo/application";
 
 export const errorEnvelopePlugin = new Elysia({ name: "error-envelope" })
 	.onError((context) => {
@@ -22,6 +22,11 @@ export const errorEnvelopePlugin = new Elysia({ name: "error-envelope" })
 		if (error instanceof IdempotencyConflictError) {
 			set.status = 409;
 			return { success: false, error: error.code, message: error.message, ...(requestId ? { requestId } : {}) };
+		}
+		if (error instanceof UnauthorizedError || error instanceof ForbiddenError || error instanceof NotFoundError) {
+			const status = error instanceof UnauthorizedError ? 401 : error instanceof ForbiddenError ? 403 : 404;
+			set.status = status;
+			return { success: false, error: error.code, message: "Resource unavailable", ...(requestId ? { requestId } : {}) };
 		}
 		if (code === "VALIDATION") {
 			set.status = 422;
