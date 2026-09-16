@@ -1,15 +1,16 @@
 import { z } from "zod";
 
 export const realtimeEventSchema = z.object({
-	type: z.literal("resource.updated"),
+	type: z.literal("document.processing.updated"),
 	eventId: z.string().uuid(),
 	occurredAt: z.string().datetime(),
-	resourceId: z.string().min(1),
+	documentId: z.string().min(1),
+	runId: z.string().min(1),
 	workspaceId: z.string().min(1),
 });
 
 export type RealtimeEvent = z.infer<typeof realtimeEventSchema>;
 
 export function roomsForEvent(event: RealtimeEvent): string[] {
-	return [`resource:${event.resourceId}`, `workspace:${event.workspaceId}`];
+	return [`document:${event.documentId}`, `run:${event.runId}`, `workspace:${event.workspaceId}`];
 }

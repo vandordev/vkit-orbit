@@ -3,10 +3,11 @@ import { expect, test } from "bun:test";
 import { createRealtimePublisher } from "./publisher";
 
 const event = {
-	type: "resource.updated" as const,
+	type: "document.processing.updated" as const,
 	eventId: crypto.randomUUID(),
 	occurredAt: new Date().toISOString(),
-	resourceId: "r1",
+	documentId: "d1",
+	runId: "r1",
 	workspaceId: "w1",
 };
 

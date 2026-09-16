@@ -17,10 +17,15 @@ import { Route as HealthIndexRouteImport } from './app/health/index'
 import { Route as TrpcSplatRouteImport } from './app/trpc/$'
 import { Route as PublicRegisterIndexRouteImport } from './app/_public/register/index'
 import { Route as PublicSignInIndexRouteImport } from './app/_public/sign-in/index'
+import { Route as AuthenticatedAppActivityIndexRouteImport } from './app/_authenticated/app/activity/index'
 import { Route as AuthenticatedAppDocumentsIndexRouteImport } from './app/_authenticated/app/documents/index'
 import { Route as AuthenticatedAppOverviewIndexRouteImport } from './app/_authenticated/app/overview/index'
+import { Route as AuthenticatedAppDevelopersApiKeysIndexRouteImport } from './app/_authenticated/app/developers/api-keys/index'
+import { Route as AuthenticatedAppDevelopersWebhooksIndexRouteImport } from './app/_authenticated/app/developers/webhooks/index'
 import { Route as AuthenticatedAppDocumentsDocumentIdIndexRouteImport } from './app/_authenticated/app/documents/$documentId/index'
 import { Route as AuthenticatedAppDocumentsNewIndexRouteImport } from './app/_authenticated/app/documents/new/index'
+import { Route as AuthenticatedAppSettingsMembersIndexRouteImport } from './app/_authenticated/app/settings/members/index'
+import { Route as AuthenticatedAppSettingsWorkspaceIndexRouteImport } from './app/_authenticated/app/settings/workspace/index'
 import { Route as AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRouteImport } from './app/_authenticated/app/documents/$documentId/runs/$runId/index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -61,6 +66,12 @@ const PublicSignInIndexRoute = PublicSignInIndexRouteImport.update({
   path: '/sign-in/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
+const AuthenticatedAppActivityIndexRoute =
+  AuthenticatedAppActivityIndexRouteImport.update({
+    id: '/activity/',
+    path: '/activity/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
 const AuthenticatedAppDocumentsIndexRoute =
   AuthenticatedAppDocumentsIndexRouteImport.update({
     id: '/documents/',
@@ -73,6 +84,18 @@ const AuthenticatedAppOverviewIndexRoute =
     path: '/overview/',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
+const AuthenticatedAppDevelopersApiKeysIndexRoute =
+  AuthenticatedAppDevelopersApiKeysIndexRouteImport.update({
+    id: '/developers/api-keys/',
+    path: '/developers/api-keys/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppDevelopersWebhooksIndexRoute =
+  AuthenticatedAppDevelopersWebhooksIndexRouteImport.update({
+    id: '/developers/webhooks/',
+    path: '/developers/webhooks/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
 const AuthenticatedAppDocumentsDocumentIdIndexRoute =
   AuthenticatedAppDocumentsDocumentIdIndexRouteImport.update({
     id: '/documents/$documentId/',
@@ -83,6 +106,18 @@ const AuthenticatedAppDocumentsNewIndexRoute =
   AuthenticatedAppDocumentsNewIndexRouteImport.update({
     id: '/documents/new/',
     path: '/documents/new/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppSettingsMembersIndexRoute =
+  AuthenticatedAppSettingsMembersIndexRouteImport.update({
+    id: '/settings/members/',
+    path: '/settings/members/',
+    getParentRoute: () => AuthenticatedAppRouteRoute,
+  } as any)
+const AuthenticatedAppSettingsWorkspaceIndexRoute =
+  AuthenticatedAppSettingsWorkspaceIndexRouteImport.update({
+    id: '/settings/workspace/',
+    path: '/settings/workspace/',
     getParentRoute: () => AuthenticatedAppRouteRoute,
   } as any)
 const AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute =
@@ -99,10 +134,15 @@ export interface FileRoutesByFullPath {
   '/health/': typeof HealthIndexRoute
   '/register/': typeof PublicRegisterIndexRoute
   '/sign-in/': typeof PublicSignInIndexRoute
+  '/app/activity/': typeof AuthenticatedAppActivityIndexRoute
   '/app/documents/': typeof AuthenticatedAppDocumentsIndexRoute
   '/app/overview/': typeof AuthenticatedAppOverviewIndexRoute
+  '/app/developers/api-keys/': typeof AuthenticatedAppDevelopersApiKeysIndexRoute
+  '/app/developers/webhooks/': typeof AuthenticatedAppDevelopersWebhooksIndexRoute
   '/app/documents/$documentId/': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
   '/app/documents/new/': typeof AuthenticatedAppDocumentsNewIndexRoute
+  '/app/settings/members/': typeof AuthenticatedAppSettingsMembersIndexRoute
+  '/app/settings/workspace/': typeof AuthenticatedAppSettingsWorkspaceIndexRoute
   '/app/documents/$documentId/runs/$runId/': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -112,10 +152,15 @@ export interface FileRoutesByTo {
   '/health': typeof HealthIndexRoute
   '/register': typeof PublicRegisterIndexRoute
   '/sign-in': typeof PublicSignInIndexRoute
+  '/app/activity': typeof AuthenticatedAppActivityIndexRoute
   '/app/documents': typeof AuthenticatedAppDocumentsIndexRoute
   '/app/overview': typeof AuthenticatedAppOverviewIndexRoute
+  '/app/developers/api-keys': typeof AuthenticatedAppDevelopersApiKeysIndexRoute
+  '/app/developers/webhooks': typeof AuthenticatedAppDevelopersWebhooksIndexRoute
   '/app/documents/$documentId': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
   '/app/documents/new': typeof AuthenticatedAppDocumentsNewIndexRoute
+  '/app/settings/members': typeof AuthenticatedAppSettingsMembersIndexRoute
+  '/app/settings/workspace': typeof AuthenticatedAppSettingsWorkspaceIndexRoute
   '/app/documents/$documentId/runs/$runId': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRoutesById {
@@ -128,10 +173,15 @@ export interface FileRoutesById {
   '/health/': typeof HealthIndexRoute
   '/_public/register/': typeof PublicRegisterIndexRoute
   '/_public/sign-in/': typeof PublicSignInIndexRoute
+  '/_authenticated/app/activity/': typeof AuthenticatedAppActivityIndexRoute
   '/_authenticated/app/documents/': typeof AuthenticatedAppDocumentsIndexRoute
   '/_authenticated/app/overview/': typeof AuthenticatedAppOverviewIndexRoute
+  '/_authenticated/app/developers/api-keys/': typeof AuthenticatedAppDevelopersApiKeysIndexRoute
+  '/_authenticated/app/developers/webhooks/': typeof AuthenticatedAppDevelopersWebhooksIndexRoute
   '/_authenticated/app/documents/$documentId/': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
   '/_authenticated/app/documents/new/': typeof AuthenticatedAppDocumentsNewIndexRoute
+  '/_authenticated/app/settings/members/': typeof AuthenticatedAppSettingsMembersIndexRoute
+  '/_authenticated/app/settings/workspace/': typeof AuthenticatedAppSettingsWorkspaceIndexRoute
   '/_authenticated/app/documents/$documentId/runs/$runId/': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -143,10 +193,15 @@ export interface FileRouteTypes {
     | '/health/'
     | '/register/'
     | '/sign-in/'
+    | '/app/activity/'
     | '/app/documents/'
     | '/app/overview/'
+    | '/app/developers/api-keys/'
+    | '/app/developers/webhooks/'
     | '/app/documents/$documentId/'
     | '/app/documents/new/'
+    | '/app/settings/members/'
+    | '/app/settings/workspace/'
     | '/app/documents/$documentId/runs/$runId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -156,10 +211,15 @@ export interface FileRouteTypes {
     | '/health'
     | '/register'
     | '/sign-in'
+    | '/app/activity'
     | '/app/documents'
     | '/app/overview'
+    | '/app/developers/api-keys'
+    | '/app/developers/webhooks'
     | '/app/documents/$documentId'
     | '/app/documents/new'
+    | '/app/settings/members'
+    | '/app/settings/workspace'
     | '/app/documents/$documentId/runs/$runId'
   id:
     | '__root__'
@@ -171,10 +231,15 @@ export interface FileRouteTypes {
     | '/health/'
     | '/_public/register/'
     | '/_public/sign-in/'
+    | '/_authenticated/app/activity/'
     | '/_authenticated/app/documents/'
     | '/_authenticated/app/overview/'
+    | '/_authenticated/app/developers/api-keys/'
+    | '/_authenticated/app/developers/webhooks/'
     | '/_authenticated/app/documents/$documentId/'
     | '/_authenticated/app/documents/new/'
+    | '/_authenticated/app/settings/members/'
+    | '/_authenticated/app/settings/workspace/'
     | '/_authenticated/app/documents/$documentId/runs/$runId/'
   fileRoutesById: FileRoutesById
 }
@@ -243,6 +308,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicSignInIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
+    '/_authenticated/app/activity/': {
+      id: '/_authenticated/app/activity/'
+      path: '/activity'
+      fullPath: '/app/activity/'
+      preLoaderRoute: typeof AuthenticatedAppActivityIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
     '/_authenticated/app/documents/': {
       id: '/_authenticated/app/documents/'
       path: '/documents'
@@ -255,6 +327,20 @@ declare module '@tanstack/react-router' {
       path: '/overview'
       fullPath: '/app/overview/'
       preLoaderRoute: typeof AuthenticatedAppOverviewIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/developers/api-keys/': {
+      id: '/_authenticated/app/developers/api-keys/'
+      path: '/developers/api-keys'
+      fullPath: '/app/developers/api-keys/'
+      preLoaderRoute: typeof AuthenticatedAppDevelopersApiKeysIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/developers/webhooks/': {
+      id: '/_authenticated/app/developers/webhooks/'
+      path: '/developers/webhooks'
+      fullPath: '/app/developers/webhooks/'
+      preLoaderRoute: typeof AuthenticatedAppDevelopersWebhooksIndexRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
     '/_authenticated/app/documents/$documentId/': {
@@ -271,6 +357,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppDocumentsNewIndexRouteImport
       parentRoute: typeof AuthenticatedAppRouteRoute
     }
+    '/_authenticated/app/settings/members/': {
+      id: '/_authenticated/app/settings/members/'
+      path: '/settings/members'
+      fullPath: '/app/settings/members/'
+      preLoaderRoute: typeof AuthenticatedAppSettingsMembersIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
+    '/_authenticated/app/settings/workspace/': {
+      id: '/_authenticated/app/settings/workspace/'
+      path: '/settings/workspace'
+      fullPath: '/app/settings/workspace/'
+      preLoaderRoute: typeof AuthenticatedAppSettingsWorkspaceIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRouteRoute
+    }
     '/_authenticated/app/documents/$documentId/runs/$runId/': {
       id: '/_authenticated/app/documents/$documentId/runs/$runId/'
       path: '/documents/$documentId/runs/$runId'
@@ -282,20 +382,34 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAppRouteRouteChildren {
+  AuthenticatedAppActivityIndexRoute: typeof AuthenticatedAppActivityIndexRoute
   AuthenticatedAppDocumentsIndexRoute: typeof AuthenticatedAppDocumentsIndexRoute
   AuthenticatedAppOverviewIndexRoute: typeof AuthenticatedAppOverviewIndexRoute
+  AuthenticatedAppDevelopersApiKeysIndexRoute: typeof AuthenticatedAppDevelopersApiKeysIndexRoute
+  AuthenticatedAppDevelopersWebhooksIndexRoute: typeof AuthenticatedAppDevelopersWebhooksIndexRoute
   AuthenticatedAppDocumentsDocumentIdIndexRoute: typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
   AuthenticatedAppDocumentsNewIndexRoute: typeof AuthenticatedAppDocumentsNewIndexRoute
+  AuthenticatedAppSettingsMembersIndexRoute: typeof AuthenticatedAppSettingsMembersIndexRoute
+  AuthenticatedAppSettingsWorkspaceIndexRoute: typeof AuthenticatedAppSettingsWorkspaceIndexRoute
   AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute: typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
 }
 
 const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
+  AuthenticatedAppActivityIndexRoute: AuthenticatedAppActivityIndexRoute,
   AuthenticatedAppDocumentsIndexRoute: AuthenticatedAppDocumentsIndexRoute,
   AuthenticatedAppOverviewIndexRoute: AuthenticatedAppOverviewIndexRoute,
+  AuthenticatedAppDevelopersApiKeysIndexRoute:
+    AuthenticatedAppDevelopersApiKeysIndexRoute,
+  AuthenticatedAppDevelopersWebhooksIndexRoute:
+    AuthenticatedAppDevelopersWebhooksIndexRoute,
   AuthenticatedAppDocumentsDocumentIdIndexRoute:
     AuthenticatedAppDocumentsDocumentIdIndexRoute,
   AuthenticatedAppDocumentsNewIndexRoute:
     AuthenticatedAppDocumentsNewIndexRoute,
+  AuthenticatedAppSettingsMembersIndexRoute:
+    AuthenticatedAppSettingsMembersIndexRoute,
+  AuthenticatedAppSettingsWorkspaceIndexRoute:
+    AuthenticatedAppSettingsWorkspaceIndexRoute,
   AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute:
     AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute,
 }
