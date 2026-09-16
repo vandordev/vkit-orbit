@@ -1,2 +1,2 @@
 import { $ } from "bun";
-await $`bun --cwd packages/database run db:migrate`;
+await $`cd packages/database && bun run db:migrate`;
