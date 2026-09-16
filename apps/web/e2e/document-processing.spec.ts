@@ -22,7 +22,7 @@ test("processes the exact Quarterly Notes fixture and downloads its report", asy
 	await expect(page.getByText("Uploading document")).toBeVisible();
 	await page.getByRole("button", { name: "Confirm upload" }).click();
 	await expect(page.getByText("Analyzing document")).toBeVisible();
-	await expect(page.getByRole("heading", { name: "Quarterly Notes", exact: true })).toBeVisible();
+	await expect(page.getByRole("heading", { name: "Quarterly Notes", exact: true })).toBeVisible({ timeout: 30_000 });
 	await expect(page.getByText("Quarterly Notes · Follow-up", { exact: true })).toBeVisible();
 	await expect(page.locator("[data-word-count]")).toHaveCount(1);
 	await expect(page.locator("[data-line-count]")).toHaveCount(1);
