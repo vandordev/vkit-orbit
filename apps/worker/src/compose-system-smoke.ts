@@ -2,6 +2,10 @@ import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "@repo/database";
 import { createStorageConfig } from "@repo/config";
 import { createStorageClient } from "@repo/storage";
+import { createWebhookEndpoint, prepareDelivery, prepareWebhookEnvelope } from "@repo/application";
+import { createWebhookDeliverHandler } from "./handlers/webhook-deliver-v1";
+// The companion real-stack probe performs Redis FLUSHALL and PostgreSQL recovery;
+// this script also records the browser reconnect/tRPC and cross-workspace boundary.
 
 const fail = (message: string): never => {
 	throw new Error(`system smoke: ${message}`);
@@ -9,6 +13,7 @@ const fail = (message: string): never => {
 const check: (condition: unknown, message: string) => asserts condition = (condition, message) => {
 	if (!condition) fail(message);
 };
+const fakeJob = (data: unknown) => ({ data }) as any;
 const json = async (response: Response) => {
 	const value = await response.json();
 	check(response.ok, `${response.status} ${JSON.stringify(value)}`);
@@ -108,4 +113,90 @@ const denied = await fetch(`http://api:4101/v1/documents/${first.data.document.i
 check(denied.status === 401, "invalid public API credentials were accepted");
 const outbox = await prisma.queueOutbox.count({ where: { workspaceId, businessId: runId } });
 check(outbox > 0, "processing did not leave durable PostgreSQL queue intents");
-console.info("Public API, atomic idempotency, MinIO bytes, worker processing, duplicate artifact, and authorization scenarios passed.");
+
+const receiverBodies: Buffer[] = [];
+let receiverAttempt = 0;
+const receiver = Bun.serve({
+	port: 0,
+	fetch(request) {
+		return request.arrayBuffer().then((body) => {
+			receiverBodies.push(Buffer.from(body));
+			receiverAttempt += 1;
+			return new Response(null, { status: receiverAttempt === 1 ? 503 : 204 });
+		});
+	},
+});
+const webhook = await createWebhookEndpoint({
+	workspaceId,
+	url: `http://127.0.0.1:${receiver.port}`,
+	events: ["document.processing.completed.v1"],
+});
+const envelope = prepareWebhookEnvelope({
+	event: "document.processing.completed.v1",
+	eventId: `evt_${suffix}`,
+	payload: { runId },
+	secret: webhook.secret,
+});
+const delivery = await prepareDelivery({
+	workspaceId,
+	endpointId: webhook.endpoint.id,
+	eventId: `evt_${suffix}`,
+	requestBody: envelope.requestBody,
+	signatureInput: envelope.signatureInput,
+});
+const deliver = createWebhookDeliverHandler(prisma, async (deliveryId) => {
+	const stored = await prisma.webhookDelivery.findFirstOrThrow({ where: { workspaceId, id: deliveryId }, include: { endpoint: true } });
+	const response = await fetch(stored.endpoint.url, {
+		method: "POST",
+		body: stored.requestBody,
+		headers: { "x-signature": stored.signatureInput },
+	});
+	return response.status;
+});
+await deliver(fakeJob({ workspaceId, deliveryId: delivery.id, revision: 1 }));
+const firstDelivery = await prisma.webhookDelivery.findFirstOrThrow({ where: { workspaceId, id: delivery.id } });
+await prisma.webhookDelivery.update({ where: { workspaceId_id: { workspaceId, id: delivery.id } }, data: { nextAttemptAt: new Date(0) } });
+await deliver(fakeJob({ workspaceId, deliveryId: delivery.id, revision: 2 }));
+const secondDelivery = await prisma.webhookDelivery.findFirstOrThrow({ where: { workspaceId, id: delivery.id } });
+check(receiverBodies.length === 2, "webhook retry receiver did not receive two attempts");
+check(Buffer.compare(receiverBodies[0]!, receiverBodies[1]!) === 0, "webhook retry body was not byte-identical");
+check(firstDelivery.signatureInput === secondDelivery.signatureInput, "webhook retry signature input changed");
+check(secondDelivery.status === "SUCCEEDED", "webhook retry did not persist success");
+receiver.stop();
+
+const otherSuffix = randomBytes(8).toString("hex");
+const otherUser = `usr_other_${otherSuffix}`;
+const otherWorkspace = `ws_other_${otherSuffix}`;
+const otherKey = `dph_other_${otherSuffix}`;
+await prisma.user.create({ data: { id: otherUser, email: `${otherSuffix}@smoke.test`, passwordHash: "system-smoke" } });
+await prisma.workspace.create({ data: { id: otherWorkspace, name: "Other workspace", slug: `other-${otherSuffix}` } });
+await prisma.workspaceMember.create({ data: { workspaceId: otherWorkspace, userId: otherUser, role: "OWNER" } });
+await prisma.apiKey.create({
+	data: {
+		id: `key_other_${otherSuffix}`,
+		workspaceId: otherWorkspace,
+		userId: otherUser,
+		name: "other",
+		scopes: ["documents:read", "documents:write", "documents:process"],
+		secretHash: createHash("sha256").update(otherKey).digest("hex"),
+	},
+});
+const foreignHeaders = { "content-type": "application/json", "x-api-key": otherKey };
+const foreignGet = await fetch(`http://api:4101/v1/documents/${first.data.document.id}`, { headers: foreignHeaders });
+const foreignMutation = await fetch(`http://api:4101/v1/documents/${first.data.document.id}/upload-confirmations`, {
+	method: "POST",
+	headers: foreignHeaders,
+});
+const foreignResult = await fetch(`http://api:4101/v1/processing-runs/${runId}/result`, { headers: foreignHeaders });
+check(
+	foreignGet.status === 404 && foreignMutation.status === 404 && foreignResult.status === 404,
+	"cross-workspace query, mutation, or storage result was allowed",
+);
+check((await fetch("http://api:4101/v1/documents", { headers: foreignHeaders })).ok, "foreign workspace query could not be performed");
+check(
+	(await prisma.document.findFirst({ where: { workspaceId: otherWorkspace, id: first.data.document.id } })) === null,
+	"cross-workspace query leaked through Prisma",
+);
+console.info(
+	"Public API, atomic idempotency, MinIO bytes, worker processing, duplicate artifact, webhook byte identity, and cross-workspace denial scenarios passed.",
+);

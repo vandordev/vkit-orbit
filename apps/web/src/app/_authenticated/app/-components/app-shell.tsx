@@ -2,10 +2,12 @@ import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { WorkspaceSwitcher } from "./workspace-switcher";
 import { UserMenu } from "./user-menu";
+import { RealtimeBridge } from "./realtime-bridge";
 
 export function AppShell({ children }: { children: ReactNode }) {
 	return (
 		<div className="min-h-screen bg-background md:flex">
+			<RealtimeBridge />
 			<aside className="border-b border-border bg-white md:min-h-screen md:w-64 md:border-r md:border-b-0">
 				<div className="flex items-center justify-between gap-4 p-4">
 					<WorkspaceSwitcher />

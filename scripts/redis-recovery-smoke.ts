@@ -13,4 +13,6 @@ if (!response?.ok) {
 if ((await command(["docker", "compose", "restart", "redis"])) !== 0) process.exit(1);
 if ((await command(["docker", "compose", "exec", "-T", "redis", "redis-cli", "FLUSHALL"])) !== 0) process.exit(1);
 if ((await command(["docker", "compose", "exec", "-T", "redis", "redis-cli", "PING"])) !== 0) process.exit(1);
-console.info("Redis restart and loss boundary passed; PostgreSQL outbox remains available for reconstruction.");
+if ((await command(["docker", "compose", "exec", "-T", "worker", "bun", "apps/worker/src/compose-recovery-smoke.ts"])) !== 0)
+	process.exit(1);
+console.info("Redis restart, FLUSHALL, and PostgreSQL-driven current-stage reconstruction passed.");

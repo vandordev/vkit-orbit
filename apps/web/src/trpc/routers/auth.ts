@@ -3,6 +3,9 @@ import { router, authenticatedProcedure, publicProcedure } from "../init";
 
 export const authRouter = router({
 	me: authenticatedProcedure.query(({ ctx }) => ({ user: ctx.session.user, sessionId: ctx.session.sessionId })),
+	realtimeTicket: authenticatedProcedure.query(async ({ ctx }) =>
+		(await import("../../server/realtime-ticket")).createRealtimeTicket(ctx.session.userId),
+	),
 	status: publicProcedure.query(({ ctx }) => ({ authenticated: Boolean(ctx.session) })),
 	register: publicProcedure
 		.input(z.object({ email: z.string().email(), password: z.string().min(12), name: z.string().min(1) }))

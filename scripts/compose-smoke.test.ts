@@ -17,6 +17,17 @@ test("compose smoke is a fail-closed real-stack gate", () => {
 		expect(script).toContain(required);
 });
 
+test("compose smoke covers every remaining system criterion", () => {
+	const script = readFileSync("apps/worker/src/compose-system-smoke.ts", "utf8");
+	const recovery = readFileSync("apps/worker/src/compose-recovery-smoke.ts", "utf8");
+	const browser = readFileSync("apps/web/src/app/_authenticated/app/-components/realtime-bridge.tsx", "utf8");
+	const realtime = readFileSync("apps/web/src/lib/realtime.ts", "utf8");
+	for (const required of ["requestBody", "signatureInput", "cross-workspace"]) expect(script).toContain(required);
+	for (const required of ["FLUSHALL", "recoverProcessing"]) expect(recovery).toContain(required);
+	for (const required of ["reconnect", "trpc"]) expect(browser).toContain(required);
+	expect(realtime).toContain("invalidateQueries");
+});
+
 test("compose publishes only the three public ports and durable Redis", () => {
 	const compose = readFileSync("docker-compose.yml", "utf8");
 	const redis = readFileSync("deploy/redis/redis.conf", "utf8");
