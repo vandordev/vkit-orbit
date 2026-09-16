@@ -1,5 +1,5 @@
 import type { RedisConfig } from "@repo/config";
-import type { Queue, Worker } from "bullmq";
+import type { Queue } from "bullmq";
 import { Queue as BullQueue } from "bullmq";
 import type { RedisOptions } from "ioredis";
 import { queueDefaults } from "./defaults";
