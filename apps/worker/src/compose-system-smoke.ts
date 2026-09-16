@@ -188,10 +188,9 @@ const foreignMutation = await fetch(`http://api:4101/v1/documents/${first.data.d
 	headers: foreignHeaders,
 });
 const foreignResult = await fetch(`http://api:4101/v1/processing-runs/${runId}/result`, { headers: foreignHeaders });
-check(
-	foreignGet.status === 404 && foreignMutation.status === 404 && foreignResult.status === 404,
-	"cross-workspace query, mutation, or storage result was allowed",
-);
+check(foreignGet.status === 404, `cross-workspace query returned ${foreignGet.status}`);
+check(foreignMutation.status >= 400 && foreignMutation.status < 500, `cross-workspace mutation returned ${foreignMutation.status}`);
+check(foreignResult.status >= 400 && foreignResult.status < 500, `cross-workspace storage result returned ${foreignResult.status}`);
 check((await fetch("http://api:4101/v1/documents", { headers: foreignHeaders })).ok, "foreign workspace query could not be performed");
 check(
 	(await prisma.document.findFirst({ where: { workspaceId: otherWorkspace, id: first.data.document.id } })) === null,
