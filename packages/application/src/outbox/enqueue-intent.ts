@@ -3,7 +3,7 @@ export function outboxId(contract: string, businessId: string, revision: number)
 	return `${contract}:${businessId}:${revision}`;
 }
 export async function enqueueIntent(
-	input: { workspaceId: string; contract: string; businessId: string; revision: number; payload: unknown },
+	input: { workspaceId: string; contract: string; businessId: string; revision: number; payload: unknown; availableAt?: Date },
 	db: any = prisma,
 ) {
 	const id = outboxId(input.contract, input.businessId, input.revision);
