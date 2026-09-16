@@ -14,7 +14,7 @@ function matchesSecret(expected: string, actual: string | null) {
 	return left.length === right.length && timingSafeEqual(left, right);
 }
 
-export const workerEventRoutes = new Elysia({ prefix: "/api/internal", tags: ["Internal"] }).post(
+export const workerEventRoutes = new Elysia({ prefix: "/internal", tags: ["Internal"] }).post(
 	"/worker-events",
 	async ({ request, body, set }) => {
 		if (!matchesSecret(workerNotificationApiKey, request.headers.get("x-worker-notification-key"))) {

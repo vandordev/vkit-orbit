@@ -7,5 +7,5 @@ export function createRoutes(version: number) {
 		throw new Error("API version must be a positive integer");
 	}
 
-	return new Elysia({ name: `api-v${version}`, prefix: `/api/v${version}` }).use(collectionQueryPlugin);
+	return new Elysia({ name: `api-v${version}`, prefix: `/v${version}` }).use(collectionQueryPlugin);
 }

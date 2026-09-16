@@ -5,7 +5,7 @@ import { createRoutes } from "./create-routes";
 
 test("creates a versioned API group", async () => {
 	const api = createRoutes(1).get("/probe", () => ({ ok: true }));
-	const response = await api.handle(new Request("http://localhost/api/v1/probe"));
+	const response = await api.handle(new Request("http://localhost/v1/probe"));
 
 	expect(response.status).toBe(200);
 });
@@ -25,7 +25,7 @@ test("installs collection query support for versioned routes", async () => {
 	});
 	const api = createRoutes(1).get("/collection", ({ collection: query }) => ({ size: query.pagination.size }), { collection });
 
-	const response = await api.handle(new Request("http://localhost/api/v1/collection?page[size]=10"));
+	const response = await api.handle(new Request("http://localhost/v1/collection?page[size]=10"));
 
 	expect(response.status).toBe(200);
 	expect(await response.json()).toEqual({ size: 10 });

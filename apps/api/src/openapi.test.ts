@@ -14,21 +14,21 @@ async function getApp() {
 
 test("serves generated OpenAPI JSON", async () => {
 	const app = await getApp();
-	const response = await app.handle(new Request("http://localhost:4100/api/openapi.json"));
+	const response = await app.handle(new Request("http://localhost:4100/openapi.json"));
 
 	expect(response.status).toBe(200);
 	const document = await response.json();
 	expect(document.openapi).toMatch(/^3\./);
 	expect(document.servers).toEqual([{ url: "http://localhost:4100" }]);
-	expect(document.paths["/api/v1/status"]).toBeDefined();
-	expect(document.paths["/api/internal/worker-events"]).toBeUndefined();
+	expect(document.paths["/v1/status"]).toBeDefined();
+	expect(document.paths["/internal/worker-events"]).toBeUndefined();
 });
 
 test("documents every visible baseline handler", async () => {
 	const app = await getApp();
-	const response = await app.handle(new Request("http://localhost:4100/api/openapi.json"));
+	const response = await app.handle(new Request("http://localhost:4100/openapi.json"));
 	const document = await response.json();
-	const operations = [document.paths["/api/v1/status"].get, document.paths["/health/"].get, document.paths["/health/ready"].get];
+	const operations = [document.paths["/v1/status"].get, document.paths["/health/live"].get, document.paths["/health/ready"].get];
 
 	for (const operation of operations) {
 		expect(operation.operationId).toEqual(expect.any(String));
@@ -37,24 +37,24 @@ test("documents every visible baseline handler", async () => {
 		expect(operation.tags).toEqual(expect.any(Array));
 	}
 
-	const statusResponse = document.paths["/api/v1/status"].get.responses["200"];
+	const statusResponse = document.paths["/v1/status"].get.responses["200"];
 	expect(statusResponse.description).toEqual(expect.any(String));
 	expect(statusResponse.content["application/json"].schema.examples).toEqual([{ success: true, data: { status: "ok" } }]);
 });
 
 test("meets the generated OpenAPI documentation contract", async () => {
 	const app = await getApp();
-	const response = await app.handle(new Request("http://localhost:4100/api/openapi.json"));
+	const response = await app.handle(new Request("http://localhost:4100/openapi.json"));
 
 	expect(validateOpenApiDocumentation(await response.json())).toEqual([]);
 });
 
 test("serves Scalar documentation", async () => {
 	const app = await getApp();
-	const response = await app.handle(new Request("http://localhost:4101/api/docs"));
+	const response = await app.handle(new Request("http://localhost:4101/docs"));
 
 	expect(response.status).toBe(200);
-	expect(await response.text()).toContain('"url":"/api/openapi.json"');
+	expect(await response.text()).toContain('"url":"/openapi.json"');
 });
 
 test("documents declared collection query parameters", async () => {

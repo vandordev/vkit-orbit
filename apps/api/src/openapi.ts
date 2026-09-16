@@ -3,10 +3,10 @@ import { openapi } from "@elysiajs/openapi";
 import { env } from "./lib/env";
 
 export const openapiPlugin = openapi({
-	path: "/api/docs",
-	specPath: "/api/openapi.json",
+	path: "/docs",
+	specPath: "/openapi.json",
 	provider: "scalar",
-	scalar: { url: "/api/openapi.json" },
+	scalar: { url: "/openapi.json" },
 	documentation: {
 		openapi: "3.0.3",
 		info: { title: "API", version: "1.0.0", description: "Generated from Elysia route schemas." },

@@ -20,9 +20,9 @@ describe("external API boundary", () => {
 		expect(sources.join("\n")).not.toContain("/examples/realtime");
 	});
 
-	test("serves the API status contract under /api/v1", async () => {
+	test("serves the API status contract under /v1", async () => {
 		const app = await getApp();
-		const response = await app.fetch(new Request("http://localhost:4100/api/v1/status"));
+		const response = await app.fetch(new Request("http://localhost:4100/v1/status"));
 
 		expect(response.status).toBe(200);
 		expect(await response.json()).toEqual({ success: true, data: { status: "ok" } });
@@ -44,7 +44,7 @@ describe("external API boundary", () => {
 
 	test("serves health", async () => {
 		const app = await getApp();
-		const response = await app.fetch(new Request("http://localhost:4100/health"));
+		const response = await app.fetch(new Request("http://localhost:4100/health/live"));
 
 		expect(response.status).toBe(200);
 		expect((await response.json()).data.status).toBe("healthy");

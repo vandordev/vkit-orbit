@@ -9,7 +9,7 @@ const validEvent = {
 };
 
 function authenticatedRequest(body: unknown = validEvent) {
-	return new Request("http://localhost:4100/api/internal/worker-events", {
+	return new Request("http://localhost:4100/internal/worker-events", {
 		method: "POST",
 		headers: { "content-type": "application/json", "x-worker-notification-key": "worker-key" },
 		body: JSON.stringify(body),
@@ -37,7 +37,7 @@ describe("worker notification gateway", () => {
 	test("rejects an invalid or unauthenticated worker event", async () => {
 		const { app } = await import("../../app");
 
-		expect((await app.fetch(new Request("http://localhost:4100/api/internal/worker-events", { method: "POST" }))).status).toBe(401);
+		expect((await app.fetch(new Request("http://localhost:4100/internal/worker-events", { method: "POST" }))).status).toBe(401);
 		expect((await app.fetch(authenticatedRequest({ type: "bad" }))).status).toBe(400);
 	});
 

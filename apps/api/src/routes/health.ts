@@ -6,7 +6,7 @@ import { apiOperation } from "../openapi/operation";
 
 export const healthRoutes = new Elysia({ prefix: "/health", tags: ["Health"] })
 	.get(
-		"/",
+		"/live",
 		() => ({
 			success: true as const,
 			data: {
