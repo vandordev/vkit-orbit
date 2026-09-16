@@ -25,10 +25,10 @@ beforeAll(() => {
 		"noeviction",
 	]);
 	if (result.exitCode !== 0) throw new Error(new TextDecoder().decode(result.stderr));
-});
+}, 30_000);
 afterAll(() => {
 	run(["rm", "-f", container]);
-});
+}, 30_000);
 
 test("reconstructs a deterministic job after a complete Redis flush and restart", async () => {
 	const queue = createQueue("documents", config);
