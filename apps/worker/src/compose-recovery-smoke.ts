@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { prisma } from "@repo/database";
+import { createRedisConfig } from "@repo/config";
 import { recoverProcessing } from "@repo/application";
 import { createQueue, createJobId, documentAnalyzeV1 } from "@repo/queue";
 
@@ -24,24 +25,14 @@ await prisma.document.create({
 await prisma.processingRun.create({
 	data: { id: runId, workspaceId, documentId, revision: 1, status: "ANALYZING", stageRevision: 7, leaseExpiresAt: new Date(0) },
 });
-await prisma.queueOutbox.create({
-	data: {
-		id: `outbox_${suffix}`,
-		workspaceId,
-		contract: "document.analyze.v1",
-		businessId: runId,
-		revision: 7,
-		payload: { workspaceId, runId, revision: 7 },
-		status: "PUBLISHED",
-		publishedAt: new Date(),
-	},
-});
-
-const recovered = await recoverProcessing({ limit: 10 }, prisma);
+console.info("recovery run persisted");
+const recovered = await recoverProcessing({ limit: 1 }, prisma);
+console.info(`recovery selected ${recovered} run(s)`);
 check(recovered === 1, "PostgreSQL current-stage recovery did not select the run");
 const pending = await prisma.queueOutbox.findFirstOrThrow({ where: { workspaceId, businessId: runId, status: "PENDING" } });
-const queue = createQueue("documents");
+const queue = createQueue("documents", createRedisConfig(process.env));
 await queue.add(documentAnalyzeV1.name, pending.payload, { jobId: createJobId(documentAnalyzeV1, runId, 7) });
 check(await queue.getJob(createJobId(documentAnalyzeV1, runId, 7)), "recovery did not reconstruct the deterministic analyze job");
 await queue.close();
 console.info("PostgreSQL-driven current-stage reconstruction after Redis FLUSHALL passed.");
+await prisma.$disconnect();

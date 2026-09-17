@@ -6,6 +6,7 @@ export async function recoverProcessing(input: { limit?: number }, db: any = pri
 			status: { in: ["QUEUED", "VALIDATING", "ANALYZING", "FINALIZING"] },
 			OR: [{ leaseExpiresAt: null }, { leaseExpiresAt: { lt: new Date() } }],
 		},
+		orderBy: { createdAt: "desc" },
 		take: input.limit ?? 100,
 	});
 	for (const run of runs) {
