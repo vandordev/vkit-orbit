@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { trpc } from "../../../../../trpc/client";
-const documentApi = trpc as any;
+const documentApi = trpc;
 export function UploadWorkflow() {
 	const workspaceId =
 		typeof window === "undefined" ? undefined : (new URLSearchParams(window.location.search).get("workspaceId") ?? undefined);
@@ -19,8 +19,8 @@ export function UploadWorkflow() {
 		const content = btoa(String.fromCharCode(...new Uint8Array(await file.arrayBuffer())));
 		await documentApi.documents.uploadSource.mutate({
 			workspaceId,
-			objectKey: created.artifact.objectKey,
-			contentType: file.type,
+			documentId: created.document.id,
+			artifactId: created.artifact.id,
 			content,
 		});
 		await documentApi.documents.confirmUpload.mutate({ workspaceId, documentId: created.document.id });

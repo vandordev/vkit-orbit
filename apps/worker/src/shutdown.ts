@@ -3,7 +3,17 @@ export function createShutdown(disconnect: () => Promise<void>, stop: () => Prom
 	return async () => {
 		if (closing) return;
 		closing = true;
-		await Promise.race([Promise.resolve(stop()), new Promise<void>((resolve) => setTimeout(resolve, timeoutMs))]);
-		await disconnect();
+		let timer: ReturnType<typeof setTimeout> | undefined;
+		try {
+			await Promise.race([
+				Promise.resolve().then(stop),
+				new Promise<void>((resolve) => {
+					timer = setTimeout(resolve, timeoutMs);
+				}),
+			]);
+		} finally {
+			clearTimeout(timer);
+			await disconnect();
+		}
 	};
 }

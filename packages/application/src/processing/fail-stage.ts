@@ -4,7 +4,7 @@ export async function failStage(input: { workspaceId: string; runId: string; rev
 		where: {
 			workspaceId: input.workspaceId,
 			id: input.runId,
-			revision: input.revision,
+			stageRevision: input.revision,
 			status: { in: ["VALIDATING", "ANALYZING", "FINALIZING"] },
 		},
 		data: { status: "FAILED", errorCode: input.errorCode, leaseExpiresAt: null },

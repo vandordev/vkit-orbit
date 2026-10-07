@@ -1,5 +1,5 @@
 import { createHmac, randomUUID } from "node:crypto";
-import { prisma } from "@repo/database";
+import { prisma, type DatabaseConnection } from "@repo/database";
 export function signWebhook(secret: string, body: Uint8Array | string): string {
 	return `sha256=${createHmac("sha256", secret).update(body).digest("hex")}`;
 }
@@ -10,7 +10,7 @@ export function prepareWebhookEnvelope(input: { event: string; eventId: string; 
 }
 export async function prepareDelivery(
 	input: { workspaceId: string; endpointId: string; eventId: string; requestBody: Uint8Array; signatureInput: string },
-	db: any = prisma,
+	db: DatabaseConnection = prisma,
 ) {
 	return db.webhookDelivery.upsert({
 		where: { workspaceId_endpointId_eventId: { workspaceId: input.workspaceId, endpointId: input.endpointId, eventId: input.eventId } },

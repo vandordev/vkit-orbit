@@ -17,7 +17,20 @@ describe("BullMQ contracts", () => {
 		expect(() => createJobId("document.validate", "run", 1)).toThrow();
 	});
 	test("publishes every approved contract with bounded deterministic retry", () => {
-		expect(Object.keys(jobContracts)).toHaveLength(7);
+		expect(Object.keys(jobContracts).sort()).toEqual(
+			[
+				"document.analyze.v1",
+				"document.cleanup.v1",
+				"document.finalize.v1",
+				"document.recover.v1",
+				"document.validate.v1",
+				"maintenance.processing.v1",
+				"maintenance.uploads.v1",
+				"maintenance.webhooks.v1",
+				"notification.publish.v1",
+				"webhook.deliver.v1",
+			].sort(),
+		);
 		expect(retryDelay(1)).toBe(1_000);
 		expect(retryDelay(20)).toBe(60_000);
 	});

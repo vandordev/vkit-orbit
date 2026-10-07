@@ -1,9 +1,29 @@
 import { ForbiddenError } from "../shared/errors";
 
 export const permissions = {
-	OWNER: ["workspace:read", "workspace:write", "documents:read", "documents:write", "audit:read", "keys:write"],
-	ADMIN: ["workspace:read", "workspace:write", "documents:read", "documents:write", "audit:read", "keys:write"],
-	MEMBER: ["workspace:read", "documents:read", "documents:write"],
+	OWNER: [
+		"workspace:read",
+		"workspace:write",
+		"documents:read",
+		"documents:write",
+		"documents:process",
+		"documents:cancel",
+		"audit:read",
+		"keys:write",
+		"webhooks:manage",
+	],
+	ADMIN: [
+		"workspace:read",
+		"workspace:write",
+		"documents:read",
+		"documents:write",
+		"documents:process",
+		"documents:cancel",
+		"audit:read",
+		"keys:write",
+		"webhooks:manage",
+	],
+	MEMBER: ["workspace:read", "documents:read", "documents:write", "documents:process", "documents:cancel"],
 	VIEWER: ["workspace:read", "documents:read"],
 } as const;
 export type Permission = (typeof permissions)[keyof typeof permissions][number];

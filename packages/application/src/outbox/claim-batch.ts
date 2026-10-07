@@ -1,5 +1,9 @@
 import { prisma } from "@repo/database";
 export async function claimOutboxBatch(limit = 100, db: any = prisma) {
+	await db.queueOutbox.updateMany({
+		where: { status: "CLAIMED", claimedAt: { lt: new Date(Date.now() - 60_000) } },
+		data: { status: "PENDING", claimedAt: null },
+	});
 	const rows = await db.queueOutbox.findMany({
 		where: { status: { in: ["PENDING", "FAILED"] }, availableAt: { lte: new Date() } },
 		orderBy: { createdAt: "asc" },

@@ -1,25 +1,30 @@
-# Cross-runtime River job contracts
+# Cross-runtime BullMQ job contracts
 
-Jobs use a stable, versioned `kind` and JSON-only `args`. TypeScript producers
-validate payloads with Zod before insertion. Go workers decode the same fields
-into a matching struct and return retryable errors when downstream delivery
-fails. Breaking payload changes require a new `.vN` kind; additive compatible
-fields must remain decodable by older workers.
+`packages/queue/src/contracts/` owns versioned names and strict JSON payload
+schemas. Producers and TypeScript workers validate those schemas. Breaking
+payload changes require a new `.vN` name. PostgreSQL outbox intents are the
+durable source; Redis is the transport.
 
-## Optional recipe example
+| Contract                    | Queue         | Payload                           |
+| --------------------------- | ------------- | --------------------------------- |
+| `document.validate.v1`      | documents     | workspaceId, runId, revision      |
+| `document.analyze.v1`       | documents     | workspaceId, runId, revision      |
+| `document.finalize.v1`      | documents     | workspaceId, runId, revision      |
+| `document.recover.v1`       | documents     | workspaceId, runId, revision      |
+| `document.cleanup.v1`       | documents     | workspaceId, documentId, revision |
+| `webhook.deliver.v1`        | webhooks      | workspaceId, deliveryId, revision |
+| `notification.publish.v1`   | notifications | workspaceId, eventId, revision    |
+| `maintenance.processing.v1` | documents     | limit (1–1000, default 100)       |
+| `maintenance.webhooks.v1`   | webhooks      | limit (1–1000, default 100)       |
+| `maintenance.uploads.v1`    | documents     | limit (1–1000, default 100)       |
 
-The baseline installs no job contracts by default. The opt-in
-`recipes/realtime-notification/` recipe supplies
-`example.realtime-notification.v1`; its JSON args are:
+Stage payload `revision` refers to `ProcessingRun.stageRevision`, not the
+document's processing-attempt revision. Webhook revision is attempts + 1.
+Maintenance jobs scan bounded eligible rows; they contain no fake workspace
+or business IDs. Upload cleanup selects uploads older than 24 hours.
 
-```json
-{
-	"resourceId": "example-resource",
-	"workspaceId": "example-workspace"
-}
-```
-
-The recipe writes no Prisma model. After explicit installation it can be
-enqueued through its Elysia adapter or scheduler, then consumed by its Go
-worker handler. Workers notify Elysia only after success; Elysia publishes to
-Socket.IO.
+The relay routes intents to their contract's queue with deterministic job IDs.
+Expired outbox and webhook claims are recoverable. Completion records a durable
+notification event and signed webhook deliveries in the same database
+transaction. Notifications carry invalidation metadata only; workers notify
+Elysia, and Elysia alone publishes to Socket.IO.

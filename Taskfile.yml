@@ -48,7 +48,11 @@ tasks:
     cmds: [bun run start:migrate]
   test:
     desc: Run TypeScript tests
-    cmds: [bun test apps packages scripts --path-ignore-patterns=apps/web/e2e]
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://test:test@127.0.0.1:1/orbit_test
+      REDIS_KEY_PREFIX: orbit:test:unit
+    cmds: [bun --no-env-file test apps packages scripts --path-ignore-patterns=apps/web/e2e]
   quality:
     desc: Run tests, lint, and typechecks
     cmds:
@@ -90,4 +94,4 @@ tasks:
     cmds: [docker compose down]
   compose:smoke:
     desc: Run the complete real-stack Compose and browser acceptance gate
-    cmds: [bun run scripts/compose-smoke.ts]
+    cmds: [bun --no-env-file run scripts/compose-smoke.ts]

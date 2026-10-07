@@ -142,6 +142,7 @@
       "name": "@repo/application",
       "version": "0.1.0",
       "dependencies": {
+        "@repo/config": "*",
         "@repo/storage": "*",
       },
       "devDependencies": {
@@ -197,6 +198,7 @@
       "name": "@repo/query",
       "version": "0.1.0",
       "dependencies": {
+        "@repo/application": "*",
         "@repo/database": "*",
       },
       "devDependencies": {

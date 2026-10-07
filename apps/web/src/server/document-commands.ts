@@ -1,7 +1,10 @@
-import { createDocumentUpload, confirmDocumentUpload, submitProcessingRun } from "@repo/application";
+import { createDocumentUpload, confirmDocumentUpload, submitProcessingRun, uploadDocumentSource } from "@repo/application";
 import { createStorageClient } from "@repo/storage";
 import { createStorageConfig } from "@repo/config";
-export async function createUpload(input: any, principalId: string) {
+export async function createUpload(
+	input: { workspaceId: string; title: string; contentType: "text/plain" | "text/markdown"; byteSize: number },
+	principalId: string,
+) {
 	const result = await createDocumentUpload({ workspaceId: input.workspaceId, principalId }, input);
 	const config = createStorageConfig(process.env);
 	if (!config) throw new Error("storage is not configured");
@@ -16,18 +19,15 @@ export async function createUpload(input: any, principalId: string) {
 		}),
 	};
 }
-export async function uploadSource(input: any) {
+export async function uploadSource(
+	input: { workspaceId: string; documentId: string; artifactId: string; content: string },
+	principalId: string,
+) {
 	const config = createStorageConfig(process.env);
 	if (!config) throw new Error("storage is not configured");
-	await createStorageClient(config).put({
-		key: input.objectKey,
-		contentType: input.contentType,
-		body: Buffer.from(input.content, "base64"),
-		contentLength: Buffer.byteLength(input.content, "base64"),
-	});
-	return { uploaded: true };
+	return uploadDocumentSource({ workspaceId: input.workspaceId, principalId }, input, createStorageClient(config));
 }
-export async function confirmUpload(input: any, principalId: string) {
+export async function confirmUpload(input: { workspaceId: string; documentId: string }, principalId: string) {
 	const config = createStorageConfig(process.env);
 	if (!config) throw new Error("storage is not configured");
 	return confirmDocumentUpload(
@@ -36,6 +36,6 @@ export async function confirmUpload(input: any, principalId: string) {
 		createStorageClient(config),
 	);
 }
-export function submit(input: any, principalId: string) {
+export function submit(input: { workspaceId: string; documentId: string; idempotencyKey: string }, principalId: string) {
 	return submitProcessingRun({ workspaceId: input.workspaceId, principalId }, input);
 }

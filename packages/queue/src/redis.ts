@@ -14,6 +14,7 @@ export function createWorkerConnection(
 		port: Number(url.port || 6379),
 		username: url.username || undefined,
 		password: url.password || undefined,
+		tls: url.protocol === "rediss:" ? {} : undefined,
 		db: url.pathname.length > 1 ? Number(url.pathname.slice(1)) : undefined,
 		connectTimeout: config.connectTimeoutMs,
 		maxRetriesPerRequest: null,

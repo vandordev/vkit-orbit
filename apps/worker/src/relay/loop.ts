@@ -1,15 +1,20 @@
 import { runOutboxRelay } from "./relay";
 export function startRelayLoop(run: () => Promise<unknown>, intervalMs = 500) {
 	let stopped = false;
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	let pending: Promise<unknown> = Promise.resolve();
 	const tick = async () => {
 		if (!stopped) {
-			await run();
-			setTimeout(tick, intervalMs);
+			pending = run().catch(() => undefined);
+			await pending;
+			if (!stopped) timer = setTimeout(tick, intervalMs);
 		}
 	};
 	void tick();
-	return () => {
+	return async () => {
 		stopped = true;
+		clearTimeout(timer);
+		await pending;
 	};
 }
 export { runOutboxRelay };

@@ -2,14 +2,15 @@ import { prisma } from "@repo/database";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 export async function completeValidation(input: { workspaceId: string; runId: string; revision: number }, db: any = prisma) {
 	const run = await db.processingRun.findFirst({
-		where: { workspaceId: input.workspaceId, id: input.runId, revision: input.revision, status: "VALIDATING" },
+		where: { workspaceId: input.workspaceId, id: input.runId, stageRevision: input.revision, status: "VALIDATING" },
 	});
 	if (!run) return false;
-	await db.$transaction(async (tx: any) => {
-		await tx.processingRun.update({
-			where: { workspaceId_id: { workspaceId: input.workspaceId, id: input.runId } },
+	return db.$transaction(async (tx: any) => {
+		const changed = await tx.processingRun.updateMany({
+			where: { workspaceId: input.workspaceId, id: input.runId, stageRevision: input.revision, status: "VALIDATING" },
 			data: { status: "ANALYZING", leaseExpiresAt: null },
 		});
+		if (changed.count !== 1) return false;
 		await enqueueIntent(
 			{
 				workspaceId: input.workspaceId,
@@ -20,6 +21,6 @@ export async function completeValidation(input: { workspaceId: string; runId: st
 			},
 			tx,
 		);
+		return true;
 	});
-	return true;
 }

@@ -1,7 +1,6 @@
 import { prisma } from "@repo/database";
 import type { Stage } from "./types";
 
-const expected: Record<Stage, string> = { VALIDATING: "QUEUED", ANALYZING: "ANALYZING", FINALIZING: "FINALIZING" };
 export async function claimStage(
 	input: { workspaceId: string; runId: string; revision: number; stage: Stage; leaseMs?: number },
 	db: any = prisma,
@@ -11,8 +10,8 @@ export async function claimStage(
 		where: {
 			workspaceId: input.workspaceId,
 			id: input.runId,
-			revision: input.revision,
-			status: expected[input.stage],
+			stageRevision: input.revision,
+			status: { in: input.stage === "VALIDATING" ? ["QUEUED", "VALIDATING"] : [input.stage] },
 			OR: [{ leaseExpiresAt: null }, { leaseExpiresAt: { lt: now } }],
 		},
 		data: { status: input.stage, leaseExpiresAt: new Date(now.getTime() + (input.leaseMs ?? 60_000)) },

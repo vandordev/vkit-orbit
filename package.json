@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "bun@1.3.14",
   "scripts": {
-    "build": "bun run format:check && bun run check-types && turbo run build",
+    "build": "bun run format:check && bun run check-types && turbo run build && bun --no-env-file run scripts/check-public-bundles.ts",
     "start": "bun run start:web",
     "start:web": "cd apps/web && bun run start",
     "start:scheduler": "cd apps/scheduler && bun run start",

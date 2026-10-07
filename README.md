@@ -43,12 +43,13 @@ task install
 cp .env.example .env
 task doctor
 task migrate
-task dev -- web
+task dev
 ```
 
-Run multiple local runtimes with `task dev -- web worker scheduler realtime`.
-The scheduler and worker are idle long-running runtimes until a consumer
-installs domain work.
+Run worker, scheduler, and realtime in separate terminals with
+`task dev:worker`, `task dev:scheduler`, and `task dev:realtime`.
+The installed worker consumes document, webhook, notification, and maintenance
+jobs; the scheduler periodically enqueues recovery and expired-upload scans.
 
 ## Configuration
 
@@ -65,6 +66,13 @@ Realtime credentials are paired across the boundaries:
 - realtime: `REALTIME_PUBLISH_API_KEY`, `REALTIME_CORS_ORIGIN`, and ticket secret;
 - web: public `VITE_REALTIME_URL` only.
 
+Webhook creation requires `WEBHOOK_SECRET_ENCRYPTION_KEY` (64 hexadecimal
+characters, shared by web/API/worker, stored outside source control). Signing
+secrets are encrypted with AES-256-GCM and returned once. Existing hash-only
+endpoints must be recreated to sign future events. Webhooks accept only public
+HTTPS targets on port 443; delivery pins validated DNS addresses and does not
+follow redirects.
+
 ## Operations and realtime
 
 The product runtime is installed by default. Realtime carries invalidation
@@ -78,19 +86,27 @@ BullMQ job kinds and JSON payloads are contracts documented in
 ## Commands
 
 ```text
-task doctor                              Verify tools, env, and migration test
+task doctor                              Verify tools and local env presence
 task migrate                             Prisma migrations
-task dev                                 Web, worker, and scheduler
-task dev -- web worker scheduler realtime Selected runtimes
+task dev                                 Web foreground
+task dev:worker                           Document/webhook/notification workers
+task dev:scheduler                        Enqueue-only maintenance schedules
+task dev:realtime                         Socket.IO runtime
 task quality                             TypeScript tests/lint/types
 task build                               TypeScript builds
-task compose:up:detached                 Default db+migrate+web stack
-task compose:jobs                        Optional worker and scheduler profile
-task compose:realtime                    Optional Socket.IO profile
+task compose:up:detached                  Full installed runtime stack
+task compose:smoke                        Disposable full-stack acceptance gate
 ```
 
 Compose exposes only web `4100`, API `4101`, and realtime `4102`; the one-shot
 `migrate` service must complete before dependent services start.
+
+Tests never load `.env`; PostgreSQL integration tests create disposable
+containers unless an explicit `TEST_DATABASE_URL` ending in `_test` is provided.
+Test Redis requires an `orbit:test:<name>` prefix. Compose smoke uses its own
+random project and volumes and excludes the developer `.env`; it still needs
+ports 4100–4102 free. Never run destructive Redis recovery against a development
+or production project.
 
 ## Scope rules
 

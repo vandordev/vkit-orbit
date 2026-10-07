@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma, type DatabaseConnection, type DatabaseTransaction } from "@repo/database";
 import { sourceObjectKey } from "@repo/storage";
 import { writeAuditLog } from "../audit/write-audit-log";
 import { assertSupportedUpload } from "./state-machine";
@@ -6,12 +6,12 @@ import { assertSupportedUpload } from "./state-machine";
 export async function createDocumentUpload(
 	scope: { workspaceId: string; principalId: string },
 	input: { documentId?: string; artifactId?: string; title: string; contentType: string; byteSize: number },
-	db: any = prisma,
+	db: DatabaseConnection = prisma,
 ) {
 	assertSupportedUpload(input.contentType, input.byteSize);
 	const documentId = input.documentId ?? `doc_${crypto.randomUUID()}`;
 	const artifactId = input.artifactId ?? `art_${crypto.randomUUID()}`;
-	const create = async (tx: any) => {
+	const create = async (tx: DatabaseTransaction) => {
 		const document = await tx.document.create({
 			data: {
 				id: documentId,
@@ -44,5 +44,5 @@ export async function createDocumentUpload(
 		);
 		return { document, artifact };
 	};
-	return typeof db.$transaction === "function" ? db.$transaction(create) : create(db);
+	return "$transaction" in db ? db.$transaction(create) : create(db);
 }

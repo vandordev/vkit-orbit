@@ -1,24 +1,31 @@
-import { enqueueIntent, recordWebhookAttempt } from "@repo/application";
+import { enqueueIntent, recordWebhookAttempt, classifyWebhookResponse } from "@repo/application";
 import { webhookDeliverV1 } from "@repo/queue";
 import { typedHandler } from "./types";
-export const createWebhookDeliverHandler = (db: any, deliver: (deliveryId: string) => Promise<number | "network">) =>
+import type { DatabaseClient } from "@repo/database";
+export const createWebhookDeliverHandler = (db: DatabaseClient, deliver: (deliveryId: string) => Promise<number | "network">) =>
 	typedHandler(webhookDeliverV1, async (payload) => {
-		const delivery = await db.webhookDelivery.findFirst({
-			where: { workspaceId: payload.workspaceId, id: payload.deliveryId, status: "PENDING" },
+		const claimed = await db.webhookDelivery.updateMany({
+			where: {
+				workspaceId: payload.workspaceId,
+				id: payload.deliveryId,
+				status: "PENDING",
+				attempts: payload.revision - 1,
+				nextAttemptAt: { lte: new Date() },
+			},
+			data: { status: "PROCESSING", leaseExpiresAt: new Date(Date.now() + 30_000) },
 		});
-		if (!delivery) return "NO_OP";
-		const status = await deliver(payload.deliveryId);
-		const outcome =
-			status === "network" || status >= 500 || status === 429
-				? "RETRYABLE"
-				: status >= 200 && status < 300
-					? "SUCCESS"
-					: status >= 400
-						? "TERMINAL"
-						: "UNKNOWN";
+		if (claimed.count !== 1) return "NO_OP";
+		let status: number | "network";
+		try {
+			status = await deliver(payload.deliveryId);
+		} catch {
+			status = "network";
+		}
+		const classified = classifyWebhookResponse(status);
+		const outcome = payload.revision >= 8 && classified !== "SUCCESS" ? "TERMINAL" : classified === "UNKNOWN" ? "RETRYABLE" : classified;
 		const nextRevision = payload.revision + 1;
 		if (outcome === "RETRYABLE") {
-			await db.$transaction(async (tx: any) => {
+			await db.$transaction(async (tx) => {
 				await recordWebhookAttempt(
 					{
 						workspaceId: payload.workspaceId,

@@ -1,7 +1,16 @@
 import { prisma } from "@repo/database";
-export async function cleanupDocuments(input: { limit?: number; before: Date }, db: any = prisma) {
+export async function cleanupDocuments(
+	input: { limit?: number; before: Date; workspaceId?: string; documentId?: string },
+	db: any = prisma,
+) {
 	const artifacts = await db.documentArtifact.findMany({
-		where: { kind: "SOURCE", createdAt: { lt: input.before }, document: { status: "UPLOADING" } },
+		where: {
+			kind: "SOURCE",
+			workspaceId: input.workspaceId,
+			documentId: input.documentId,
+			createdAt: { lt: input.before },
+			document: { status: "UPLOADING" },
+		},
 		take: input.limit ?? 100,
 	});
 	for (const artifact of artifacts)

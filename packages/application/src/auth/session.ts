@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { prisma } from "@repo/database";
+import { prisma, type DatabaseClient } from "@repo/database";
 import { UnauthorizedError } from "../shared/errors";
 
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
@@ -19,11 +19,14 @@ export async function createSession(input: { userId: string; expiresAt?: Date; u
 	});
 	return { ...session, token: secret };
 }
-export async function authenticateSession(secret: string) {
+export async function authenticateSession(secret: string, db: Pick<DatabaseClient, "session"> = prisma) {
 	if (!secret.startsWith("ses_")) throw new UnauthorizedError("invalid session");
-	const session = await prisma.session.findUnique({ where: { tokenHash: digest(secret) }, include: { user: true } });
+	const session = await db.session.findUnique({
+		where: { tokenHash: digest(secret) },
+		include: { user: { select: { id: true, email: true } } },
+	});
 	if (!session || session.revokedAt || session.expiresAt <= new Date()) throw new UnauthorizedError("invalid session");
-	return { userId: session.userId, sessionId: session.id, user: session.user };
+	return { userId: session.userId, sessionId: session.id, user: { id: session.user.id, email: session.user.email } };
 }
 export async function revokeSession(secret: string) {
 	await prisma.session.updateMany({ where: { tokenHash: digest(secret), revokedAt: null }, data: { revokedAt: new Date() } });

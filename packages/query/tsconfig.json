@@ -1,5 +1,5 @@
 {
   "extends": "@repo/typescript-config/base.json",
-  "compilerOptions": { "outDir": "dist", "rootDir": "src" },
+  "compilerOptions": { "outDir": "dist", "module": "ESNext", "moduleResolution": "Bundler", "noEmit": true },
   "include": ["src"]
 }

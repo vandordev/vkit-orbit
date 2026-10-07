@@ -1,4 +1,5 @@
 export { createApiConfig } from "./api";
+export { createWebhookConfig } from "./webhook";
 export type { ApiConfig } from "./api";
 export { createCommonConfig } from "./common";
 export type { CommonConfig } from "./common";

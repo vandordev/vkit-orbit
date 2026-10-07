@@ -38,6 +38,7 @@ enum ArtifactKind {
 }
 enum WebhookDeliveryStatus {
   PENDING
+  PROCESSING
   SUCCEEDED
   FAILED
 }
@@ -189,6 +190,7 @@ model WebhookEndpoint {
   workspaceId String
   url String
   secretHash String
+  encryptedSecret String?
   events Json
   active Boolean @default(true)
   createdAt DateTime @default(now())
@@ -209,6 +211,7 @@ model WebhookDelivery {
   status WebhookDeliveryStatus @default(PENDING)
   attempts Int @default(0)
   nextAttemptAt DateTime @default(now())
+  leaseExpiresAt DateTime?
   createdAt DateTime @default(now())
   endpoint WebhookEndpoint @relation(fields: [workspaceId, endpointId], references: [workspaceId, id], onDelete: Cascade)
   @@unique([workspaceId, id])

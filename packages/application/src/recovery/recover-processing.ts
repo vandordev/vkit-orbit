@@ -1,8 +1,10 @@
 import { prisma } from "@repo/database";
 import { enqueueIntent } from "../outbox/enqueue-intent";
-export async function recoverProcessing(input: { limit?: number }, db: any = prisma) {
+export async function recoverProcessing(input: { limit?: number; workspaceId?: string; runId?: string }, db: any = prisma) {
 	const runs = await db.processingRun.findMany({
 		where: {
+			workspaceId: input.workspaceId,
+			id: input.runId,
 			status: { in: ["QUEUED", "VALIDATING", "ANALYZING", "FINALIZING"] },
 			OR: [{ leaseExpiresAt: null }, { leaseExpiresAt: { lt: new Date() } }],
 		},
@@ -19,7 +21,7 @@ export async function recoverProcessing(input: { limit?: number }, db: any = pri
 						? "document.analyze.v1"
 						: "document.finalize.v1";
 		await db.queueOutbox.updateMany({
-			where: { workspaceId: run.workspaceId, businessId: run.id, revision: run.stageRevision, status: "PUBLISHED" },
+			where: { workspaceId: run.workspaceId, businessId: run.id, contract, revision: run.stageRevision, status: "PUBLISHED" },
 			data: { status: "PENDING", availableAt: new Date(), claimedAt: null, publishedAt: null },
 		});
 		await enqueueIntent(

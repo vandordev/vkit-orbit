@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { prisma } from "@repo/database";
+import { prisma, type DatabaseClient, type DatabaseTransaction, type Prisma } from "@repo/database";
 
 function sortValue(value: unknown): unknown {
 	if (Array.isArray(value)) return value.map(sortValue);
@@ -25,23 +25,25 @@ export async function executeIdempotent<T>(
 	operation: string,
 	key: string,
 	request: unknown,
-	action: (db: any) => Promise<T>,
-	db: any = prisma,
+	action: (db: DatabaseTransaction) => Promise<T>,
+	db: DatabaseClient = prisma,
 ): Promise<T> {
 	const requestHash = canonicalRequestHash(request);
-	const existing = await db.idempotencyRecord.findUnique({
-		where: { workspaceId_operation_key: { workspaceId: scope.workspaceId, operation, key } },
-	});
-	if (existing) {
-		if (existing.requestHash !== requestHash) throw new IdempotencyConflictError("idempotency key was reused with a different request");
-		return existing.response as T;
-	}
-	return db.$transaction(async (tx: any) => {
+	if (!key || key.length > 255) throw new Error("invalid idempotency key");
+	// Serialize the reservation BEFORE business writes. A transaction-scoped lock
+	// is released on both commit and rollback, including process termination.
+	const lock = createHash("sha256")
+		.update(JSON.stringify([scope.workspaceId, operation, key]))
+		.digest()
+		.readBigInt64BE();
+	return db.$transaction(async (tx) => {
+		await tx.$queryRaw`SELECT pg_advisory_xact_lock(${lock})::text`;
 		const raced = await tx.idempotencyRecord.findUnique({
 			where: { workspaceId_operation_key: { workspaceId: scope.workspaceId, operation, key } },
 		});
 		if (raced) {
-			if (raced.requestHash !== requestHash) throw new IdempotencyConflictError("idempotency key was reused with a different request");
+			if (raced.requestHash !== requestHash || raced.principalId !== scope.principalId)
+				throw new IdempotencyConflictError("idempotency key was reused by a different principal or request");
 			return raced.response as T;
 		}
 		const result = await action(tx);
@@ -53,7 +55,7 @@ export async function executeIdempotent<T>(
 				operation,
 				key,
 				requestHash,
-				response: result as never,
+				response: JSON.parse(JSON.stringify(result)) as Prisma.InputJsonValue,
 			},
 		});
 		return result;

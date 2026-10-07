@@ -64,3 +64,23 @@ test("rejects forbidden runtime and browser boundaries", async () => {
 		"apps/worker/main.go: Go worker runtime files are forbidden",
 	]);
 });
+
+test("checks current API handler paths, browser tRPC clients and scheduler ownership", async () => {
+	const root = await fixture();
+	await mkdir(join(root, "apps/api/src/handlers/v1/documents"), { recursive: true });
+	await mkdir(join(root, "apps/web/src/trpc"), { recursive: true });
+	await mkdir(join(root, "apps/scheduler/src"), { recursive: true });
+	await writeFile(
+		join(root, "apps/api/src/handlers/v1/documents/create.ts"),
+		'import { prisma } from "@repo/database"; prisma.document.create();',
+	);
+	await writeFile(join(root, "apps/web/src/trpc/client.ts"), 'import { prisma } from "@repo/database"; import "@repo/storage";');
+	await writeFile(join(root, "apps/scheduler/src/main.ts"), 'import { prisma } from "@repo/database";');
+	expect(checkArchitecture(root)).toEqual([
+		"apps/api/src/handlers/v1/documents/create.ts: versioned routes must not import @repo/database",
+		"apps/api/src/handlers/v1/documents/create.ts: versioned routes must not perform Prisma writes",
+		"apps/scheduler/src/main.ts: scheduler must be enqueue-only",
+		"apps/web/src/trpc/client.ts: browser code must not import server-only modules",
+		"apps/web/src/trpc/client.ts: web must not import @repo/database",
+	]);
+});

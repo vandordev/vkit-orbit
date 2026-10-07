@@ -6,6 +6,8 @@ test("workspace-scoped identifiers do not cross tenant boundaries", async () => 
 	await withPostgres(async (db) => {
 		await db.workspace.create({ data: { id: "scope_one", name: "One", slug: "scope-one" } });
 		await db.workspace.create({ data: { id: "scope_two", name: "Two", slug: "scope-two" } });
+		await db.user.create({ data: { id: "user", email: "member@test.invalid", passwordHash: "synthetic" } });
+		await db.workspaceMember.create({ data: { workspaceId: "scope_two", userId: "user", role: "VIEWER" } });
 		await db.document.create({
 			data: { id: "private_doc", workspaceId: "scope_one", title: "Private", contentType: "text/plain", byteSize: 4 },
 		});

@@ -126,11 +126,27 @@ const receiver = Bun.serve({
 		});
 	},
 });
-const webhook = await createWebhookEndpoint({
-	workspaceId,
-	url: `http://127.0.0.1:${receiver.port}`,
-	events: ["document.processing.completed.v1"],
+// Prove that production endpoint creation rejects loopback. The byte-retry
+// fixture below uses direct persistence and an injected transport, not a
+// production SSRF policy exception or a claim of public HTTPS delivery.
+let rejected = false;
+try {
+	await createWebhookEndpoint({ workspaceId, url: `http://127.0.0.1:${receiver.port}`, events: ["document.processing.completed.v1"] });
+} catch {
+	rejected = true;
+}
+check(rejected, "localhost webhook registration bypassed URL policy");
+const secret = randomBytes(32).toString("hex");
+const endpoint = await prisma.webhookEndpoint.create({
+	data: {
+		id: `wh_smoke_${suffix}`,
+		workspaceId,
+		url: `http://127.0.0.1:${receiver.port}`,
+		events: [],
+		secretHash: createHash("sha256").update(secret).digest("hex"),
+	},
 });
+const webhook = { endpoint, secret };
 const envelope = prepareWebhookEnvelope({
 	event: "document.processing.completed.v1",
 	eventId: `evt_${suffix}`,

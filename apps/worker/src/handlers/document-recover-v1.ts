@@ -7,11 +7,11 @@ export const createDocumentRecoverHandler = (db: any) =>
 			where: {
 				workspaceId: payload.workspaceId,
 				id: payload.runId,
-				revision: payload.revision,
+				stageRevision: payload.revision,
 				status: { notIn: ["COMPLETED", "CANCELED"] },
 			},
 		});
 		if (!run) return "NO_OP";
-		await recoverProcessing({ limit: 1 }, db);
+		await recoverProcessing({ limit: 1, workspaceId: payload.workspaceId, runId: payload.runId }, db);
 		return "SUCCESS";
 	});

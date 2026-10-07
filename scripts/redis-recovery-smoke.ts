@@ -1,4 +1,7 @@
 import { spawn } from "node:child_process";
+import { assertSmokeIsolation } from "./smoke-isolation";
+
+assertSmokeIsolation();
 
 const command = (args: string[]) =>
 	new Promise<number>((resolve) => {
