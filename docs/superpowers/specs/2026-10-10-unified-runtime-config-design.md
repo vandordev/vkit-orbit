@@ -2,9 +2,9 @@
 
 ## Status and authority
 
-Design direction approved in conversation; this written specification awaits
-user review before an implementation plan is written. No implementation is
-authorized by publication of this document alone.
+Design direction and this written specification were approved by the user on
+2026-10-10 after commit `4b34aac`. Implementation plan creation is authorized;
+implementation still requires plan approval and execution/branch selection.
 
 This specification governs the configuration migration in `vkit-orbit`. It
 replaces historical modular-YAML and client-environment requirements only for
