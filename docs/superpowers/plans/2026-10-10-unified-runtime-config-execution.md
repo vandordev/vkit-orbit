@@ -14,11 +14,21 @@ upstream typecheck dependencies. Registry confirms stable Zod 4.6.5.
 | --- | --- | --- | --- |
 | 1 | 1–3 | PASS | `47de22b`; Zod 4.6.5 direct; transitive 4.4.3 only; install scripts disabled; fresh post-fixture `bun --no-env-file run check-types --force`: 16/16, zero cached |
 | 2 | 4–6 | PASS | `79c4101`; `bun --no-env-file run check-types --force --filter=...@repo/config`: 14/14, zero cached |
-| 3 | 7 | PASS | `bun --no-env-file run check-types --force --filter=...@repo/db --filter=...@repo/config`: 15/15, zero cached |
-| 4 | 8–10 | PENDING | |
+| 3 | 7 | PASS | `9d7408b`; `bun --no-env-file run check-types --force --filter=...@repo/db --filter=...@repo/config`: 15/15, zero cached |
+| 4 | 8–10 | PASS | `bun --no-env-file run check-types --force --filter=web`: 9/9, zero cached |
 | 5 (sole integrated audit) | 11–13 | PENDING | |
 
 ## Verification boundaries
+
+Batch 4: base context defers cookies/session/database and memoizes one session
+promise. Authenticated middleware attaches nonnull session/database before unchanged
+workspace/permission middleware; auth.status explicitly resolves session. Public
+query has no input, strict output and generic failure. HTTP handler extraction is
+a supporting path revision for fixture review; preserves cookies and same-origin
+gate, enforces no-store after adapter response as well as responseMeta and early
+failures. Config query is mounted-browser-only, page-memory infinite cache with
+bounded retries; socket requires both successful non-error queries, explicit URL,
+separate ticket, and effect disposal. No presentation change or Storybook needed.
 
 Batch 3: Prisma constructor receives explicit datasource URL, singleton getter is
 lazy and retains development global reuse. All application defaults call getter

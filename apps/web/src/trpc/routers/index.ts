@@ -6,8 +6,10 @@ import { processingRunsRouter } from "./processing-runs";
 import { apiKeysRouter } from "./api-keys";
 import { webhooksRouter } from "./webhooks";
 import { auditRouter } from "./audit";
+import { configRouter } from "./config";
 
 export const appRouter = router({
+	config: configRouter,
 	auth: authRouter,
 	workspace: workspaceRouter,
 	documents: documentsRouter,

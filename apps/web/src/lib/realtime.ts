@@ -1,8 +1,8 @@
 import { io, type Socket } from "socket.io-client";
 import { realtimeEventSchema, type RealtimeEvent } from "@repo/realtime";
 
-export function createRealtimeSocket(ticket: string): Socket {
-	return io(import.meta.env.VITE_REALTIME_URL, { path: "/ws", auth: { ticket }, transports: ["websocket"], autoConnect: false });
+export function createRealtimeSocket(input: { url: string; ticket: string }): Socket {
+	return io(input.url, { path: "/ws", auth: { ticket: input.ticket }, transports: ["websocket"], autoConnect: false });
 }
 
 type RealtimeSocket = {

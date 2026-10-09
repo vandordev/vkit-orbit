@@ -7,8 +7,8 @@ test("settings lists read scoped persisted metadata without credential fields", 
 	const ctx = {
 		req: new Request("https://example.test"),
 		responseHeaders: new Headers(),
-		session: { userId: "usr_one", sessionId: "ses_one", user: { id: "usr_one", email: "one@test.invalid" } },
-		database: {
+		getSession: async () => ({ userId: "usr_one", sessionId: "ses_one", user: { id: "usr_one", email: "one@test.invalid" } }),
+		getDatabase: () => ({
 			workspaceMember: { findUnique: async () => ({ role: "OWNER" }) },
 			apiKey: {
 				findMany: async (query: unknown) => {
@@ -23,7 +23,7 @@ test("settings lists read scoped persisted metadata without credential fields", 
 				},
 			},
 			workspace: { findUniqueOrThrow: async () => ({ id: "ws_one", name: "One", slug: "one" }) },
-		},
+		}),
 	} as unknown as TRPCContext;
 	const caller = appRouter.createCaller(ctx);
 	expect(await caller.apiKeys.list({ workspaceId: "ws_one" })).toMatchObject([{ id: "key_one", name: "One" }]);

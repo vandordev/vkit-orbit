@@ -6,7 +6,7 @@ export const authRouter = router({
 	realtimeTicket: authenticatedProcedure.query(async ({ ctx }) =>
 		(await import("../../server/realtime-ticket")).createRealtimeTicket(ctx.session.userId),
 	),
-	status: publicProcedure.query(({ ctx }) => ({ authenticated: Boolean(ctx.session) })),
+	status: publicProcedure.query(async ({ ctx }) => ({ authenticated: Boolean(await ctx.getSession()) })),
 	register: publicProcedure
 		.input(z.object({ email: z.string().email(), password: z.string().min(12), name: z.string().min(1) }))
 		.mutation(async ({ input, ctx }) => {

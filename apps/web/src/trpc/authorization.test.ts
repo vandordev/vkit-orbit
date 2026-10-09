@@ -7,8 +7,8 @@ function context(role: "OWNER" | "VIEWER" | null): TRPCContext {
 	return {
 		req: new Request("https://example.test/trpc"),
 		responseHeaders: new Headers(),
-		session: { userId: "usr_one", sessionId: "ses_one", user: { id: "usr_one", email: "one@test.invalid" } },
-		database: { workspaceMember: { findUnique: async () => (role ? { role, workspaceId: "ws_one", userId: "usr_one" } : null) } },
+		getSession: async () => ({ userId: "usr_one", sessionId: "ses_one", user: { id: "usr_one", email: "one@test.invalid" } }),
+		getDatabase: () => ({ workspaceMember: { findUnique: async () => (role ? { role, workspaceId: "ws_one", userId: "usr_one" } : null) } }),
 	} as unknown as TRPCContext;
 }
 

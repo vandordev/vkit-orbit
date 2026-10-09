@@ -6,9 +6,10 @@ import { hasPermission, type Permission } from "@repo/application";
 const t = initTRPC.context<TRPCContext>().create();
 export const router = t.router;
 export const publicProcedure = t.procedure;
-export const authenticatedProcedure = publicProcedure.use(({ ctx, next }) => {
-	if (!ctx.session) throw new TRPCError({ code: "UNAUTHORIZED" });
-	return next({ ctx: { ...ctx, session: ctx.session } });
+export const authenticatedProcedure = publicProcedure.use(async ({ ctx, next }) => {
+	const session = await ctx.getSession();
+	if (!session) throw new TRPCError({ code: "UNAUTHORIZED" });
+	return next({ ctx: { ...ctx, session, database: ctx.getDatabase() } });
 });
 export const workspaceProcedure = authenticatedProcedure
 	.input(z.object({ workspaceId: z.string().min(1) }))
