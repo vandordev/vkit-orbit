@@ -2,6 +2,11 @@ import { describe, expect, test } from "bun:test";
 import { documentValidateV1, parseJobPayload, createJobId, jobContracts, retryDelay } from "./index";
 
 describe("BullMQ contracts", () => {
+	test("preserves maintenance defaults and strict numeric revisions", () => {
+		expect(parseJobPayload("maintenance.processing.v1", {})).toEqual({ limit: 100 });
+		expect(() => parseJobPayload("maintenance.processing.v1", { extra: true })).toThrow();
+		for (const revision of ["1", 0, 1.5]) expect(() => parseJobPayload("document.validate.v1", { workspaceId: "ws", runId: "run", revision })).toThrow();
+	});
 	test("parses the exact versioned stage payload", () => {
 		expect(parseJobPayload("document.validate.v1", { workspaceId: "ws_1", runId: "run_1", revision: 1 })).toEqual({
 			workspaceId: "ws_1",

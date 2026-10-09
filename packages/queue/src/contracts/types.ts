@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export type JobContract<T extends z.ZodTypeAny = z.ZodTypeAny> = {
+export type JobContract<T extends z.ZodType = z.ZodType> = {
 	name: string;
 	queue: "documents" | "webhooks" | "notifications";
 	schema: T;

@@ -10,7 +10,7 @@
 
 **Approved spec:** `docs/superpowers/specs/2026-10-10-unified-runtime-config-design.md`, approved by the user after commit `4b34aac`.
 
-**Status:** Proposed plan awaiting user approval and execution/branch selection. No task is implemented by this document.
+**Status:** Approved by the user; executing inline in this session on existing local `main`, without orchestration, subagents, worktrees, or Goal Mode. Progress and evidence are recorded in the execution ledger.
 
 ## Discovery Evidence
 
