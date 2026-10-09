@@ -39,7 +39,9 @@ feasibility, build typed presentation components with stories, verify them here,
 then integrate fetching/auth/navigation in route adapters. Pages/layouts use
 `Web/Pages/<Area>/<Page>` and `Web/Layouts/<Layout>` titles under route-local
 `-components`. The initial `Web/UI/Button` stories render the real existing Button;
-existing routes are not migrated by this installation.
+existing routes are not migrated by this installation. Shared Vandor Button and
+its portable stories live in `packages/components`, under `Vandor UI/Button`.
+See [component ownership rules](../../.agent/components.md).
 
 Fixtures are deterministic and local, respecting actual schema/runtime contracts.
 Stories compose their own providers when needed, never production credentials

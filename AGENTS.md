@@ -11,6 +11,8 @@ changed, the plan/spec, and run
 - `apps/web`: TanStack Start, Tailwind/shadcn UI, and same-origin tRPC.
 - `apps/storybook`: repository-wide presentation previews; stories stay colocated
   with their owning components. Development tooling only, not a deployed runtime.
+- `packages/components`: shared Vandor UI source, imported through explicit
+  `@repo/components/<name>` entrypoints. Existing local UI is transitional.
 - `apps/api`: Elysia factory, validation, envelopes, usecase transport, and the
   authenticated `/api/internal/worker-events` gateway.
 - `packages/database`: the only Prisma client owner and migration source.
@@ -53,6 +55,7 @@ UI follows component-driven design: check schema and runtime feasibility, build
 typed presentation components with colocated stories, verify them in Storybook,
 then integrate routes and tRPC. Keep fetching, authorization, and navigation out
 of presentation components. Read `.agent/web/README.md` and the Storybook README.
+For shared UI, read `.agent/components.md` and `packages/components/README.md`.
 Prefer `task` commands. Preserve unrelated changes and report exactly what was
 verified and what remains unresolved. Commit completed tasks with an appropriate
 conventional message; no automatic merge or push.

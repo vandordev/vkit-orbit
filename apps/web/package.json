@@ -13,6 +13,7 @@
     "clean": "rm -rf .output .vite src/routeTree.gen.ts"
   },
   "dependencies": {
+    "@repo/components": "*",
     "@repo/application": "*",
     "@repo/config": "*",
     "@repo/query": "*",

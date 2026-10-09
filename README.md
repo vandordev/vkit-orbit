@@ -9,6 +9,11 @@ Prisma, BullMQ/Redis workers, MinIO, and Socket.IO invalidation events.
 standalone public Elysia `/v1` server, not a browser proxy. Web uses Tailwind
 CSS and shadcn/ui primitives.
 
+New shared UI lives in [`packages/components`](packages/components/README.md),
+installed from Vandor UI and imported via `@repo/components/<name>`. Button is the
+initial example; existing web-local primitives remain transitional, not migrated.
+See [component ownership and installation rules](.agent/components.md).
+
 [`apps/storybook`](apps/storybook/README.md) hosts repository-wide component
 previews. Stories remain colocated with their components. Run `task dev:storybook`
 on port 6006 or `task build:storybook` for static output. New/changed UI follows

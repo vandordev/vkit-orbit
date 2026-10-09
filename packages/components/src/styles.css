@@ -1,0 +1,11 @@
+@source "./**/*.{ts,tsx}";
+@custom-variant vandor-dark (&:where(.dark, .dark *));
+
+@theme inline {
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-input: var(--input);
+}

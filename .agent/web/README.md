@@ -13,8 +13,11 @@ the embedded Elysia route adapters. `/api/*` delegates to `app.fetch` without a
 network proxy. Realtime events only invalidate/refetch authoritative API data;
 the opt-in `/examples/realtime` route has no default navigation link.
 
-Use TanStack Start with Tailwind CSS and shadcn/ui primitives as the single UI
-baseline. Keep accessible labels, focus states, responsive layouts, and typed
+Use TanStack Start with Tailwind CSS and shared Vandor UI primitives as the UI
+baseline. New shared UI imports `@repo/components/<name>`; only Button is initially
+installed. Read [component rules](../components.md) and
+[package guidance](../../packages/components/README.md). Existing local shadcn UI
+remains transitional until explicitly migrated. Keep accessible labels, focus states, responsive layouts, and typed
 same-origin tRPC calls. Do not reintroduce Next.js or Mantine as defaults.
 
 See [routing.md](routing.md) for the complete directory-first route

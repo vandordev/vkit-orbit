@@ -1,0 +1,127 @@
+"use client";
+
+import { Button as BaseButton } from "@base-ui/react/button";
+import { useRender } from "@base-ui/react/use-render";
+import { cva } from "class-variance-authority";
+import type { VariantProps } from "class-variance-authority";
+import { cn } from "cn";
+import { motion, useReducedMotion } from "motion/react";
+import type { HTMLMotionProps } from "motion/react";
+import type * as React from "react";
+import { cloneElement, isValidElement } from "react";
+
+import { LoadingArc } from "./loading-arc";
+
+const buttonVariants = cva(
+	"inline-flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-[background-color,color,border-color,box-shadow,filter] duration-200 ease-out motion-reduce:transition-none [&:active:not([disabled]):not([aria-disabled=true])]:brightness-90 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 vandor-dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+	{
+		defaultVariants: {
+			size: "default",
+			variant: "default",
+		},
+		variants: {
+			size: {
+				default: "h-9 px-4 py-2 has-[>svg]:px-3",
+				icon: "size-9",
+				"icon-lg": "size-10",
+				"icon-sm": "size-8",
+				"icon-xs": "size-6 rounded-md [&_svg:not([class*='size-'])]:size-3",
+				lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
+				sm: "h-8 gap-1.5 rounded-md px-3 has-[>svg]:px-2.5",
+				xs: "h-6 gap-1 rounded-md px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
+			},
+			variant: {
+				default:
+					"border border-primary border-t-primary/70 bg-primary bg-linear-to-b from-white/10 to-black/20 text-primary-foreground hover:bg-primary/90",
+				destructive:
+					"border border-destructive border-t-destructive/70 bg-destructive bg-linear-to-b from-white/10 to-black/10 text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 vandor-dark:bg-destructive/60 vandor-dark:focus-visible:ring-destructive/40",
+				ghost: "hover:bg-accent hover:text-accent-foreground vandor-dark:hover:bg-accent/50",
+				link: "text-primary underline-offset-4 hover:underline",
+				outline:
+					"border bg-background hover:bg-accent hover:text-accent-foreground vandor-dark:border-input vandor-dark:bg-input/30 vandor-dark:hover:bg-input/50",
+				secondary:
+					"border border-input bg-secondary bg-linear-to-b from-white/10 to-black/10 text-secondary-foreground hover:bg-secondary/80",
+			},
+		},
+	},
+);
+
+const Slot = ({ children, ref, ...props }: React.ComponentProps<"button">) =>
+	useRender({
+		props,
+		ref,
+		render: children as React.ReactElement,
+	});
+const MotionSlot = motion.create(Slot);
+const MotionButton = motion.create(BaseButton);
+
+const blockLoadingClick = (event: React.MouseEvent) => {
+	event.preventDefault();
+	event.stopPropagation();
+};
+
+type ButtonProps = Omit<HTMLMotionProps<"button">, "children" | "whileTap"> &
+	VariantProps<typeof buttonVariants> & {
+		asChild?: boolean;
+		isLoading?: boolean;
+		render?: React.ComponentProps<typeof BaseButton>["render"];
+		nativeButton?: boolean;
+		children?: React.ReactNode;
+		whileTap?: HTMLMotionProps<"button">["whileTap"] | false;
+	};
+
+const Button = ({
+	className,
+	variant = "default",
+	size = "default",
+	asChild = false,
+	isLoading = false,
+	children,
+	disabled,
+	whileTap = { scale: 0.96 },
+	transition = { duration: 0.12, ease: "easeOut" },
+	...props
+}: ButtonProps) => {
+	const shouldReduceMotion = useReducedMotion();
+	const Comp = asChild ? MotionSlot : MotionButton;
+	const isDisabled = disabled || isLoading;
+	const iconOnly = size?.startsWith("icon");
+	const loadingContent = (content: React.ReactNode) => (
+		<>
+			<LoadingArc size={size === "xs" || size === "icon-xs" ? 12 : 16} data-icon="inline-start" aria-hidden="true" />
+			{iconOnly ? null : content}
+		</>
+	);
+	let content = children;
+	if (isLoading) {
+		content =
+			asChild && isValidElement<React.ComponentProps<"button">>(children)
+				? cloneElement(children, {
+						"aria-busy": true,
+						"aria-disabled": true,
+						children: loadingContent(children.props.children),
+						onClickCapture: blockLoadingClick,
+					})
+				: loadingContent(children);
+	}
+
+	return (
+		<Comp
+			data-slot="button"
+			data-variant={variant}
+			data-size={size}
+			className={cn(buttonVariants({ className, size, variant }))}
+			{...props}
+			disabled={isDisabled}
+			aria-busy={isLoading ? true : props["aria-busy"]}
+			aria-disabled={isLoading ? true : props["aria-disabled"]}
+			onClickCapture={isLoading ? blockLoadingClick : props.onClickCapture}
+			transition={transition}
+			whileTap={isDisabled || shouldReduceMotion || whileTap === false ? undefined : whileTap}
+		>
+			{content}
+		</Comp>
+	);
+};
+
+export { Button, buttonVariants };
