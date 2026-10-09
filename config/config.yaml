@@ -1,0 +1,41 @@
+app:
+  environment: "${NODE_ENV:-development}"
+  logLevel: "${LOG_LEVEL:-info}"
+database:
+  url: "${DATABASE_URL}"
+web:
+  host: "${WEB_HOST:-0.0.0.0}"
+  port: "${WEB_PORT:-4100}"
+  origin: "${WEB_ORIGIN:-http://localhost:4100}"
+api:
+  host: "${API_HOST:-0.0.0.0}"
+  port: "${API_PORT:-4101}"
+  corsOrigin: "${CORS_ORIGIN:-http://localhost:4100}"
+  openapi:
+    serverUrl: "${OPENAPI_SERVER_URL:-http://localhost:4101}"
+    username: "${OPENAPI_BASIC_AUTH_USERNAME:-}"
+    password: "${OPENAPI_BASIC_AUTH_PASSWORD:-}"
+redis:
+  url: "${REDIS_URL:-redis://localhost:6379}"
+  keyPrefix: "${REDIS_KEY_PREFIX:-dph:}"
+  connectTimeoutMs: "${REDIS_CONNECT_TIMEOUT_MS:-5000}"
+storage:
+  bucket: "${S3_BUCKET:-}"
+  region: "${S3_REGION:-us-east-1}"
+  accessKeyId: "${S3_ACCESS_KEY_ID:-}"
+  secretAccessKey: "${S3_SECRET_ACCESS_KEY:-}"
+  endpoint: "${S3_ENDPOINT:-}"
+  rootPrefix: "${S3_ROOT_PREFIX:-uploads}"
+realtime:
+  publicUrl: "${REALTIME_URL:-http://localhost:4102}"
+  host: "${REALTIME_HOST:-0.0.0.0}"
+  port: "${REALTIME_PORT:-4102}"
+  corsOrigin: "${REALTIME_CORS_ORIGIN:-http://localhost:4100}"
+  ticketSecret: "${REALTIME_TICKET_SECRET}"
+  internalUrl: "${REALTIME_INTERNAL_URL:-}"
+  publishApiKey: "${REALTIME_PUBLISH_API_KEY:-}"
+worker:
+  notificationUrl: "${WORKER_NOTIFICATION_URL:-http://localhost:4101/internal/worker-events}"
+  notificationApiKey: "${WORKER_NOTIFICATION_API_KEY:-}"
+webhook:
+  secretEncryptionKey: "${WEBHOOK_SECRET_ENCRYPTION_KEY:-}"

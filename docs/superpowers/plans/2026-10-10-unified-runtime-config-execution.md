@@ -12,13 +12,24 @@ upstream typecheck dependencies. Registry confirms stable Zod 4.6.5.
 
 | Batch | Tasks | Status | Evidence/commit |
 | --- | --- | --- | --- |
-| 1 | 1–3 | PASS | Zod 4.6.5 direct; transitive 4.4.3 only; install scripts disabled; fresh post-fixture `bun --no-env-file run check-types --force`: 16/16, zero cached |
-| 2 | 4–6 | PENDING | |
+| 1 | 1–3 | PASS | `47de22b`; Zod 4.6.5 direct; transitive 4.4.3 only; install scripts disabled; fresh post-fixture `bun --no-env-file run check-types --force`: 16/16, zero cached |
+| 2 | 4–6 | PASS | `bun --no-env-file run check-types --force --filter=...@repo/config`: 14/14, zero cached |
 | 3 | 7 | PENDING | |
 | 4 | 8–10 | PENDING | |
 | 5 (sole integrated audit) | 11–13 | PENDING | |
 
 ## Verification boundaries
+
+Batch 2: new pipeline is independent of old module loader/adapters retained only
+for planned sequencing. Explicit strict raw shapes and selectors preserve runtime
+secret isolation. Parse-first YAML AST review rejects documents/errors/warnings,
+anchors/aliases/tags/merge syntax; scanner handles original strings only. Narrow
+public/database/webhook cached getters and server/public exports are lazy. Defaults
+exist in canonical YAML, not new value schemas. Numeric conversion uses validated
+string/number transform rather than coercion of arbitrary input. First typecheck
+found AST narrowing and Zod generic/input errors; repaired without relaxed types,
+then reran successfully. New cohesive `schemas.ts` owns typed value schemas while
+old adapters remain until cutover (same tasks/batches/requirements).
 
 Batch 1 audit: env-core peer supports Zod 4 and remains only for sequencing.
 Queue base generic migrated to public `ZodType`; no record/error alias repairs
