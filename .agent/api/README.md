@@ -104,5 +104,6 @@ exception only when its operation description states why validation must occur
 after another step, such as authentication.
 
 Malformed request schemas, including collection query input, return the shared
-`422` validation envelope. Run `task quality` before completing backend work;
-it verifies the route source and generated OpenAPI documentation contract.
+`422` validation envelope. Follow [verification.md](../verification.md).
+When changing HTTP/OpenAPI contracts, run the focused source and generated
+documentation checks for that boundary, not an automatic full `task quality` gate.

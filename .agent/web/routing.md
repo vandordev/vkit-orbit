@@ -59,12 +59,19 @@ render TanStack error/loading UI.
 
 ## UI data and navigation
 
-UI routes use typed Eden clients. Server loaders may call the embedded app
-client; browser components use the same-origin `/api/*` client. A feature that
-hydrates TanStack Query shares query-option functions between its loader and
-browser query to avoid duplicate requests. UI search parameters must use
+UI uses the same-origin `/trpc` boundary described in [trpc.md](trpc.md).
+Route adapters own data, auth, and navigation; presentation components accept
+typed props and callbacks without importing real clients. UI search parameters must use
 `validateSearch` with Zod. Internal navigation uses typed `<Link>` or
 `navigate`, including the future `_authenticated` `beforeLoad` guard.
+
+## Component-driven pages
+
+New or changed UI pages/layouts own typed presentation components and colocated
+stories under `-components`. Develop and verify these in Storybook before route
+integration. Use `Web/Pages/<Area>/<Page>` and `Web/Layouts/<Layout>` story titles,
+deterministic schema-supported fixtures, and relevant pending/error/long-content
+states. Existing pages are not automatically migrated by installing Storybook.
 
 ## Metadata and route boundaries
 
@@ -104,7 +111,9 @@ guard in `beforeLoad`.
 
 Never edit `src/routeTree.gen.ts` manually. The TanStack plugin regenerates it
 from `src/app`; run the web dev/build command after route changes and verify its
-imports. Focused tests include:
+imports. Tests and stories are excluded by `routeFileIgnorePattern`; `-` directories
+are ignored by native routing. Follow [verification.md](../verification.md) for proportional checks.
+Useful focused commands, not mandatory gates for every change:
 
 ```bash
 bun test apps/web/src/app apps/web/src/lib

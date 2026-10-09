@@ -9,6 +9,8 @@ changed, the plan/spec, and run
 ## Repository shape
 
 - `apps/web`: TanStack Start, Tailwind/shadcn UI, and same-origin tRPC.
+- `apps/storybook`: repository-wide presentation previews; stories stay colocated
+  with their owning components. Development tooling only, not a deployed runtime.
 - `apps/api`: Elysia factory, validation, envelopes, usecase transport, and the
   authenticated `/api/internal/worker-events` gateway.
 - `packages/database`: the only Prisma client owner and migration source.
@@ -41,8 +43,16 @@ the active architecture.
 
 ## Workflow
 
-For every behavior change: write a focused failing test, run it and inspect the
-expected failure, implement the smallest fix, run focused tests/typechecks,
-then commit the task with its planned conventional message. Prefer `task`
-commands. Before completion run focused
-tests, `task quality`, `task build`, and Compose smoke checks.
+Follow `.agent/verification.md` for the active, risk-based verification policy.
+Typesafe wiring/refactors normally stop after a fresh successful native typecheck.
+For runtime invariants types cannot prove, use focused tests, test-first when
+meaningful. Do not automatically run `task quality`, repository builds, or Compose.
+These commands remain available for explicitly scoped integrated checks.
+
+UI follows component-driven design: check schema and runtime feasibility, build
+typed presentation components with colocated stories, verify them in Storybook,
+then integrate routes and tRPC. Keep fetching, authorization, and navigation out
+of presentation components. Read `.agent/web/README.md` and the Storybook README.
+Prefer `task` commands. Preserve unrelated changes and report exactly what was
+verified and what remains unresolved. Commit completed tasks with an appropriate
+conventional message; no automatic merge or push.

@@ -19,6 +19,12 @@ tasks:
   dev:web:
     desc: Run TanStack Start
     cmds: [bun run dev:web]
+  dev:storybook:
+    desc: Run the shared Storybook on port 6006
+    cmds: [bun --no-env-file run dev:storybook]
+  build:storybook:
+    desc: Build the shared Storybook static preview
+    cmds: [bun --no-env-file run build:storybook]
   dev:worker:
     desc: Run the TypeScript worker
     cmds: [bun run --cwd apps/worker dev]

@@ -8,6 +8,10 @@
 		"DATABASE_URL"
 	],
 	"tasks": {
+		"@repo/storybook#build": {
+			"cache": false,
+			"outputs": ["storybook-static/**"]
+		},
 		"build": {
 			"dependsOn": [
 				"^build"

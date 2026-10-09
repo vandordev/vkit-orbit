@@ -9,6 +9,13 @@ Prisma, BullMQ/Redis workers, MinIO, and Socket.IO invalidation events.
 standalone public Elysia `/v1` server, not a browser proxy. Web uses Tailwind
 CSS and shadcn/ui primitives.
 
+[`apps/storybook`](apps/storybook/README.md) hosts repository-wide component
+previews. Stories remain colocated with their components. Run `task dev:storybook`
+on port 6006 or `task build:storybook` for static output. New/changed UI follows
+component-driven design: check data feasibility, develop typed components and
+stories, verify in Storybook, then integrate routes/tRPC. See the active
+[verification policy](.agent/verification.md).
+
 Web routing is directory-first under `apps/web/src/app`; see
 [.agent/web/routing.md](.agent/web/routing.md) for native TanStack tokens,
 generated-tree ownership, and adapter isolation rules.
@@ -92,6 +99,8 @@ task dev                                 Web foreground
 task dev:worker                           Document/webhook/notification workers
 task dev:scheduler                        Enqueue-only maintenance schedules
 task dev:realtime                         Socket.IO runtime
+task dev:storybook                        Shared component previews on port 6006
+task build:storybook                      Static Storybook build
 task quality                             TypeScript tests/lint/types
 task build                               TypeScript builds
 task compose:up:detached                  Full installed runtime stack
@@ -111,5 +120,8 @@ or production project.
 ## Scope rules
 
 Initial support is `.txt` and `.md`; OCR, PDF/DOCX, AI, and compatibility layers
-are excluded. Add product rules in the owning boundary, write a failing focused
-test first, and run `task quality`, `task build`, and Compose smoke before handoff.
+are excluded. Add product rules in the owning boundary. Follow
+[risk-based verification](.agent/verification.md): typecheck typed wiring; use
+focused tests for runtime invariants and browser Storybook checks for UI. Full
+quality/build/Compose gates are deliberate integration checks, not automatic
+requirements for every task. Do not apply remote migrations without authorization.

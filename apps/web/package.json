@@ -37,6 +37,7 @@
     "zod": "^3.25.0"
   },
   "devDependencies": {
+    "@storybook/react": "10.6.1",
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@tanstack/router-plugin": "1.168.22",

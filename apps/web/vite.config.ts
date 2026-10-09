@@ -8,7 +8,7 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		// TanStack Start resolves router paths from the configured src directory.
-		tanstackStart({ router: { routesDirectory: "./app", routeFileIgnorePattern: "\\.test\\." } }),
+		tanstackStart({ router: { routesDirectory: "./app", routeFileIgnorePattern: "\\.(test|stories)\\." } }),
 		nitro({ preset: "bun" }),
 		react(),
 	],

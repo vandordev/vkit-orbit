@@ -12,6 +12,8 @@
     "start:migrate": "cd apps/migrate && bun run start",
     "start:realtime": "cd apps/realtime && bun run start",
     "dev:web": "turbo run dev --filter=web",
+    "dev:storybook": "bun --no-env-file run --cwd apps/storybook dev",
+    "build:storybook": "bun --no-env-file run --cwd apps/storybook build",
     "dev:scheduler": "turbo run dev --filter=@repo/scheduler",
     "dev:realtime": "turbo run dev --filter=@repo/realtime-server",
     "lint": "turbo run lint",
