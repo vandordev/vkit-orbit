@@ -42,6 +42,8 @@ then integrate fetching/auth/navigation in route adapters. Pages/layouts use
 `packages/components`, under `Vandor UI/Button`. The obsolete web-local Button
 and `Web/UI/Button` stories are removed; error/not-found boundaries use the shared
 Button and are previewed under `Web/Components/RouteBoundaries`.
+The public Loading wrapper has local colocated previews under `Vandor UI/Loading`,
+including its full variant catalog, sizing, text, variant options, and Button usage.
 See [component ownership rules](../../.agent/components.md).
 
 Fixtures are deterministic and local, respecting actual schema/runtime contracts.

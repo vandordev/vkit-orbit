@@ -3,8 +3,9 @@
 `@repo/components` owns editable React presentation source installed from
 [Vandor UI](https://vandor-ui.vercel.app/llms-full.txt). The initial example is
 Button, installed through the shadcn CLI together with its internal licensed
-`loading-arc.tsx` dependency and optional portable stories. No other Vandor
-components, providers, or application routes are installed by this example.
+`loading-arc.tsx` dependency and optional portable stories. The public Loading
+wrapper and its full registry snapshot of loading visuals are also installed.
+No providers or application routes are installed by these components.
 
 ## Usage
 
@@ -64,6 +65,28 @@ not-found boundaries now import this shared Button. All new small UI primitives
 must live in this package, not application-local duplicates; install missing
 primitives here before use. Other local presentation remains outside this migration.
 
+## Loading contract
+
+```tsx
+import { Loading } from "@repo/components/loading";
+
+<Loading aria-label="Loading documents" />
+<Loading variant="text-dots" text="Preparing document" size={16} />
+<Loading variant="bars" variantProps={{ bars: 5 }} size={32} />
+```
+
+The entrypoint also exports `LoadingProps`, `LoadingVariant`, and `loadingVariants`.
+The 47 upstream variants use `size` (pixels or CSS length), optional `duration`
+(CSS cycle seconds only), `text` for text variants, and typed `variantProps`.
+The wrapper provides a labeled status and hides decorative internals from assistive
+technology. Reduced motion substitutes a static visual or static text.
+
+Button continues to import only `LoadingArc`, keeping the full variant catalog
+out of Button's dependency graph. Public Loading uses the same Arc by default.
+Internal `loading-ui` visuals are not public package entrypoints; use the wrapper
+for consistent accessibility and reduced-motion behavior. Keep the bundled MIT
+license in `src/components/loading-ui/LICENSE.md`.
+
 ## Install and update
 
 Run from `packages/components`:
@@ -73,6 +96,8 @@ bunx --bun shadcn@latest add @vandor/button --dry-run
 bunx --bun shadcn@latest add @vandor/button --diff
 bunx --bun shadcn@latest add @vandor/button
 bunx --bun shadcn@latest add @vandor/button-stories
+bunx --bun shadcn@latest add @vandor/loading --dry-run
+bunx --bun shadcn@latest add @vandor/loading
 ```
 
 The package-local `@` alias is only an installer destination. Installed runtime
@@ -88,6 +113,8 @@ Button's dark classes use `vandor-dark`, activated by an explicit `.dark` ancest
 not the OS preference against light tokens. This scoped variant leaves existing
 web-local `dark:` behavior untouched. Future dark themes must supply their own
 tokens before activation. Button/LoadingArc interaction behavior is unchanged.
+Loading's generated imports are made package-relative. The registry currently
+has no `loading-stories` item; local colocated stories render the installed source.
 
 ## Preview and verification
 
@@ -97,6 +124,7 @@ task build:storybook
 bun --cwd packages/components run check-types
 bun --cwd packages/components run lint
 bun --no-env-file run scripts/check-shared-button.ts
+bun --no-env-file run scripts/check-shared-loading.ts
 ```
 
 Portable stories appear under `Vandor UI/Button`; the old `Web/UI/Button` group is
@@ -107,3 +135,6 @@ requires an explicitly authorized Storybook server lifecycle; builds alone are
 not visual acceptance. The explicit browser probe requires the existing server
 on port 6006 and does not start or stop one. It covers loading, keyboard/focus,
 link semantics, reduced motion, mobile overflow, and OS-dark/light-token isolation.
+Loading previews under `Vandor UI/Loading` cover all variants and common props.
+The Loading browser probe checks desktop/mobile overflow, accessible status,
+sizing/duration, variant options, reduced-motion fallback, and Button integration.

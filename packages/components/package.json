@@ -5,6 +5,7 @@
 	"type": "module",
 	"exports": {
 		"./button": "./src/components/ui/button.tsx",
+		"./loading": "./src/components/ui/loading.tsx",
 		"./styles.css": "./src/styles.css"
 	},
 	"scripts": {

@@ -16,8 +16,7 @@ the opt-in `/examples/realtime` route has no default navigation link.
 Use TanStack Start with Tailwind CSS and shared Vandor UI primitives as the UI
 baseline. Small UI primitives must import `@repo/components/<name>`, not local
 `@/components/ui` copies; install missing primitives in the shared package first.
-Only Button is initially
-installed. Read [component rules](../components.md) and
+Button and Loading are installed. Read [component rules](../components.md) and
 [package guidance](../../packages/components/README.md). The local Button and its
 stories are removed; remaining local presentation stays intact until explicitly
 migrated. Keep accessible labels, focus states, responsive layouts, and typed

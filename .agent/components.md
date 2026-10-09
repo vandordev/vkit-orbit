@@ -11,8 +11,8 @@ promote feature compositions only when genuinely reusable. Small UI primitives
 ## Installation and imports
 
 - All new primitive UI uses explicit `@repo/components/<name>` entrypoints. Check the
-  installed exports first; the initial catalog contains only Button and its
-  internal LoadingArc dependency, not all Vandor components.
+  installed exports first; the catalog contains Button and Loading, plus internal
+  loading visuals, not all Vandor components.
 - Run registry commands inside `packages/components`, using its `components.json`.
   Install only needed components and dependencies. Consult Vandor documentation
   for the actual API; generic shadcn guidance does not override registry contracts.
