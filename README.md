@@ -29,6 +29,9 @@ generated-tree ownership, and adapter isolation rules.
 Web brand defaults are centralized in `apps/web/src/lib/config.ts`; see the
 [web guidance](.agent/web/README.md) before changing application metadata or
 public brand copy.
+TanStack Start SEO follows the `tanstack-seo` skill with repository-specific
+[SEO rules](.agent/web/seo.md). This is implementation guidance, not a claim that
+all SEO layers are already installed.
 
 ```text
 Browser -- same-origin /trpc --> TanStack Start --> PostgreSQL

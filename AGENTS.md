@@ -58,6 +58,9 @@ typed presentation components with colocated stories, verify them in Storybook,
 then integrate routes and tRPC. Keep fetching, authorization, and navigation out
 of presentation components. Read `.agent/web/README.md` and the Storybook README.
 For shared UI, read `.agent/components.md` and `packages/components/README.md`.
+For TanStack Start SEO, use the `tanstack-seo` skill and `.agent/web/seo.md`;
+adapt examples to `src/app`, existing brand/config ownership, and typecheck-only
+system verification. Confirm public origin/indexing scope before implementation.
 Prefer `task` commands. Preserve unrelated changes and report exactly what was
 verified and what remains unresolved. Commit completed tasks with an appropriate
 conventional message; no automatic merge or push.

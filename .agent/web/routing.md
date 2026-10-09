@@ -81,6 +81,9 @@ fields are the web app's single source of truth. Use `createMetadata` from
 `src/lib/metadata.ts` in `head: () => ...`; nested TanStack head values merge
 with the most-specific title/meta winning. Route metadata may override title or
 description for a specific page. The root defaults come from `appConfig`. The
+`tanstack-seo` skill and [SEO rules](seo.md) govern future SEO extensions, including
+absolute canonical/social URLs, structured data, and public discovery endpoints.
+The existing helper is a partial foundation, not full SEO acceptance. The
 root `pendingComponent` uses the shadcn
 Symmetric Wave primitive through `GlobalPending`; route-local pending states may
 wrap the same component. `GlobalError` calls the supplied `reset()` and offers

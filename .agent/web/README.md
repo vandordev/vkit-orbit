@@ -27,6 +27,9 @@ same-origin tRPC calls. Do not reintroduce Next.js or Mantine as defaults.
 See [routing.md](routing.md) for the complete directory-first route
 convention, adapter isolation rules, and native typecheck command.
 See [trpc.md](trpc.md) for UI-driven contracts and server-owned boundaries.
+For TanStack Start SEO, use the `tanstack-seo` skill and [SEO rules](seo.md).
+Adapt its examples to `src/app` and `appConfig`; do not invent a public domain or
+index private content. SEO server/head changes follow system typecheck-only verification.
 
 The generated tree is owned by the TanStack plugin. Keep route-local helpers
 under `-`-prefixed files or directories; `_` is reserved for pathless layouts.
