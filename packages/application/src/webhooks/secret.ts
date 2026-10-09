@@ -1,5 +1,5 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
-import { createWebhookConfig } from "@repo/config";
+import { getWebhookConfig } from "@repo/config/server";
 
 export function createWebhookSecretCrypto(hexKey: string) {
 	if (!/^[a-f0-9]{64}$/i.test(hexKey)) throw new Error("Invalid webhook encryption key");
@@ -28,7 +28,7 @@ export function createWebhookSecretCrypto(hexKey: string) {
 
 export type WebhookSecretCrypto = ReturnType<typeof createWebhookSecretCrypto>;
 export function runtimeWebhookSecretCrypto(): WebhookSecretCrypto {
-	const key = createWebhookConfig().WEBHOOK_SECRET_ENCRYPTION_KEY;
+	const key = getWebhookConfig().secretEncryptionKey;
 	if (!key) throw new Error("Webhook encryption is not configured");
 	return createWebhookSecretCrypto(key);
 }

@@ -1,11 +1,11 @@
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 import { writeAuditLog } from "../audit/write-audit-log";
 import { NotFoundError } from "../shared/errors";
 export async function confirmDocumentUpload(
 	scope: { workspaceId: string; principalId: string },
 	input: { documentId: string; revision?: number },
 	storage: { head(key: string): Promise<any> },
-	db: any = prisma,
+	db: any = getPrisma(),
 ) {
 	return db.$transaction(async (tx: any) => {
 		const document = await tx.document.findFirst({ where: { workspaceId: scope.workspaceId, id: input.documentId } });

@@ -1,4 +1,4 @@
-import { prisma, type DatabaseClient } from "@repo/db";
+import { getPrisma, type DatabaseClient } from "@repo/db";
 import type { PutObjectInput } from "@repo/storage";
 import { requirePermission } from "../auth/permissions";
 import { ForbiddenError, NotFoundError } from "../shared/errors";
@@ -8,7 +8,7 @@ export async function uploadDocumentSource(
 	scope: { workspaceId: string; principalId: string },
 	input: { documentId: string; artifactId: string; content: string },
 	storage: { put(input: PutObjectInput): Promise<unknown> },
-	db: DatabaseClient = prisma,
+	db: DatabaseClient = getPrisma(),
 ) {
 	const member = await db.workspaceMember.findUnique({
 		where: { workspaceId_userId: { workspaceId: scope.workspaceId, userId: scope.principalId } },

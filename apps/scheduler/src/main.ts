@@ -1,4 +1,4 @@
-import { createSchedulerConfig, createRedisConfig, resolvedConfigEnvironment } from "@repo/config";
+import { getSchedulerConfig } from "@repo/config/server";
 
 import { runScheduler } from "./runtime";
 import { createQueue } from "@repo/queue";
@@ -6,14 +6,13 @@ import { installSchedulers } from "./schedules";
 import { log } from "./logger";
 
 if (import.meta.main) {
-	const environment = { ...process.env, ...resolvedConfigEnvironment(["base", "redis", "scheduler"]) };
-	const config = createSchedulerConfig(environment);
-	const redis = createRedisConfig(environment);
+	const config = getSchedulerConfig();
+	const redis = config.redis;
 	const queue = createQueue("documents", redis);
 	const webhooks = createQueue("webhooks", redis);
 	try {
 		await installSchedulers(queue, webhooks);
-		log("info", { service: "scheduler", environment: config.NODE_ENV }, "scheduler started");
+		log("info", { service: "scheduler", environment: config.app.environment }, "scheduler started");
 		await runScheduler({
 			disconnect: async () => {
 				await Promise.all([queue.close(), webhooks.close()]);

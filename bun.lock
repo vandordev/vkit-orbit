@@ -44,6 +44,7 @@
       "name": "@repo/migrate",
       "version": "0.1.0",
       "dependencies": {
+        "@repo/config": "*",
         "@repo/db": "*",
       },
       "devDependencies": {
@@ -237,6 +238,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@prisma/client": "^6.0.0",
+        "@repo/config": "*",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",

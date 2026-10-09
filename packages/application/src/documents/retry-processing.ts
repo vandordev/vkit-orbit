@@ -1,7 +1,7 @@
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 import { writeAuditLog } from "../audit/write-audit-log";
 import { enqueueIntent } from "../outbox/enqueue-intent";
-export async function retryProcessingRun(scope: { workspaceId: string; principalId: string }, runId: string, db: any = prisma) {
+export async function retryProcessingRun(scope: { workspaceId: string; principalId: string }, runId: string, db: any = getPrisma()) {
 	return db.$transaction(async (tx: any) => {
 		const old = await tx.processingRun.findFirst({ where: { workspaceId: scope.workspaceId, id: runId } });
 		if (!old) throw new Error("run not found");

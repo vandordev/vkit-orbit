@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
-import { prisma, type DatabaseClient } from "@repo/db";
+import { getPrisma, type DatabaseClient } from "@repo/db";
 import { UnauthorizedError } from "../shared/errors";
 import { hasPermission, permissions, type Permission } from "../auth/permissions";
-export async function authenticateApiKey(secret: string, db: DatabaseClient = prisma) {
+export async function authenticateApiKey(secret: string, db: DatabaseClient = getPrisma()) {
 	const key = await db.apiKey.findUnique({ where: { secretHash: createHash("sha256").update(secret).digest("hex") } });
 	if (!key || key.revokedAt || (key.expiresAt && key.expiresAt <= new Date())) throw new UnauthorizedError("invalid API key");
 	const member = await db.workspaceMember.findUnique({

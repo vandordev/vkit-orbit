@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { createDocumentUpload, executeIdempotent } from "@repo/application";
 import { createStorageClient } from "@repo/storage";
-import { env } from "../../../lib/env";
+import { getEnv } from "../../../lib/env";
 import { apiOperation } from "../../../openapi/operation";
 import { successEnvelope } from "../../../schemas/envelope";
 import { authenticatedPrincipal, requireApiScope } from "../../../plugins/api-key";
@@ -34,8 +34,9 @@ export const createDocumentUploadHandler = new Elysia().post(
 			input,
 			(db) => createDocumentUpload({ workspaceId: principal!.workspaceId, principalId: principal!.userId }, input, db),
 		);
-		if (!env.storage) throw new Error("storage is not configured");
-		const storage = createStorageClient(env.storage);
+		const config = getEnv().storage;
+		if (!config) throw new Error("storage is not configured");
+		const storage = createStorageClient(config);
 		return {
 			success: true as const,
 			data: {

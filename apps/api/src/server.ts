@@ -1,16 +1,19 @@
-import { env } from "./lib/env";
-import { logger } from "./lib/logger";
-import { app } from "./app";
+import { getEnv } from "./lib/env";
+import { getLogger } from "./lib/logger";
+import { createApp } from "./app";
 
-app.listen(env.port);
+if (import.meta.main) {
+const env = getEnv();
+const app = createApp();
+app.listen({ port: env.api.port, hostname: env.api.host });
 
-logger.info(
+getLogger().info(
 	{
-		url: `http://localhost:${env.port}`,
-		environment: env.NODE_ENV,
-		health: `http://localhost:${env.port}/health`,
+		port: env.api.port,
+		environment: env.app.environment,
 	},
 	"Reusable Elysia API boundary started",
 );
 
-export type Server = typeof app;
+}
+export type Server = ReturnType<typeof createApp>;

@@ -1,8 +1,8 @@
 import { Elysia } from "elysia";
 
-import { env } from "../lib/env";
+import { getEnv } from "../lib/env";
 import { AppError } from "../lib/errors";
-import { logger } from "../lib/logger";
+import { getLogger } from "../lib/logger";
 import { ForbiddenError, IdempotencyConflictError, NotFoundError, UnauthorizedError } from "@repo/application";
 
 export const errorEnvelopePlugin = new Elysia({ name: "error-envelope" })
@@ -36,13 +36,13 @@ export const errorEnvelopePlugin = new Elysia({ name: "error-envelope" })
 			set.status = 404;
 			return { success: false, error: "NOT_FOUND", message: "Resource not found", ...(requestId ? { requestId } : {}) };
 		}
-		logger.error({ requestId, code, error }, "Unhandled API error");
+		getLogger().error({ requestId, code, error }, "Unhandled API error");
 		set.status = 500;
 		return {
 			success: false,
 			error: "INTERNAL_ERROR",
 			message:
-				env.NODE_ENV === "production"
+				getEnv().app.environment === "production"
 					? "An unexpected error occurred"
 					: error instanceof Error
 						? error.message

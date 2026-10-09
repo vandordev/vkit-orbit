@@ -1,12 +1,15 @@
 import pino from "pino";
 import { redact, safeLogContext } from "@repo/application";
 
-import { env } from "./env";
+import { getEnv } from "./env";
 
-const isProduction = env.NODE_ENV === "production";
-
-export const logger = pino({
-	level: env.LOG_LEVEL || (isProduction ? "info" : "debug"),
+let logger: ReturnType<typeof pino> | undefined;
+export function getLogger() {
+if (logger) return logger;
+const env = getEnv();
+const isProduction = env.app.environment === "production";
+logger = pino({
+	level: env.app.logLevel,
 	transport: isProduction
 		? undefined
 		: {
@@ -22,7 +25,8 @@ export const logger = pino({
 	timestamp: pino.stdTimeFunctions.isoTime,
 });
 
-export default logger;
+return logger;
+}
 
 export function logContext(input: Record<string, unknown>) {
 	return redact(safeLogContext(input));

@@ -1,5 +1,5 @@
-import { prisma } from "@repo/db";
-export async function failStage(input: { workspaceId: string; runId: string; revision: number; errorCode: string }, db: any = prisma) {
+import { getPrisma } from "@repo/db";
+export async function failStage(input: { workspaceId: string; runId: string; revision: number; errorCode: string }, db: any = getPrisma()) {
 	const result = await db.processingRun.updateMany({
 		where: {
 			workspaceId: input.workspaceId,

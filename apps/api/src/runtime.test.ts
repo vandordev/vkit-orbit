@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 
-import { workerNotificationApiKey } from "./runtime";
+import { getWorkerNotificationApiKey } from "./runtime";
 
 test("exposes the API runtime worker key singleton", () => {
-	expect(typeof workerNotificationApiKey).toBe("string");
+	expect(typeof getWorkerNotificationApiKey).toBe("function");
 });

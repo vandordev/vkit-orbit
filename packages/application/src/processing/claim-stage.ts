@@ -1,9 +1,9 @@
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 import type { Stage } from "./types";
 
 export async function claimStage(
 	input: { workspaceId: string; runId: string; revision: number; stage: Stage; leaseMs?: number },
-	db: any = prisma,
+	db: any = getPrisma(),
 ) {
 	const now = new Date();
 	const result = await db.processingRun.updateMany({

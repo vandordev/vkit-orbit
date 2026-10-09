@@ -1,7 +1,7 @@
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 export async function cleanupDocuments(
 	input: { limit?: number; before: Date; workspaceId?: string; documentId?: string },
-	db: any = prisma,
+	db: any = getPrisma(),
 ) {
 	const artifacts = await db.documentArtifact.findMany({
 		where: {

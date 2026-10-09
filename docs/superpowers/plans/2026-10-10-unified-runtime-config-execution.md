@@ -13,12 +13,25 @@ upstream typecheck dependencies. Registry confirms stable Zod 4.6.5.
 | Batch | Tasks | Status | Evidence/commit |
 | --- | --- | --- | --- |
 | 1 | 1–3 | PASS | `47de22b`; Zod 4.6.5 direct; transitive 4.4.3 only; install scripts disabled; fresh post-fixture `bun --no-env-file run check-types --force`: 16/16, zero cached |
-| 2 | 4–6 | PASS | `bun --no-env-file run check-types --force --filter=...@repo/config`: 14/14, zero cached |
-| 3 | 7 | PENDING | |
+| 2 | 4–6 | PASS | `79c4101`; `bun --no-env-file run check-types --force --filter=...@repo/config`: 14/14, zero cached |
+| 3 | 7 | PASS | `bun --no-env-file run check-types --force --filter=...@repo/db --filter=...@repo/config`: 15/15, zero cached |
 | 4 | 8–10 | PENDING | |
 | 5 (sole integrated audit) | 11–13 | PENDING | |
 
 ## Verification boundaries
+
+Batch 3: Prisma constructor receives explicit datasource URL, singleton getter is
+lazy and retains development global reuse. All application defaults call getter
+inside execution; query adapters retain injected clients. Worker bootstrap owns
+its client; scheduler/realtime have no database dependency. API config/logger/
+publisher/OpenAPI are deferred; `createApp` is called once by guarded bootstrap,
+not at import. Existing fixture app imports migrated to factory. Web storage and
+ticket consumers use typed web fields; webhook crypto uses narrow key getter.
+Migration child uses only database adapter. Supporting tsconfig revision: migrate
+now uses bundler resolution like other Bun source consumers; NodeNext rejected
+extensionless config source imports. Initial gate failed there, then fresh rerun
+passed. No schema/migration/security/payload changes. Smoke sources retain explicit
+executable fixture handles; they are never imported by runtime or executed here.
 
 Batch 2: new pipeline is independent of old module loader/adapters retained only
 for planned sequencing. Explicit strict raw shapes and selectors preserve runtime

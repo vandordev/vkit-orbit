@@ -2,14 +2,13 @@ import { expect, test } from "bun:test";
 import { openapi } from "@elysiajs/openapi";
 import { Elysia } from "elysia";
 
-import { resolvedConfigEnvironment } from "../../../packages/config/src/run";
 import { collectionQueryPlugin } from "./collection-query/plugin";
 import { defineCollection, enumFilter } from "./collection-query/definition";
 import { validateOpenApiDocumentation } from "./openapi/contract";
 
 async function getApp() {
-	Object.assign(process.env, resolvedConfigEnvironment(["base", "api"], { DATABASE_URL: "postgresql://db", NODE_ENV: "test" }));
-	return (await import("./app")).app;
+	Object.assign(process.env, { DATABASE_URL: "postgresql://localhost/fixture_test", NODE_ENV: "test" });
+	return (await import("./app")).createApp();
 }
 
 test("serves generated OpenAPI JSON", async () => {
@@ -19,7 +18,7 @@ test("serves generated OpenAPI JSON", async () => {
 	expect(response.status).toBe(200);
 	const document = await response.json();
 	expect(document.openapi).toMatch(/^3\./);
-	expect(document.servers).toEqual([{ url: "http://localhost:4100" }]);
+	expect(document.servers).toEqual([{ url: "http://localhost:4101" }]);
 	expect(document.paths["/v1/status"]).toBeDefined();
 	expect(document.paths["/internal/worker-events"]).toBeUndefined();
 });

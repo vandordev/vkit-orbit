@@ -1,4 +1,4 @@
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 export function revokeApiKey(id: string) {
-	return prisma.apiKey.update({ where: { id }, data: { revokedAt: new Date() } });
+	return getPrisma().apiKey.update({ where: { id }, data: { revokedAt: new Date() } });
 }

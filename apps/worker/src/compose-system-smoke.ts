@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
-import { prisma } from "@repo/db";
-import { createStorageConfig } from "@repo/config";
+import { getPrisma } from "@repo/db";
+import { getWorkerConfig } from "@repo/config/server";
+const prisma = getPrisma();
 import { createStorageClient } from "@repo/storage";
 import { createWebhookEndpoint, prepareDelivery, prepareWebhookEnvelope } from "@repo/application";
 import { createWebhookDeliverHandler } from "./handlers/webhook-deliver-v1";
@@ -98,7 +99,7 @@ const result = await json(await fetch(`http://api:4101/v1/processing-runs/${runI
 check(result.data.result.title === "Quarterly Notes", "public result did not contain the deterministic title");
 const resultArtifact = await prisma.documentArtifact.findFirst({ where: { workspaceId, processingRunId: runId, kind: "RESULT" } });
 check(resultArtifact, "result artifact was not persisted");
-const storageConfig = createStorageConfig(process.env);
+const storageConfig = getWorkerConfig().storage;
 check(storageConfig, "storage configuration is unavailable");
 const object = (await createStorageClient(storageConfig).get(resultArtifact.objectKey)) as {
 	Body?: { transformToByteArray?: () => Promise<Uint8Array> };

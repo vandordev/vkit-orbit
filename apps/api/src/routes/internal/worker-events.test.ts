@@ -27,8 +27,8 @@ describe("worker notification gateway", () => {
 
 	test("accepts an authenticated worker event and forwards it once", async () => {
 		const publishRealtimeEvent = mock(async () => undefined);
-		mock.module("../../runtime", () => ({ workerNotificationApiKey: "worker-key", publishRealtimeEvent }));
-		const { app } = await import("../../app");
+		mock.module("../../runtime", () => ({ getWorkerNotificationApiKey: () => "worker-key", publishRealtimeEvent }));
+		const app = (await import("../../app")).createApp();
 
 		const response = await app.fetch(authenticatedRequest());
 		expect(response.status).toBe(202);
@@ -36,7 +36,7 @@ describe("worker notification gateway", () => {
 	});
 
 	test("rejects an invalid or unauthenticated worker event", async () => {
-		const { app } = await import("../../app");
+		const app = (await import("../../app")).createApp();
 
 		expect((await app.fetch(new Request("http://localhost:4100/internal/worker-events", { method: "POST" }))).status).toBe(401);
 		expect((await app.fetch(authenticatedRequest({ type: "bad" }))).status).toBe(400);
@@ -44,12 +44,12 @@ describe("worker notification gateway", () => {
 
 	test("returns retryable failure when the realtime publisher is unavailable", async () => {
 		mock.module("../../runtime", () => ({
-			workerNotificationApiKey: "worker-key",
+			getWorkerNotificationApiKey: () => "worker-key",
 			publishRealtimeEvent: async () => {
 				throw new Error("unavailable");
 			},
 		}));
-		const { app } = await import("../../app");
+		const app = (await import("../../app")).createApp();
 
 		const response = await app.fetch(authenticatedRequest());
 		expect(response.status).toBe(503);

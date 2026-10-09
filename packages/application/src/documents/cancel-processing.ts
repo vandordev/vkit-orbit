@@ -1,6 +1,6 @@
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 import { writeAuditLog } from "../audit/write-audit-log";
-export async function cancelProcessingRun(scope: { workspaceId: string; principalId: string }, runId: string, db: any = prisma) {
+export async function cancelProcessingRun(scope: { workspaceId: string; principalId: string }, runId: string, db: any = getPrisma()) {
 	return db.$transaction(async (tx: any) => {
 		const run = await tx.processingRun.findFirst({ where: { workspaceId: scope.workspaceId, id: runId } });
 		if (!run) throw new Error("run not found");

@@ -1,4 +1,4 @@
-import { prisma, type DatabaseConnection, type Prisma } from "@repo/db";
+import { getPrisma, type DatabaseConnection, type Prisma } from "@repo/db";
 export function writeAuditLog(
 	input: {
 		workspaceId: string;
@@ -8,7 +8,7 @@ export function writeAuditLog(
 		resourceId?: string;
 		metadata?: Prisma.InputJsonValue;
 	},
-	db: DatabaseConnection = prisma,
+	db: DatabaseConnection = getPrisma(),
 ) {
 	return db.auditLog.create({ data: { id: crypto.randomUUID(), ...input } });
 }

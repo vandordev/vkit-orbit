@@ -1,1 +1,1 @@
-{"name":"@repo/migrate","version":"0.1.0","type":"module","private":true,"scripts":{"start":"bun src/main.ts","check-types":"tsc --noEmit"},"dependencies":{"@repo/db":"*"},"devDependencies":{"@repo/typescript-config":"*","typescript":"5.9.2"}}
+{"name":"@repo/migrate","version":"0.1.0","type":"module","private":true,"scripts":{"start":"bun src/main.ts","check-types":"tsc --noEmit"},"dependencies":{"@repo/db":"*","@repo/config":"*"},"devDependencies":{"@repo/typescript-config":"*","typescript":"5.9.2"}}

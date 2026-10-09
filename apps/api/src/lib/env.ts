@@ -1,4 +1,2 @@
-import { createApiConfig } from "@repo/config";
-
-export const env = createApiConfig(process.env);
-export type Env = typeof env;
+export { getApiConfig as getEnv } from "@repo/config/server";
+export type Env = import("@repo/config/server").RuntimeConfig<"api">;

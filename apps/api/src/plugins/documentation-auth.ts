@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 
-import { env } from "../lib/env";
+import { getEnv } from "../lib/env";
 import { isDocumentationAuthorized } from "../lib/docs-auth";
 
 export const documentationAuthPlugin = new Elysia({ name: "documentation-auth" })
@@ -10,8 +10,8 @@ export const documentationAuthPlugin = new Elysia({ name: "documentation-auth" }
 		if (
 			!isDocumentationAuthorized(
 				request.headers.get("authorization") ?? undefined,
-				env.OPENAPI_BASIC_AUTH_USERNAME,
-				env.OPENAPI_BASIC_AUTH_PASSWORD,
+				getEnv().api.openapi.username,
+				getEnv().api.openapi.password,
 			)
 		) {
 			set.status = 401;

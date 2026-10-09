@@ -1,4 +1,4 @@
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 export function outboxId(contract: string, businessId: string, revision: number): string {
 	return `${contract}:${businessId}:${revision}`;
 }
@@ -14,7 +14,7 @@ function stableJson(value: unknown): string {
 }
 export async function enqueueIntent(
 	input: { workspaceId: string; contract: string; businessId: string; revision: number; payload: unknown; availableAt?: Date },
-	db: any = prisma,
+	db: any = getPrisma(),
 ) {
 	const id = outboxId(input.contract, input.businessId, input.revision);
 	const existing = await db.queueOutbox.findUnique({ where: { workspaceId_id: { workspaceId: input.workspaceId, id } } });

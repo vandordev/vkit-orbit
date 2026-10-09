@@ -1,4 +1,2 @@
-import { app } from "./app";
-
-export { app };
-export type App = typeof app;
+export { createApp } from "./app";
+export type App = ReturnType<typeof import("./app").createApp>;

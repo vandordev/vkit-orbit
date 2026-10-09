@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
-import { prisma } from "@repo/db";
-import { createRedisConfig } from "@repo/config";
+import { getPrisma } from "@repo/db";
+import { getWorkerConfig } from "@repo/config/server";
+const prisma = getPrisma();
 import { recoverProcessing } from "@repo/application";
 import { createQueue, createJobId, documentAnalyzeV1 } from "@repo/queue";
 
@@ -30,7 +31,7 @@ const recovered = await recoverProcessing({ limit: 1 }, prisma);
 console.info(`recovery selected ${recovered} run(s)`);
 check(recovered === 1, "PostgreSQL current-stage recovery did not select the run");
 const pending = await prisma.queueOutbox.findFirstOrThrow({ where: { workspaceId, businessId: runId, status: "PENDING" } });
-const queue = createQueue("documents", createRedisConfig(process.env));
+const queue = createQueue("documents", getWorkerConfig().redis);
 await queue.add(documentAnalyzeV1.name, pending.payload, { jobId: createJobId(documentAnalyzeV1, runId, 7) });
 check(await queue.getJob(createJobId(documentAnalyzeV1, runId, 7)), "recovery did not reconstruct the deterministic analyze job");
 await queue.close();

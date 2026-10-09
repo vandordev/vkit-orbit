@@ -1,2 +1,2 @@
-import { prisma } from "@repo/db";
-export const transaction = <T>(work: Parameters<typeof prisma.$transaction>[0]) => prisma.$transaction(work as never) as Promise<T>;
+import { getPrisma, type DatabaseTransaction } from "@repo/db";
+export const transaction = <T>(work: (transaction: DatabaseTransaction) => Promise<T>): Promise<T> => getPrisma().$transaction(work);

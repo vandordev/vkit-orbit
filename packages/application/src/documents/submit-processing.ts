@@ -1,11 +1,11 @@
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 import { writeAuditLog } from "../audit/write-audit-log";
 import { executeIdempotent } from "../idempotency/execute-idempotent";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 export function submitProcessingRun(
 	scope: { workspaceId: string; principalId: string },
 	input: { documentId: string; idempotencyKey: string },
-	db: any = prisma,
+	db: any = getPrisma(),
 ) {
 	return executeIdempotent(
 		scope,

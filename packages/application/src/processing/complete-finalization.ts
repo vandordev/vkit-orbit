@@ -1,4 +1,4 @@
-import { prisma, type DatabaseClient } from "@repo/db";
+import { getPrisma, type DatabaseClient } from "@repo/db";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 import { prepareDelivery, prepareWebhookEnvelope } from "../webhooks/prepare-delivery";
 import { runtimeWebhookSecretCrypto, type WebhookSecretCrypto } from "../webhooks/secret";
@@ -9,7 +9,7 @@ export async function completeFinalization(
 		revision: number;
 		artifact: { id: string; documentId: string; objectKey: string; contentType: string; byteSize: number; checksum?: string };
 	},
-	db: DatabaseClient = prisma,
+	db: DatabaseClient = getPrisma(),
 	secretCrypto?: WebhookSecretCrypto,
 ) {
 	return db.$transaction(async (tx) => {

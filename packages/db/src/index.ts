@@ -1,4 +1,4 @@
-export { prisma } from "./client.js";
+export { getPrisma, createDatabaseClient } from "./client.js";
 export type { DatabaseClient } from "./client.js";
 export { Prisma } from "@prisma/client";
 export type { PrismaClient } from "@prisma/client";

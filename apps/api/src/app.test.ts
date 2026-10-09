@@ -1,10 +1,9 @@
 import { describe, expect, test } from "bun:test";
 
-import { resolvedConfigEnvironment } from "../../../packages/config/src/run";
 
 async function getApp() {
-	Object.assign(process.env, resolvedConfigEnvironment(["base", "api"], { DATABASE_URL: "postgresql://db", NODE_ENV: "test" }));
-	return (await import("./app")).app;
+	Object.assign(process.env, { DATABASE_URL: "postgresql://localhost/fixture_test", NODE_ENV: "test" });
+	return (await import("./app")).createApp();
 }
 
 describe("external API boundary", () => {

@@ -1,19 +1,20 @@
-import { createRealtimeConfig } from "@repo/config";
+import { getRealtimeConfig } from "@repo/config/server";
 
 import { createTicketAuthenticator } from "./auth";
 import { createRealtimeServer } from "./server";
 import { log } from "./logger";
 
-const config = createRealtimeConfig(process.env);
+if (import.meta.main) {
+const config = getRealtimeConfig();
 const runtime = createRealtimeServer({
-	publishApiKey: config.REALTIME_PUBLISH_API_KEY,
-	authenticate: createTicketAuthenticator(config.REALTIME_TICKET_SECRET),
+	publishApiKey: config.realtime.publishApiKey,
+	authenticate: createTicketAuthenticator(config.realtime.ticketSecret),
 	authorizeWorkspace: async () => false,
-	corsOrigin: config.REALTIME_CORS_ORIGIN,
+	corsOrigin: config.realtime.corsOrigin,
 });
 
-await runtime.listen(config.port, "0.0.0.0");
-log("info", { service: "realtime", environment: process.env.NODE_ENV ?? "development" }, "realtime started");
+await runtime.listen(config.realtime.port, config.realtime.host);
+log("info", { service: "realtime", environment: config.app.environment }, "realtime started");
 
 async function shutdown() {
 	await runtime.close();
@@ -22,3 +23,4 @@ async function shutdown() {
 
 process.once("SIGINT", shutdown);
 process.once("SIGTERM", shutdown);
+}

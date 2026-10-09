@@ -1,5 +1,5 @@
-import { createRedisConfig, createWorkerConfig, resolvedConfigEnvironment } from "@repo/config";
-import { prisma, type DatabaseClient } from "@repo/db";
+import { getWorkerConfig } from "@repo/config/server";
+import { getPrisma, type DatabaseClient } from "@repo/db";
 import { createQueue, queueNames, type QueueName } from "@repo/queue";
 import { createStorageClient, resultObjectKey } from "@repo/storage";
 import { createHash } from "node:crypto";
@@ -71,11 +71,11 @@ export function createDocumentHandlers(db: any, storage: Storage) {
 }
 
 if (import.meta.main) {
-	const environment = { ...process.env, ...resolvedConfigEnvironment(["base", "redis", "storage", "worker"]) };
-	const config = createWorkerConfig(environment);
+	const config = getWorkerConfig();
+	const prisma = getPrisma();
 	const storageConfig = config.storage;
 	if (!storageConfig) throw new Error("storage is not configured");
-	const redisConfig = createRedisConfig(environment);
+	const redisConfig = config.redis;
 	const storage = createStorageClient(storageConfig);
 	const queues = Object.fromEntries(Object.values(queueNames).map((name) => [name, createQueue(name, redisConfig)])) as Record<
 		QueueName,
@@ -88,9 +88,9 @@ if (import.meta.main) {
 			const { eventId, workspaceId } = payload as { eventId: string; workspaceId: string };
 			const event = await prisma.auditLog.findUnique({ where: { workspaceId_id: { workspaceId, id: eventId } } });
 			if (!event || event.action !== "processing.completed") throw new Error("Notification event unavailable");
-			const response = await fetch(config.WORKER_NOTIFICATION_URL, {
+			const response = await fetch(config.worker.notificationUrl, {
 				method: "POST",
-				headers: { "content-type": "application/json", "x-worker-notification-key": config.WORKER_NOTIFICATION_API_KEY },
+				headers: { "content-type": "application/json", "x-worker-notification-key": config.worker.notificationApiKey },
 				body: JSON.stringify(event.metadata),
 				signal: AbortSignal.timeout(5000),
 			});
@@ -122,5 +122,5 @@ if (import.meta.main) {
 				process.exitCode = 1;
 			});
 		});
-	log("info", { service: "worker", environment: config.NODE_ENV }, "worker started");
+	log("info", { service: "worker", environment: config.app.environment }, "worker started");
 }

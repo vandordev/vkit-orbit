@@ -3,7 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { Elysia, t } from "elysia";
 import { realtimeEventSchema, type RealtimeEvent } from "@repo/realtime";
 
-import { publishRealtimeEvent, workerNotificationApiKey } from "../../runtime";
+import { publishRealtimeEvent, getWorkerNotificationApiKey } from "../../runtime";
 import { apiOperation } from "../../openapi/operation";
 import { failureEnvelope, successEnvelope } from "../../schemas/envelope";
 
@@ -17,7 +17,7 @@ function matchesSecret(expected: string, actual: string | null) {
 export const workerEventRoutes = new Elysia({ prefix: "/internal", tags: ["Internal"] }).post(
 	"/worker-events",
 	async ({ request, body, set }) => {
-		if (!matchesSecret(workerNotificationApiKey, request.headers.get("x-worker-notification-key"))) {
+		if (!matchesSecret(getWorkerNotificationApiKey(), request.headers.get("x-worker-notification-key"))) {
 			set.status = 401;
 			return { success: false as const, error: "UNAUTHORIZED" as const, message: "Worker notification authentication required" };
 		}

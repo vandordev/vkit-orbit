@@ -1,5 +1,5 @@
-import { prisma } from "@repo/db";
-export async function claimOutboxBatch(limit = 100, db: any = prisma) {
+import { getPrisma } from "@repo/db";
+export async function claimOutboxBatch(limit = 100, db: any = getPrisma()) {
 	await db.queueOutbox.updateMany({
 		where: { status: "CLAIMED", claimedAt: { lt: new Date(Date.now() - 60_000) } },
 		data: { status: "PENDING", claimedAt: null },

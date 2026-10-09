@@ -1,10 +1,10 @@
 import { createHash, randomBytes } from "node:crypto";
-import { prisma, type DatabaseClient } from "@repo/db";
+import { getPrisma, type DatabaseClient } from "@repo/db";
 import { validateWebhookUrl, type WebhookUrlPolicy } from "./safe-url";
 import { runtimeWebhookSecretCrypto, type WebhookSecretCrypto } from "./secret";
 export async function createWebhookEndpoint(
 	input: { workspaceId: string; url: string; events: string[] },
-	db: DatabaseClient = prisma,
+	db: DatabaseClient = getPrisma(),
 	options: { crypto?: WebhookSecretCrypto; urlPolicy?: WebhookUrlPolicy } = {},
 ) {
 	await validateWebhookUrl(input.url, options.urlPolicy);

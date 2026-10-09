@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 
-import { prisma } from "@repo/db";
+import { getPrisma } from "@repo/db";
 
 import { apiOperation } from "../openapi/operation";
 
@@ -59,7 +59,7 @@ export const healthRoutes = new Elysia({ prefix: "/health", tags: ["Health"] })
 		"/ready",
 		async ({ set }) => {
 			try {
-				await prisma.$queryRaw`SELECT 1`;
+				await getPrisma().$queryRaw`SELECT 1`;
 				return {
 					success: true as const,
 					data: {

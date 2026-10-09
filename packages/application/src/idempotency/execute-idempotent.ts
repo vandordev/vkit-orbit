@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { prisma, type DatabaseClient, type DatabaseTransaction, type Prisma } from "@repo/db";
+import { getPrisma, type DatabaseClient, type DatabaseTransaction, type Prisma } from "@repo/db";
 
 function sortValue(value: unknown): unknown {
 	if (Array.isArray(value)) return value.map(sortValue);
@@ -26,7 +26,7 @@ export async function executeIdempotent<T>(
 	key: string,
 	request: unknown,
 	action: (db: DatabaseTransaction) => Promise<T>,
-	db: DatabaseClient = prisma,
+	db: DatabaseClient = getPrisma(),
 ): Promise<T> {
 	const requestHash = canonicalRequestHash(request);
 	if (!key || key.length > 255) throw new Error("invalid idempotency key");
