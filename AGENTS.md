@@ -14,6 +14,8 @@ changed, the plan/spec, and run
 - `packages/components`: shared Vandor UI source, imported through explicit
   `@repo/components/<name>` entrypoints. All new small UI primitives belong here,
   never in application-local copies. Unmigrated existing presentation stays intact.
+- `packages/brand`: source of truth for brand name, logo, and color tokens.
+  Consumers use `@repo/brand` entrypoints; do not duplicate identity or palette.
 - `apps/api`: Elysia factory, validation, envelopes, usecase transport, and the
   authenticated `/api/internal/worker-events` gateway.
 - `packages/database`: the only Prisma client owner and migration source.
@@ -58,6 +60,7 @@ typed presentation components with colocated stories, verify them in Storybook,
 then integrate routes and tRPC. Keep fetching, authorization, and navigation out
 of presentation components. Read `.agent/web/README.md` and the Storybook README.
 For shared UI, read `.agent/components.md` and `packages/components/README.md`.
+For brand changes, read `packages/brand/README.md`; web config derives brand identity.
 For TanStack Start SEO, use the `tanstack-seo` skill and `.agent/web/seo.md`;
 adapt examples to `src/app`, existing brand/config ownership, and typecheck-only
 system verification. Confirm public origin/indexing scope before implementation.

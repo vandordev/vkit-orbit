@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@repo/brand/tokens.css";
 @import "@repo/components/styles.css";
 
 @theme inline {
@@ -14,20 +15,6 @@
 }
 
 :root {
-	--background: oklch(0.985 0.003 285.8);
-	--foreground: oklch(0.18 0.01 285.8);
-	--primary: oklch(0.33 0.14 24);
-	--primary-foreground: oklch(0.985 0.003 285.8);
-	--muted: oklch(0.95 0.006 285.8);
-	--muted-foreground: oklch(0.48 0.015 285.8);
-	--secondary: var(--muted);
-	--secondary-foreground: var(--foreground);
-	--accent: var(--muted);
-	--accent-foreground: var(--foreground);
-	--destructive: oklch(0.5 0.18 24);
-	--input: var(--border);
-	--border: oklch(0.89 0.008 285.8);
-	--ring: oklch(0.48 0.16 24);
 	--radius: 0.5rem;
 }
 

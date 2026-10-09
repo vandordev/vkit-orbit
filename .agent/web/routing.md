@@ -75,9 +75,10 @@ states. Existing pages are not automatically migrated by installing Storybook.
 
 ## Metadata and route boundaries
 
-Use `appConfig` from `src/lib/config.ts` for static brand values. Its
+Brand identity comes from `packages/brand`. Use `appConfig` from `src/lib/config.ts`
+for web defaults derived from that identity. Its
 `appName`, `defaultTitle`, `defaultDescription`, `favicon`, and `repositoryUrl`
-fields are the web app's single source of truth. Use `createMetadata` from
+fields are the web configuration adapter, not an independent brand source. Use `createMetadata` from
 `src/lib/metadata.ts` in `head: () => ...`; nested TanStack head values merge
 with the most-specific title/meta winning. Route metadata may override title or
 description for a specific page. The root defaults come from `appConfig`. The

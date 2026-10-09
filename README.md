@@ -26,7 +26,9 @@ Web routing is directory-first under `apps/web/src/app`; see
 [.agent/web/routing.md](.agent/web/routing.md) for native TanStack tokens,
 generated-tree ownership, and adapter isolation rules.
 
-Web brand defaults are centralized in `apps/web/src/lib/config.ts`; see the
+Brand name, logo, and color tokens are centralized in
+[`packages/brand`](packages/brand/README.md). Web's `apps/web/src/lib/config.ts`
+derives identity from `@repo/brand` and retains app-specific defaults; see the
 [web guidance](.agent/web/README.md) before changing application metadata or
 public brand copy.
 TanStack Start SEO follows the `tanstack-seo` skill with repository-specific

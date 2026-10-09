@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import type { FormEvent } from "react";
 import { trpc } from "../../../trpc/client";
 import { useNavigate } from "@tanstack/react-router";
+import { brand } from "@repo/brand";
 
 export function AuthForm({ mode }: { mode: "sign-in" | "register" }) {
 	const isSignIn = mode === "sign-in";
@@ -21,7 +22,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "register" }) {
 		<main className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
 			<section className="w-full max-w-md rounded-xl border border-border bg-white p-8 shadow-sm">
 				<Link to="/" className="text-sm font-semibold text-primary">
-					Vkit Orbit
+					{brand.name}
 				</Link>
 				<h1 className="mt-8 text-3xl font-semibold tracking-tight">{isSignIn ? "Sign in" : "Create your account"}</h1>
 				<p className="mt-2 text-sm text-muted-foreground">

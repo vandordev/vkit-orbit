@@ -29,14 +29,15 @@ by Vite. Shared source never imports web routes, API clients, or server modules.
 
 ```css
 @import "tailwindcss";
+@import "@repo/brand/tokens.css";
 @import "@repo/components/styles.css";
 ```
 
 The stylesheet registers the package source with Tailwind 4 and exposes secondary,
-accent, destructive, and input utilities. The consumer supplies the standard
+accent, destructive, and input utilities. The consumer imports `@repo/brand/tokens.css` for the standard
 background/foreground, primary, secondary, accent, muted, destructive, border,
-input, ring, and radius tokens. Web retains its current light palette and supplies
-the missing roles; Storybook loads the same web stylesheet. No theme switch or
+input, and ring colors; the consumer owns radius and utility mappings. Web retains
+the current light palette from brand; Storybook loads the same web stylesheet. No theme switch or
 new dark palette is installed.
 
 ## Button contract

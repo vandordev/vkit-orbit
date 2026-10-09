@@ -9,6 +9,7 @@
 		"lint": "eslint .storybook test"
 	},
 	"dependencies": {
+		"@repo/brand": "*",
 		"@repo/components": "*",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0"

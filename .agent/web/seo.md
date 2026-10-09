@@ -17,9 +17,10 @@ data, and discovery endpoints require separately scoped implementation.
 
 ## Configuration and ownership
 
-- `src/lib/config.ts` (`appConfig`) remains the source of static brand defaults.
-  Do not introduce an independent `brand/index.ts` with duplicate values merely
-  because the skill uses that example. Extend or derive from the existing owner.
+- `packages/brand` is the source of truth for name, logo, and color tokens.
+  Consume `@repo/brand` entrypoints; do not introduce a web-local `brand/index.ts`
+  with duplicate values merely because the skill uses that example. `appConfig`
+  derives identity from brand and owns app-specific SEO defaults/configuration.
 - Confirm the public production origin and indexable route set with the user
   before implementation. Do not infer an origin from the repository URL, localhost,
   untrusted request headers, or `https://yoursite.com`.

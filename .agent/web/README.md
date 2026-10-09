@@ -34,9 +34,11 @@ index private content. SEO server/head changes follow system typecheck-only veri
 The generated tree is owned by the TanStack plugin. Keep route-local helpers
 under `-`-prefixed files or directories; `_` is reserved for pathless layouts.
 
-Static web brand configuration lives in `apps/web/src/lib/config.ts` as the
-`appConfig` single source of truth. It owns `appName`, `defaultTitle`,
-`defaultDescription`, `favicon`, and `repositoryUrl`. Metadata and public UI
-may override route-specific copy, but must not repeat the application defaults.
+Brand name, logo, and color tokens are owned by `packages/brand`; see its
+[README](../../packages/brand/README.md). Import `@repo/brand` and its asset/CSS
+entrypoints instead of duplicating values. `apps/web/src/lib/config.ts` is the web
+adapter: `appName` and `defaultTitle` derive from brand, while `defaultDescription`,
+`favicon`, and `repositoryUrl` remain app configuration. Metadata and public UI
+may override route-specific copy, but must not repeat brand or application defaults.
 Secrets and runtime environment values remain in the YAML configuration
 modules; `appConfig` never reads credentials or `process.env`.

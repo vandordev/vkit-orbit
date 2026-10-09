@@ -34,8 +34,9 @@ promote feature compositions only when genuinely reusable. Small UI primitives
 ## Styling and composition
 
 - Import `@repo/components/styles.css` after Tailwind in the consumer stylesheet.
-  It registers shared source and extra semantic utilities; consumers own theme
-  values. Storybook imports web's stylesheet so both use the same tokens.
+  It registers shared source and extra semantic utilities. Brand color values come
+  from `@repo/brand/tokens.css`; consumers own utility mappings, not duplicate
+  palettes. Storybook imports web's stylesheet so both use the same tokens.
 - Use component variants/sizes and semantic colors first. Prefer `className` for
   layout. Change shared visual defaults in the component/token owner instead of
   repeating per-page color overrides.
