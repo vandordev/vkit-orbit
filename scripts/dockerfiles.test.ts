@@ -17,9 +17,9 @@ test("ships every production runtime Dockerfile", () => {
 	}
 });
 
-test("uses Bun 1.3.14 runtime bases", () => {
-	expect(readFileSync(join(root, "Dockerfile.web"), "utf8")).toContain("oven/bun:1.3.14");
-	expect(readFileSync(join(root, "Dockerfile.worker"), "utf8")).toContain("oven/bun:1.3.14");
+test("uses Bun 1.4.2 runtime bases", () => {
+	expect(readFileSync(join(root, "Dockerfile.web"), "utf8")).toContain("oven/bun:1.4.2");
+	expect(readFileSync(join(root, "Dockerfile.worker"), "utf8")).toContain("oven/bun:1.4.2");
 });
 
 test("keeps web runtime dependencies production-only and Prisma artifacts", () => {

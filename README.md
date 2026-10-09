@@ -54,7 +54,7 @@ publisher endpoint; `apps/migrate` owns one-shot migration orchestration.
 
 ## Quick start
 
-Prerequisites: Bun 1.3.14, Task, Docker, and PostgreSQL (or Compose).
+Prerequisites: Bun 1.4.2, Task, Docker, and PostgreSQL (or Compose).
 
 ```bash
 task install

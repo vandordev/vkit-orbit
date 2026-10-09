@@ -2,7 +2,7 @@
   "name": "web",
   "version": "0.1.0",
   "type": "module",
-  "packageManager": "bun@1.3.14",
+  "packageManager": "bun@1.4.2",
   "private": true,
   "scripts": {
     "dev": "bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun run vite --port 4100",
