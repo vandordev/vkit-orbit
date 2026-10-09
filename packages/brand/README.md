@@ -26,7 +26,9 @@ import { brand } from "@repo/brand";
 @import "@repo/components/styles.css";
 ```
 
-The PNG lives only in `assets/logo.png`, moved from web's public images directory.
+The PNG lives only in `assets/logo.png`, sourced from
+`vandor-landing/public/app-logo.png`. It is a white transparent mark; render it
+against a contrasting dark surface. The identity story demonstrates this treatment.
 Consumers declare `"@repo/brand": "*"` and use package asset resolution, not a
 copied asset or the obsolete `/images/app-logo.png` URL. Non-Vite consumers must
 use their own asset pipeline; the name export does not promise a deployment URL.

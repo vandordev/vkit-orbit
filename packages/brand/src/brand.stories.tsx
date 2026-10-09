@@ -13,7 +13,9 @@ type Story = StoryObj<typeof meta>;
 export const Identity: Story = {
 	render: () => (
 		<div className="flex flex-col items-center gap-6">
-			<img src={logoUrl} alt={`${brand.name} logo`} width={180} height={180} />
+			<div className="bg-foreground p-6">
+				<img src={logoUrl} alt={`${brand.name} logo`} width={180} height={180} />
+			</div>
 			<p className="text-xl font-semibold">{brand.name}</p>
 		</div>
 	),
