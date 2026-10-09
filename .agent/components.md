@@ -59,7 +59,7 @@ stories when available, then add relevant consumer cases rather than duplicating
 the component implementation. Stories import relatively or through public package
 exports, use deterministic local state, and never call production APIs.
 
-Follow [verification.md](verification.md): typecheck the owner and consumers, use
-builds for module/CSS integration, and verify affected stories in the existing
-permission-managed Storybook. Record local source adaptations and blocked checks
+Follow [verification.md](verification.md): typecheck the owner and consumers and
+verify affected stories in the existing permission-managed Storybook. No automatic
+lint/build or system verification gates. Record local source adaptations and blocked checks
 in the package README. Do not claim browser acceptance from typecheck/build alone.

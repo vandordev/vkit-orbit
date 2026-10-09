@@ -105,5 +105,6 @@ after another step, such as authentication.
 
 Malformed request schemas, including collection query input, return the shared
 `422` validation envelope. Follow [verification.md](../verification.md).
-When changing HTTP/OpenAPI contracts, run the focused source and generated
-documentation checks for that boundary, not an automatic full `task quality` gate.
+HTTP/OpenAPI changes use the system verification track: affected native typechecks
+only. Review contracts in source without starting the API or generating runtime
+documentation for verification. Report HTTP/runtime behavior as unverified.

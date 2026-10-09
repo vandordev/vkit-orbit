@@ -110,12 +110,14 @@ guard in `beforeLoad`.
 ## Generated ownership and tests
 
 Never edit `src/routeTree.gen.ts` manually. The TanStack plugin regenerates it
-from `src/app`; run the web dev/build command after route changes and verify its
-imports. Tests and stories are excluded by `routeFileIgnorePattern`; `-` directories
-are ignored by native routing. Follow [verification.md](../verification.md) for proportional checks.
-Useful focused commands, not mandatory gates for every change:
+from `src/app` during an explicitly authorized web dev/build run; inspect generated
+imports afterward. Tests and stories are excluded by `routeFileIgnorePattern`; `-` directories
+are ignored by native routing. Do not run dev/build solely for verification;
+if regeneration is required by a route edit, obtain explicit user authorization
+for that command. Follow [verification.md](../verification.md): UI uses Storybook
+plus typecheck; server adapters/tRPC use typecheck only. Runtime auth/navigation
+integration remains unverified. The native web typecheck is:
 
 ```bash
-bun test apps/web/src/app apps/web/src/lib
 bun --cwd apps/web run check-types
 ```

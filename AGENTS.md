@@ -46,11 +46,12 @@ the active architecture.
 
 ## Workflow
 
-Follow `.agent/verification.md` for the active, risk-based verification policy.
-Typesafe wiring/refactors normally stop after a fresh successful native typecheck.
-For runtime invariants types cannot prove, use focused tests, test-first when
-meaningful. Do not automatically run `task quality`, repository builds, or Compose.
-These commands remain available for explicitly scoped integrated checks.
+Follow `.agent/verification.md` for the two verification tracks: UI uses Storybook
+plus typecheck; system (all backend/database/service work, including web tRPC)
+uses typecheck only. Never start Compose, containers, databases, backend services,
+or execute system tests, migrations, builds, or full quality gates for verification.
+Risk does not authorize extra runtime checks. Report runtime integrations as
+unverified, not proven by typecheck. Exceptions require new explicit user instruction.
 
 UI follows component-driven design: check schema and runtime feasibility, build
 typed presentation components with colocated stories, verify them in Storybook,

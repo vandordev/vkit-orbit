@@ -1,6 +1,8 @@
 # Web
 
-Follow [verification.md](../verification.md), not automatic full-repository gates.
+Follow [verification.md](../verification.md): UI uses Storybook plus typecheck;
+server-side tRPC/adapters and all service work use typecheck only. Do not start
+the product stack, run system tests, or add lint/build/full-repository gates.
 New or changed UI follows component-driven design: check persisted-data feasibility
 and runtime support, develop typed presentation components with colocated stories,
 verify them in Storybook, then integrate routes/tRPC. Presentation components do
@@ -23,7 +25,7 @@ migrated. Keep accessible labels, focus states, responsive layouts, and typed
 same-origin tRPC calls. Do not reintroduce Next.js or Mantine as defaults.
 
 See [routing.md](routing.md) for the complete directory-first route
-convention, adapter isolation rules, and focused test commands.
+convention, adapter isolation rules, and native typecheck command.
 See [trpc.md](trpc.md) for UI-driven contracts and server-owned boundaries.
 
 The generated tree is owned by the TanStack plugin. Keep route-local helpers

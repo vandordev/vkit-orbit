@@ -127,7 +127,9 @@ or production project.
 
 Initial support is `.txt` and `.md`; OCR, PDF/DOCX, AI, and compatibility layers
 are excluded. Add product rules in the owning boundary. Follow
-[risk-based verification](.agent/verification.md): typecheck typed wiring; use
-focused tests for runtime invariants and browser Storybook checks for UI. Full
-quality/build/Compose gates are deliberate integration checks, not automatic
-requirements for every task. Do not apply remote migrations without authorization.
+[verification policy](.agent/verification.md): UI uses Storybook plus typecheck;
+system/backend/database/service work uses typecheck only. Do not start Compose,
+containers, databases, or backend services, or run system tests/build/quality gates
+for verification. The operational commands above remain available but are not
+verification authorization. Report runtime integrations as unverified; exceptions
+require new explicit user instruction. Do not apply remote migrations without authorization.

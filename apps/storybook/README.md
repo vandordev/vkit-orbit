@@ -70,5 +70,9 @@ bun --cwd apps/web run check-types
 task build:storybook
 ```
 
-Run only checks relevant to the changed boundary. Storybook/browser checks do not
-establish production auth or backend integration behavior.
+The commands above are tooling references, not automatic verification gates.
+Follow [verification policy](../../.agent/verification.md): UI uses affected native
+typechecks plus browser Storybook inspection; no default test/lint/build gate.
+System/backend/service changes use typecheck only; never start Compose or product
+services for previews. Storybook/browser checks do not establish production auth
+or backend integration behavior. Report those runtime boundaries as unverified.
