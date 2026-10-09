@@ -9,6 +9,6 @@ test("public bundle checks fail closed and reject credential or server module ma
 	expect(scanner.checkPublicBundles([root])).toEqual([]);
 	await writeFile(`${root}/app.js`, 'const DATABASE_URL = "postgresql://synthetic";');
 	expect(scanner.checkPublicBundles([root])).toHaveLength(1);
-	await writeFile(`${root}/app.js`, 'import { db } from "@repo/database";');
+	await writeFile(`${root}/app.js`, 'import { db } from "@repo/db";');
 	expect(scanner.checkPublicBundles([root])).toHaveLength(1);
 });

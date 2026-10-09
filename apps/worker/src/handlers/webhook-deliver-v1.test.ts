@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { createWebhookDeliverHandler } from "./webhook-deliver-v1";
 import type { Job } from "bullmq";
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 
 test("webhook handler treats HTTP 408 as retryable and persists another durable attempt", async () => {
 	let status = "PENDING";

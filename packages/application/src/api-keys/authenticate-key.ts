@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { prisma, type DatabaseClient } from "@repo/database";
+import { prisma, type DatabaseClient } from "@repo/db";
 import { UnauthorizedError } from "../shared/errors";
 import { hasPermission, permissions, type Permission } from "../auth/permissions";
 export async function authenticateApiKey(secret: string, db: DatabaseClient = prisma) {

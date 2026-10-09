@@ -22,7 +22,7 @@
         "@elysiajs/openapi": "^1.4.15",
         "@repo/application": "*",
         "@repo/config": "*",
-        "@repo/database": "*",
+        "@repo/db": "*",
         "@repo/queue": "*",
         "@repo/realtime": "*",
         "@repo/storage": "*",
@@ -44,7 +44,7 @@
       "name": "@repo/migrate",
       "version": "0.1.0",
       "dependencies": {
-        "@repo/database": "*",
+        "@repo/db": "*",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -74,7 +74,7 @@
       "dependencies": {
         "@repo/application": "*",
         "@repo/config": "*",
-        "@repo/database": "*",
+        "@repo/db": "*",
         "@repo/queue": "*",
       },
       "devDependencies": {
@@ -157,7 +157,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@repo/application": "*",
-        "@repo/database": "*",
+        "@repo/db": "*",
         "@repo/queue": "*",
         "bullmq": "^5.58.0",
         "ioredis": "^5.6.1",
@@ -175,7 +175,7 @@
         "@repo/storage": "*",
       },
       "devDependencies": {
-        "@repo/database": "*",
+        "@repo/db": "*",
         "@repo/typescript-config": "*",
         "typescript": "5.9.2",
       },
@@ -232,8 +232,8 @@
         "typescript": "5.9.2",
       },
     },
-    "packages/database": {
-      "name": "@repo/database",
+    "packages/db": {
+      "name": "@repo/db",
       "version": "0.1.0",
       "dependencies": {
         "@prisma/client": "^6.0.0",
@@ -266,7 +266,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@repo/application": "*",
-        "@repo/database": "*",
+        "@repo/db": "*",
       },
       "devDependencies": {
         "@repo/typescript-config": "*",
@@ -768,7 +768,7 @@
 
     "@repo/config": ["@repo/config@workspace:packages/config"],
 
-    "@repo/database": ["@repo/database@workspace:packages/database"],
+    "@repo/db": ["@repo/db@workspace:packages/db"],
 
     "@repo/eslint-config": ["@repo/eslint-config@workspace:packages/eslint-config"],
 

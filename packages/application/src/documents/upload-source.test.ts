@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import * as commands from "../index";
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 import type { PutObjectInput } from "@repo/storage";
 
 test("source upload refuses foreign artifacts and never accepts browser object keys", async () => {

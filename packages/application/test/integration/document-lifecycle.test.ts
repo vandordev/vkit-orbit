@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { withPostgres } from "../../../database/test/integration/harness";
+import { withPostgres } from "../../../db/test/integration/harness";
 import { submitProcessingRun } from "../../src";
 
 test("submits a ready document with audit, idempotency, and outbox atomically", async () => {

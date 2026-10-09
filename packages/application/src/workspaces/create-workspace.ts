@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 export async function createWorkspace(input: { name: string; slug: string; ownerId: string }) {
 	return prisma.$transaction(async (tx) => {
 		const workspace = await tx.workspace.create({

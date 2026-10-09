@@ -1,5 +1,5 @@
 import { createHmac, randomUUID } from "node:crypto";
-import { prisma, type DatabaseConnection } from "@repo/database";
+import { prisma, type DatabaseConnection } from "@repo/db";
 export function signWebhook(secret: string, body: Uint8Array | string): string {
 	return `sha256=${createHmac("sha256", secret).update(body).digest("hex")}`;
 }

@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { authenticateSession } from "./session";
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 
 test("session authentication returns only public user fields", async () => {
 	const db = {

@@ -46,7 +46,7 @@ apps/migrate -- Prisma deploy -------------------------------------> PostgreSQL
 
 Workspace ownership is explicit: `apps/web` owns routes and browser clients;
 `apps/api` owns Elysia validation/envelopes and the worker notification gateway;
-`packages/application` owns TypeScript business rules; `packages/database` owns
+`packages/application` owns TypeScript business rules; `packages/db` owns
 Prisma; `packages/queue` owns BullMQ contracts/producers;
 `apps/scheduler` only schedules/enqueues; `apps/worker` owns TypeScript handlers;
 `apps/realtime` owns Socket.IO ticket/room authorization and its private

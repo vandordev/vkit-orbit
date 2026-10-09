@@ -32,6 +32,6 @@ test("keeps web runtime dependencies production-only and Prisma artifacts", () =
 test("limits migration image dependencies to the database workspace", () => {
 	const dockerfile = readFileSync(join(root, "Dockerfile.migrate"), "utf8");
 	expect(dockerfile).toContain("--filter @repo/migrate");
-	expect(dockerfile).toContain("COPY packages/database/package.json packages/database/package.json");
+	expect(dockerfile).toContain("COPY packages/db/package.json packages/db/package.json");
 	expect(dockerfile).not.toContain("COPY . .");
 });

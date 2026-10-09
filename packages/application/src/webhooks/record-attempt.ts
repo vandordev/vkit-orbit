@@ -1,4 +1,4 @@
-import { prisma, type DatabaseConnection } from "@repo/database";
+import { prisma, type DatabaseConnection } from "@repo/db";
 export function classifyWebhookResponse(status: number | "network"): "SUCCESS" | "RETRYABLE" | "TERMINAL" | "UNKNOWN" {
 	if (status === "network" || (typeof status === "number" && (status === 408 || status === 429 || status >= 500))) return "RETRYABLE";
 	if (typeof status === "number" && status >= 200 && status < 300) return "SUCCESS";

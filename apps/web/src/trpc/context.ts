@@ -1,5 +1,5 @@
 import { authenticateSession } from "@repo/application";
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { readSessionCookie } from "../server/cookies";
 
 export async function createTRPCContext(input: { req: Request }) {

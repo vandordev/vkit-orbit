@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 export function outboxId(contract: string, businessId: string, revision: number): string {
 	return `${contract}:${businessId}:${revision}`;
 }

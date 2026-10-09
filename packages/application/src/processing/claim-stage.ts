@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import type { Stage } from "./types";
 
 export async function claimStage(

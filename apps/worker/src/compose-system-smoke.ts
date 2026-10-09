@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { createStorageConfig } from "@repo/config";
 import { createStorageClient } from "@repo/storage";
 import { createWebhookEndpoint, prepareDelivery, prepareWebhookEnvelope } from "@repo/application";

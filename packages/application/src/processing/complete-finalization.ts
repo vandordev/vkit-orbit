@@ -1,4 +1,4 @@
-import { prisma, type DatabaseClient } from "@repo/database";
+import { prisma, type DatabaseClient } from "@repo/db";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 import { prepareDelivery, prepareWebhookEnvelope } from "../webhooks/prepare-delivery";
 import { runtimeWebhookSecretCrypto, type WebhookSecretCrypto } from "../webhooks/secret";

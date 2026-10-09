@@ -13,7 +13,7 @@ export async function withPostgres<T>(callback: (db: PrismaClient) => Promise<T>
 	loadTestEnvironment({ TEST_DATABASE_URL: url });
 	try {
 		if (!existing) {
-			const migration = Bun.spawnSync(["bunx", "prisma", "migrate", "deploy", "--schema", "packages/database/prisma/schema.prisma"], {
+			const migration = Bun.spawnSync(["bunx", "prisma", "migrate", "deploy", "--schema", "packages/db/prisma/schema.prisma"], {
 				env: { ...process.env, DATABASE_URL: url },
 			});
 			if (migration.exitCode !== 0) throw new Error(new TextDecoder().decode(migration.stderr));

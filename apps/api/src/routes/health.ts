@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia";
 
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 
 import { apiOperation } from "../openapi/operation";
 

@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 export async function completeValidation(input: { workspaceId: string; runId: string; revision: number }, db: any = prisma) {
 	const run = await db.processingRun.findFirst({

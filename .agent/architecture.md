@@ -2,7 +2,7 @@
 
 TanStack Start serves the dashboard and same-origin tRPC. `apps/api` is the
 standalone Elysia business HTTP boundary with public routes under `/v1`.
-Prisma is owned by `packages/database`; PostgreSQL is source of truth and
+Prisma is owned by `packages/db`; PostgreSQL is source of truth and
 BullMQ/Redis provides delivery and scheduling. The TypeScript worker relays
 events to the Socket.IO runtime.
 

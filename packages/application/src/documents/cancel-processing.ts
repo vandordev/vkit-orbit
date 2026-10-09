@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { writeAuditLog } from "../audit/write-audit-log";
 export async function cancelProcessingRun(scope: { workspaceId: string; principalId: string }, runId: string, db: any = prisma) {
 	return db.$transaction(async (tx: any) => {

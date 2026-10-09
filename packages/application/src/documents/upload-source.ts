@@ -1,4 +1,4 @@
-import { prisma, type DatabaseClient } from "@repo/database";
+import { prisma, type DatabaseClient } from "@repo/db";
 import type { PutObjectInput } from "@repo/storage";
 import { requirePermission } from "../auth/permissions";
 import { ForbiddenError, NotFoundError } from "../shared/errors";

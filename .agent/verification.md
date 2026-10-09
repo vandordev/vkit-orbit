@@ -42,7 +42,7 @@ build, full-repository, or system test gates. Standalone Storybook is the only
 preview runtime allowed by this track, subject to the lifecycle permission below.
 
 1. Before designing data-bearing UI or fixtures, inspect relevant models in
-   `packages/database/prisma/schema.prisma`. Map values, filters, sorting, and
+   `packages/db/prisma/schema.prisma`. Map values, filters, sorting, and
    aggregates to fields, relations, enums, or feasible derivations. Respect
    nullability and tenant/permission boundaries. Schema support does not prove
    runtime availability; inspect the relevant application/API implementation too.

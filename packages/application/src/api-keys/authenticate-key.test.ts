@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { authenticateApiKey } from "./authenticate-key";
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 
 test("an API key cannot outlive its owner's workspace membership", async () => {
 	let used = false;

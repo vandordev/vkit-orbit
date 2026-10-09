@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 export async function completeAnalysis(input: { workspaceId: string; runId: string; revision: number; report: unknown }, db: any = prisma) {
 	const run = await db.processingRun.findFirst({

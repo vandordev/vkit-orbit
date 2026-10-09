@@ -1,7 +1,7 @@
 import { enqueueIntent, recordWebhookAttempt, classifyWebhookResponse } from "@repo/application";
 import { webhookDeliverV1 } from "@repo/queue";
 import { typedHandler } from "./types";
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 export const createWebhookDeliverHandler = (db: DatabaseClient, deliver: (deliveryId: string) => Promise<number | "network">) =>
 	typedHandler(webhookDeliverV1, async (payload) => {
 		const claimed = await db.webhookDelivery.updateMany({

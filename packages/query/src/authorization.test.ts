@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { getDocument } from "./index.js";
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 
 test("a workspace predicate alone cannot authorize a document read", async () => {
 	const db = {

@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");
 export async function createApiKey(input: { workspaceId: string; userId: string; name: string; scopes: string[]; expiresAt?: Date }) {
 	const secret = `dph_${randomBytes(32).toString("base64url")}`;

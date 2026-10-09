@@ -13,7 +13,7 @@ COPY --from=prune /app/out/full/ ./
 COPY config ./config
 ARG DATABASE_URL=postgresql://boilerplate:boilerplate@db:5432/boilerplate
 ENV DATABASE_URL=$DATABASE_URL NODE_ENV=production
-RUN bun run --cwd packages/database db:generate
+RUN bun run --cwd packages/db db:generate
 RUN cd apps/web && bun run build
 FROM base AS runtime-deps
 COPY --from=prune /app/out/json/ ./

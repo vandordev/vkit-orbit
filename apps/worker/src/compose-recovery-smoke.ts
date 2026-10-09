@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { createRedisConfig } from "@repo/config";
 import { recoverProcessing } from "@repo/application";
 import { createQueue, createJobId, documentAnalyzeV1 } from "@repo/queue";

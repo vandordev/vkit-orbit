@@ -1,5 +1,5 @@
 import { createRealtimeConfig } from "@repo/config";
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { signRealtimeTicket } from "@repo/realtime";
 
 export async function createRealtimeTicket(userId: string) {

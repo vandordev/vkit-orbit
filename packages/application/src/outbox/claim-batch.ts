@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 export async function claimOutboxBatch(limit = 100, db: any = prisma) {
 	await db.queueOutbox.updateMany({
 		where: { status: "CLAIMED", claimedAt: { lt: new Date(Date.now() - 60_000) } },

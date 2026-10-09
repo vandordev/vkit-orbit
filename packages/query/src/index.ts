@@ -1,6 +1,6 @@
 export type PageInput = { size: number; after?: string; before?: string };
 export type WorkspaceScope = { workspaceId: string; principalId: string };
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 import { ForbiddenError, hasPermission } from "@repo/application";
 
 async function authorize(scope: WorkspaceScope, db: DatabaseClient, permission: "documents:read" | "audit:read") {
@@ -30,14 +30,14 @@ export type DocumentDto = {
 	updatedAt: string;
 };
 export async function getDocument(scope: WorkspaceScope, documentId: string, db?: DatabaseClient): Promise<DocumentDto | null> {
-	const prisma = db ?? (await import("@repo/database")).prisma;
+	const prisma = db ?? (await import("@repo/db")).prisma;
 	await authorize(scope, prisma, "documents:read");
 	const document = await prisma.document.findFirst({ where: { workspaceId: scope.workspaceId, id: documentId } });
 	return document ? { ...document, createdAt: document.createdAt.toISOString(), updatedAt: document.updatedAt.toISOString() } : null;
 }
 export async function listDocuments(scope: WorkspaceScope, page: PageInput, db?: DatabaseClient) {
 	pageInput(page);
-	const prisma = db ?? (await import("@repo/database")).prisma;
+	const prisma = db ?? (await import("@repo/db")).prisma;
 	await authorize(scope, prisma, "documents:read");
 	const rows = await prisma.document.findMany({
 		where: { workspaceId: scope.workspaceId },
@@ -50,7 +50,7 @@ export async function listDocuments(scope: WorkspaceScope, page: PageInput, db?:
 		.map((row) => ({ ...row, createdAt: row.createdAt.toISOString(), updatedAt: row.updatedAt.toISOString() }));
 }
 export async function getProcessingRun(scope: WorkspaceScope, runId: string, db?: DatabaseClient) {
-	const prisma = db ?? (await import("@repo/database")).prisma;
+	const prisma = db ?? (await import("@repo/db")).prisma;
 	await authorize(scope, prisma, "documents:read");
 	const run = await prisma.processingRun.findFirst({ where: { workspaceId: scope.workspaceId, id: runId } });
 	return run
@@ -65,7 +65,7 @@ export async function getProcessingRun(scope: WorkspaceScope, runId: string, db?
 }
 export async function listAuditLogs(scope: WorkspaceScope, page: PageInput, db?: DatabaseClient) {
 	pageInput(page);
-	const prisma = db ?? (await import("@repo/database")).prisma;
+	const prisma = db ?? (await import("@repo/db")).prisma;
 	await authorize(scope, prisma, "audit:read");
 	return prisma.auditLog
 		.findMany({ where: { workspaceId: scope.workspaceId }, orderBy: { createdAt: "desc" }, take: page.size })

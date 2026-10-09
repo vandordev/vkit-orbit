@@ -18,7 +18,7 @@ changed, the plan/spec, and run
   Consumers use `@repo/brand` entrypoints; do not duplicate identity or palette.
 - `apps/api`: Elysia factory, validation, envelopes, usecase transport, and the
   authenticated `/api/internal/worker-events` gateway.
-- `packages/database`: the only Prisma client owner and migration source.
+- `packages/db`: the only Prisma client owner and migration source.
 - `packages/application`: TypeScript business rules and transactions.
 - `packages/queue`: BullMQ producer and versioned JSON contracts.
 - `apps/scheduler`: Bun lifecycle and consumer-installed enqueue-only schedules;
@@ -34,7 +34,7 @@ The web process hosts the dashboard and same-origin tRPC. `apps/api` is the
 standalone public Elysia `/v1` server, not a proxy. Process health is exposed
 by each runtime's health endpoint.
 
-Only `packages/database` creates Prisma clients. Do not expose `DATABASE_URL`
+Only `packages/db` creates Prisma clients. Do not expose `DATABASE_URL`
 or other credentials to browser code. Use the YAML/config loaders rather than
 reading `process.env` in feature code.
 

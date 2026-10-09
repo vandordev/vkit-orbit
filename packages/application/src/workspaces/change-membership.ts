@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 export type WorkspaceMemberRole = "OWNER" | "ADMIN" | "MEMBER" | "VIEWER";
 export function changeWorkspaceMembership(input: { workspaceId: string; userId: string; role: WorkspaceMemberRole }) {
 	return prisma.workspaceMember.upsert({

@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { createSession, createWorkspace, hashPassword, verifyPassword } from "@repo/application";
 export async function register(input: any, request: Request) {
 	const user = await prisma.user.create({

@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { withPostgres } from "../../../database/test/integration/harness";
+import { withPostgres } from "../../../db/test/integration/harness";
 import { getDocument } from "../../src/index";
 
 test("workspace-scoped identifiers do not cross tenant boundaries", async () => {

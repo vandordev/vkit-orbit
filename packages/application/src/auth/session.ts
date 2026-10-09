@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { prisma, type DatabaseClient } from "@repo/database";
+import { prisma, type DatabaseClient } from "@repo/db";
 import { UnauthorizedError } from "../shared/errors";
 
 const digest = (value: string) => createHash("sha256").update(value).digest("hex");

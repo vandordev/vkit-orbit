@@ -1,4 +1,4 @@
-import { prisma, type DatabaseConnection, type Prisma } from "@repo/database";
+import { prisma, type DatabaseConnection, type Prisma } from "@repo/db";
 export function writeAuditLog(
 	input: {
 		workspaceId: string;

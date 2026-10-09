@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 export async function failStage(input: { workspaceId: string; runId: string; revision: number; errorCode: string }, db: any = prisma) {
 	const result = await db.processingRun.updateMany({
 		where: {

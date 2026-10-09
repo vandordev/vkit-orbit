@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { prisma, type DatabaseClient, type DatabaseTransaction, type Prisma } from "@repo/database";
+import { prisma, type DatabaseClient, type DatabaseTransaction, type Prisma } from "@repo/db";
 
 function sortValue(value: unknown): unknown {
 	if (Array.isArray(value)) return value.map(sortValue);

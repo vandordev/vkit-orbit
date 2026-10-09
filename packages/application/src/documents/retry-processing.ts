@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { writeAuditLog } from "../audit/write-audit-log";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 export async function retryProcessingRun(scope: { workspaceId: string; principalId: string }, runId: string, db: any = prisma) {

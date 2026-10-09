@@ -1,5 +1,5 @@
 import { request } from "node:https";
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 import { validateWebhookUrl, type WebhookTarget } from "@repo/application";
 
 const MAX_BYTES = 256 * 1024;

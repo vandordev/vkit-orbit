@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 export async function recoverProcessing(input: { limit?: number; workspaceId?: string; runId?: string }, db: any = prisma) {
 	const runs = await db.processingRun.findMany({

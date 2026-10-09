@@ -84,7 +84,7 @@ tasks:
     cmds: [bun run check-types]
   db:generate:
     desc: Generate Prisma client
-    dir: packages/database
+    dir: packages/db
     cmds: [bun run db:generate]
   db:migrate:
     desc: Apply Prisma migrations

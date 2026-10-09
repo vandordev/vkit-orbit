@@ -1,5 +1,5 @@
 import { recoverProcessing, recoverWebhooks, cleanupDocuments } from "@repo/application";
-import type { DatabaseClient } from "@repo/database";
+import type { DatabaseClient } from "@repo/db";
 import { processingRecoveryV1, webhookRecoveryV1, uploadCleanupV1 } from "@repo/queue";
 import { typedHandler } from "./types";
 

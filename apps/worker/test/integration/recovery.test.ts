@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, expect, test } from "bun:test";
 import { createQueue, documentAnalyzeV1, createJobId } from "@repo/queue";
 import { submitProcessingRun, recoverProcessing } from "@repo/application";
-import { withPostgres } from "../../../../packages/database/test/integration/harness";
+import { withPostgres } from "../../../../packages/db/test/integration/harness";
 import { runOutboxRelay } from "../../src/relay/relay";
 import Redis from "ioredis";
 

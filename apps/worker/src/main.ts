@@ -1,5 +1,5 @@
 import { createRedisConfig, createWorkerConfig, resolvedConfigEnvironment } from "@repo/config";
-import { prisma, type DatabaseClient } from "@repo/database";
+import { prisma, type DatabaseClient } from "@repo/db";
 import { createQueue, queueNames, type QueueName } from "@repo/queue";
 import { createStorageClient, resultObjectKey } from "@repo/storage";
 import { createHash } from "node:crypto";

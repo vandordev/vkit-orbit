@@ -1,4 +1,4 @@
-import { prisma, type DatabaseConnection, type DatabaseTransaction } from "@repo/database";
+import { prisma, type DatabaseConnection, type DatabaseTransaction } from "@repo/db";
 import { sourceObjectKey } from "@repo/storage";
 import { writeAuditLog } from "../audit/write-audit-log";
 import { assertSupportedUpload } from "./state-machine";

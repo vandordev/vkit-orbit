@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { enqueueIntent } from "../outbox/enqueue-intent";
 export async function recoverWebhooks(input: { limit?: number }, db: any = prisma) {
 	await db.webhookDelivery.updateMany({

@@ -6,6 +6,6 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": { "check-types": "tsc --noEmit", "clean": "rm -rf dist" },
-  "dependencies": { "@repo/database": "*", "@repo/application": "*" },
+  "dependencies": { "@repo/db": "*", "@repo/application": "*" },
   "devDependencies": { "@repo/typescript-config": "*", "typescript": "5.9.2" }
 }

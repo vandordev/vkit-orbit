@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 import { writeAuditLog } from "../audit/write-audit-log";
 import { NotFoundError } from "../shared/errors";
 export async function confirmDocumentUpload(

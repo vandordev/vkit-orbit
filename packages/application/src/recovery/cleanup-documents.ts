@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database";
+import { prisma } from "@repo/db";
 export async function cleanupDocuments(
 	input: { limit?: number; before: Date; workspaceId?: string; documentId?: string },
 	db: any = prisma,
