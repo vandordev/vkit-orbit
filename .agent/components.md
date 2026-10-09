@@ -4,11 +4,13 @@
 [Vandor UI](https://vandor-ui.vercel.app/llms-full.txt). `apps/storybook` owns the
 preview host, not component source. `apps/web` owns route adapters and feature/page
 compositions. Colocate route-specific presentation and stories under `-components`;
-promote to the shared package only when it is genuinely reusable.
+promote feature compositions only when genuinely reusable. Small UI primitives
+(buttons, inputs, selects, badges, and similar controls) belong in
+`packages/components`, not application-local copies.
 
 ## Installation and imports
 
-- New shared UI uses explicit `@repo/components/<name>` entrypoints. Check the
+- All new primitive UI uses explicit `@repo/components/<name>` entrypoints. Check the
   installed exports first; the initial catalog contains only Button and its
   internal LoadingArc dependency, not all Vandor components.
 - Run registry commands inside `packages/components`, using its `components.json`.
@@ -21,9 +23,13 @@ promote to the shared package only when it is genuinely reusable.
   no root barrel importing the entire catalog. Internal imports must resolve in
   both web and Storybook without relying on web's `@` alias. Prefer relative
   imports inside this package.
-- Existing `apps/web/src/components/ui` components remain transitional. Do not
-  delete, overwrite, or mass-migrate them without a scoped migration. New usage
-  prefers the shared package where an equivalent is installed.
+- If a needed primitive is not installed, install it into `packages/components`
+  and expose its public entrypoint before use; do not create a web-local fallback
+  or assume the full catalog is available.
+- The web-local Button and its stories have been removed; all Button usage imports
+  `@repo/components/button`. Other existing local presentation components are
+  retained until a scoped migration. Do not recreate a local Button, install new
+  primitives in `apps/web`, or mass-migrate unrelated existing components.
 
 ## Styling and composition
 

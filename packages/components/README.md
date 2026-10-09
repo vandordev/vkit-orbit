@@ -59,8 +59,10 @@ This preserves link semantics. `variant="link"` alone is a visual button variant
 Native `disabled` does not disable links; do not promise otherwise. Inspect the
 actual primitive semantics before migrating Radix or `render` call sites.
 
-The existing web-local Radix Button is preserved, including its stories and
-current route usage. It is not silently replaced by this shared Button.
+The web-local Radix Button and its stories have been removed. Global error and
+not-found boundaries now import this shared Button. All new small UI primitives
+must live in this package, not application-local duplicates; install missing
+primitives here before use. Other local presentation remains outside this migration.
 
 ## Install and update
 
@@ -97,8 +99,8 @@ bun --cwd packages/components run lint
 bun --no-env-file run scripts/check-shared-button.ts
 ```
 
-Portable stories appear under `Vandor UI/Button`, separate from the transitional
-`Web/UI/Button`. They cover variants, sizes, disabled/loading, icons, link
+Portable stories appear under `Vandor UI/Button`; the old `Web/UI/Button` group is
+removed. They cover variants, sizes, disabled/loading, icons, link
 composition, and no-press-motion states. Follow the [shared component rules](../../.agent/components.md)
 and [verification policy](../../.agent/verification.md). Browser verification
 requires an explicitly authorized Storybook server lifecycle; builds alone are

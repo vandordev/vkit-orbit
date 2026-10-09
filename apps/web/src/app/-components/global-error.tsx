@@ -1,7 +1,7 @@
 import { Link, type ErrorComponentProps } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@repo/components/button";
 
 export function GlobalError({ reset }: ErrorComponentProps) {
 	return (

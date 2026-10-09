@@ -12,7 +12,8 @@ changed, the plan/spec, and run
 - `apps/storybook`: repository-wide presentation previews; stories stay colocated
   with their owning components. Development tooling only, not a deployed runtime.
 - `packages/components`: shared Vandor UI source, imported through explicit
-  `@repo/components/<name>` entrypoints. Existing local UI is transitional.
+  `@repo/components/<name>` entrypoints. All new small UI primitives belong here,
+  never in application-local copies. Unmigrated existing presentation stays intact.
 - `apps/api`: Elysia factory, validation, envelopes, usecase transport, and the
   authenticated `/api/internal/worker-events` gateway.
 - `packages/database`: the only Prisma client owner and migration source.

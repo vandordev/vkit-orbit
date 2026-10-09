@@ -11,7 +11,8 @@ CSS and shadcn/ui primitives.
 
 New shared UI lives in [`packages/components`](packages/components/README.md),
 installed from Vandor UI and imported via `@repo/components/<name>`. Button is the
-initial example; existing web-local primitives remain transitional, not migrated.
+initial example and all Button usage now uses this package. New small UI primitives
+must be installed here, not duplicated in web. Other local presentation is retained.
 See [component ownership and installation rules](.agent/components.md).
 
 [`apps/storybook`](apps/storybook/README.md) hosts repository-wide component
