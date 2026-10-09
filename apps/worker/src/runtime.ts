@@ -3,7 +3,7 @@ import { Worker } from "bullmq";
 export function createWorkerRuntime(input: {
 	handlers: Record<string, (job: any) => Promise<unknown>>;
 	queueName?: QueueName;
-	config?: Parameters<typeof createWorkerConnection>[0];
+	config: Parameters<typeof createWorkerConnection>[0];
 }) {
 	const worker = new Worker(
 		input.queueName ?? "documents",
@@ -12,7 +12,7 @@ export function createWorkerRuntime(input: {
 			if (!handler) throw new Error(`unknown job: ${job.name}`);
 			return handler(job);
 		},
-		{ connection: createWorkerConnection(input.config), prefix: input.config?.keyPrefix ?? "dph:" },
+		{ connection: createWorkerConnection(input.config), prefix: input.config.keyPrefix },
 	);
 	return worker;
 }

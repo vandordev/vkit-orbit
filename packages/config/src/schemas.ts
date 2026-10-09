@@ -13,20 +13,21 @@ const database = z.strictObject({ url: text.refine(value => { try { return ["pos
 export const databaseConfigSchema = z.strictObject({ url: database.shape.url, environment: appEnvironmentSchema });
 export type DatabaseConfig = z.output<typeof databaseConfigSchema>;
 const web = z.strictObject({ host: text, port, origin: z.string().url() });
-const openapi = z.strictObject({ serverUrl: z.string().url(), username: optionalText, password: optionalText }).refine(value => Boolean(value.username) === Boolean(value.password), "documentation credentials must be paired");
+export const webToolConfigSchema = z.strictObject({ app, web });
+const openapi = z.strictObject({ serverUrl: z.string().url(), username: optionalText, password: optionalText }).refine(value => Boolean(value.username) === Boolean(value.password), { message: "documentation credentials must be paired", path: ["username"] });
 const api = z.strictObject({ host: text, port, corsOrigin: z.string().url(), openapi });
-const redis = z.strictObject({ url: z.string().url().refine(value => ["redis:", "rediss:"].includes(new URL(value).protocol)), keyPrefix: text, connectTimeoutMs: numeric.pipe(z.number().min(1).max(2147483647)) }).transform(value => ({ ...value, maxRetriesPerRequest: null }));
+const redis = z.strictObject({ url: z.string().url().refine(value => { try { return ["redis:", "rediss:"].includes(new URL(value).protocol); } catch { return false; } }), keyPrefix: text, connectTimeoutMs: numeric.pipe(z.number().min(1).max(2147483647)) }).transform(value => ({ ...value, maxRetriesPerRequest: null }));
 const storage = z.strictObject({ bucket: optionalText, region: text, accessKeyId: optionalText, secretAccessKey: optionalText, endpoint: optionalUrl, rootPrefix: text }).transform((value, ctx) => {
 	const { bucket, accessKeyId, secretAccessKey } = value;
 	if (!bucket && !accessKeyId && !secretAccessKey) return null;
-	if (!bucket || !accessKeyId || !secretAccessKey) { ctx.addIssue({ code: "custom", message: "storage credentials must be complete" }); return z.NEVER; }
+	if (!bucket || !accessKeyId || !secretAccessKey) { ctx.addIssue({ code: "custom", path: ["bucket"], message: "storage credentials must be complete" }); return z.NEVER; }
 	return { ...value, bucket, accessKeyId, secretAccessKey };
 });
 export const webhookConfigSchema = z.strictObject({ secretEncryptionKey: z.preprocess(value => value === "" ? undefined : value, z.string().regex(/^[a-f0-9]{64}$/i).optional()) });
 export const publicSelectionSchema = z.strictObject({ app: z.strictObject({ environment: appEnvironmentSchema }), realtime: z.strictObject({ publicUrl: realtimeOriginSchema }) });
 export const runtimeSchemas = {
 	web: z.strictObject({ app, web, database, storage, webhook: webhookConfigSchema, realtime: z.strictObject({ publicUrl: realtimeOriginSchema, ticketSecret: text }) }),
-	api: z.strictObject({ app, api, database, storage, webhook: webhookConfigSchema, worker: z.strictObject({ notificationApiKey: optionalText }), realtime: z.strictObject({ internalUrl: optionalUrl, publishApiKey: optionalText }) }).refine(value => { const fields = [value.worker.notificationApiKey, value.realtime.internalUrl, value.realtime.publishApiKey]; return !fields.some(Boolean) || fields.every(Boolean); }, "publisher credentials must be complete"),
+	api: z.strictObject({ app, api, database, storage, webhook: webhookConfigSchema, worker: z.strictObject({ notificationApiKey: optionalText }), realtime: z.strictObject({ internalUrl: optionalUrl, publishApiKey: optionalText }) }).refine(value => { const fields = [value.worker.notificationApiKey, value.realtime.internalUrl, value.realtime.publishApiKey]; return !fields.some(Boolean) || fields.every(Boolean); }, { message: "publisher credentials must be complete", path: ["realtime", "publishApiKey"] }),
 	worker: z.strictObject({ app, database, redis, storage, webhook: webhookConfigSchema, worker: z.strictObject({ notificationUrl: z.string().url(), notificationApiKey: text }) }),
 	scheduler: z.strictObject({ app, redis }),
 	realtime: z.strictObject({ app, realtime: z.strictObject({ host: text, port, corsOrigin: z.string().url(), ticketSecret: text, publishApiKey: text }) }),

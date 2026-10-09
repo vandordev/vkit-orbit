@@ -11,16 +11,15 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=prune /app/out/full/ ./
 COPY config ./config
-ARG DATABASE_URL=postgresql://boilerplate:boilerplate@db:5432/boilerplate
-ENV DATABASE_URL=$DATABASE_URL NODE_ENV=production
-RUN bun run --cwd packages/db db:generate
+ENV NODE_ENV=production
+RUN DATABASE_URL=postgresql://tooling:tooling@localhost:5432/tooling bun --no-env-file run --cwd packages/db db:generate
 RUN cd apps/web && bun run build
 FROM base AS runtime-deps
 COPY --from=prune /app/out/json/ ./
 RUN bun install --production --ignore-scripts
 FROM oven/bun:1.4.2-alpine AS runner
 WORKDIR /app
-ENV NODE_ENV=production PORT=4100 HOSTNAME=0.0.0.0
+ENV NODE_ENV=production
 RUN addgroup -S app && adduser -S app -G app
 COPY --from=runtime-deps --chown=app:app /app/node_modules ./node_modules
 COPY --from=builder --chown=app:app /app/node_modules/.prisma ./node_modules/.prisma
@@ -30,4 +29,4 @@ COPY --from=builder --chown=app:app /app/config ./config
 COPY --from=builder --chown=app:app /app/package.json ./package.json
 USER app
 EXPOSE 4100
-CMD ["bun", "run", "packages/config/src/run.ts", "--modules", "base,web,api,storage", "--", "bun", ".output/server/index.mjs"]
+CMD ["bun", "--no-env-file", "run", "packages/config/src/run.ts", "--runtime", "web", "--root", "/app", "--", "bun", ".output/server/index.mjs"]

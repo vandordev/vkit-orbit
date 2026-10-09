@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { bindRealtimeInvalidation } from "./realtime";
+import { bindRealtimeInvalidation, startRealtimeBridge } from "./realtime";
 
 function fakeSocket() {
 	const listeners = new Map<string, Set<(...args: unknown[]) => void>>();
@@ -22,6 +22,29 @@ function fakeSocket() {
 }
 
 describe("realtime invalidation", () => {
+	test("bridge waits for both values, blocks failures, and disposes replacement/unmount", () => {
+		let connected = 0;
+		let closed = 0;
+		const urls: string[] = [];
+		const factory = (input: { url: string; ticket: string }) => {
+			urls.push(input.url);
+			return { ...fakeSocket(), connect: () => { connected++; }, close: () => { closed++; } };
+		};
+		const queryClient = { invalidateQueries: () => undefined };
+		const config = { realtimeUrl: "https://realtime.test" };
+		const ticket = { ticket: "authenticated-ticket", workspaceId: "workspace" };
+		expect(startRealtimeBridge({ ready: false, config, ticket }, queryClient, factory)).toBeUndefined();
+		expect(startRealtimeBridge({ ready: true, config }, queryClient, factory)).toBeUndefined();
+		expect(startRealtimeBridge({ ready: true, ticket }, queryClient, factory)).toBeUndefined();
+		expect(connected).toBe(0);
+		const dispose = startRealtimeBridge({ ready: true, config, ticket }, queryClient, factory);
+		dispose?.();
+		const replacement = startRealtimeBridge({ ready: true, config: { realtimeUrl: "https://replacement.test" }, ticket }, queryClient, factory);
+		replacement?.();
+		expect(urls).toEqual(["https://realtime.test", "https://replacement.test"]);
+		expect(connected).toBe(2);
+		expect(closed).toBe(2);
+	});
 	test("invalidates queries after event and reconnect, then unsubscribes", async () => {
 		const socket = fakeSocket();
 		const invalidate = () => Promise.resolve();

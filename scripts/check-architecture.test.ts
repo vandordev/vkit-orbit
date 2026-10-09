@@ -6,6 +6,17 @@ import { expect, test } from "bun:test";
 
 import { checkArchitecture } from "./check-architecture";
 
+test("allows only public config values and rejects client environment and Zod 3", async () => {
+	const root = await fixture();
+	const page = join(root, "apps/web/src/page.tsx");
+	await writeFile(page, 'import { publicWebConfigSchema } from "@repo/config/public"; import type { RuntimeConfig } from "@repo/config/server"; const dev = import.meta.env.DEV;');
+	expect(checkArchitecture(root)).toEqual([]);
+	await writeFile(page, 'import { getWebConfig } from "@repo/config/server"; const url = import.meta.env.VITE_REALTIME_URL; import "zod/v3";');
+	expect(checkArchitecture(root)).toContain("apps/web/src/page.tsx: browser code must not import server-only modules");
+	expect(checkArchitecture(root)).toContain("apps/web/src/page.tsx: browser deployment environment is forbidden");
+	expect(checkArchitecture(root)).toContain("apps/web/src/page.tsx: Zod 3 contracts are forbidden");
+});
+
 async function fixture() {
 	const root = await mkdtemp(join(tmpdir(), "vkit-architecture-"));
 	await mkdir(join(root, "apps/api/src/routes/v1"), { recursive: true });

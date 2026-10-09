@@ -11,9 +11,8 @@ Read [the Storybook guidance](../../apps/storybook/README.md) for discovery,
 fixtures, styling, and the permission-required server lifecycle on port 6006.
 
 `apps/web` owns TanStack routes, `routeTree.gen.ts`, browser query clients, and
-the embedded Elysia route adapters. `/api/*` delegates to `app.fetch` without a
-network proxy. Realtime events only invalidate/refetch authoritative API data;
-the opt-in `/examples/realtime` route has no default navigation link.
+same-origin tRPC. Elysia is standalone `/v1`, not embedded or proxied by web.
+Realtime events only invalidate/refetch authoritative data.
 
 Use TanStack Start with Tailwind CSS and shared Vandor UI primitives as the UI
 baseline. Small UI primitives must import `@repo/components/<name>`, not local
@@ -40,5 +39,8 @@ entrypoints instead of duplicating values. `apps/web/src/lib/config.ts` is the w
 adapter: `appName` and `defaultTitle` derive from brand, while `defaultDescription`,
 `favicon`, and `repositoryUrl` remain app configuration. Metadata and public UI
 may override route-specific copy, but must not repeat brand or application defaults.
-Secrets and runtime environment values remain in the YAML configuration
-modules; `appConfig` never reads credentials or `process.env`.
+Secrets and runtime environment values remain in the single YAML configuration
+and lazy server-only typed getters; `appConfig` never reads credentials or
+`process.env`. Browser realtime gets only `{ realtimeUrl }` from same-origin
+`config.public` at runtime, separate from the authenticated ticket. No deployment
+env or build injection. Public schema/types use `@repo/config/public` only.

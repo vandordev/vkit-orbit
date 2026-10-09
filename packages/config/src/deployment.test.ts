@@ -16,4 +16,12 @@ test("containers use the committed YAML configuration and one root environment f
 		expect(dockerfile).toContain("/app/config");
 	}
 	expect(compose).toContain("service_completed_successfully");
+	expect(compose).not.toContain("VITE_REALTIME_URL");
+	expect(compose).toContain("REALTIME_URL:");
+	expect(webDockerfile).not.toContain("ARG DATABASE_URL");
+	expect(webDockerfile).not.toContain("ENV DATABASE_URL");
+	for (const dockerfile of [webDockerfile, migrateDockerfile, schedulerDockerfile, realtimeDockerfile]) {
+		expect(dockerfile).toContain('"--root", "/app"');
+		expect(dockerfile).not.toContain("--modules");
+	}
 });

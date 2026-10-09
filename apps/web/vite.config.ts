@@ -5,6 +5,9 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+	// Runtime config is fetched through tRPC; never load application .env here.
+	envDir: false,
+	envPrefix: [],
 	plugins: [
 		tailwindcss(),
 		// TanStack Start resolves router paths from the configured src directory.

@@ -4,6 +4,14 @@ Web owns the same-origin `/trpc` boundary. Server context and routers live under
 `apps/web/src/trpc`; browser code imports only the `AppRouter` type from server
 modules. Keep credentials, Prisma, and business rules server-owned.
 
+Base context has lazy memoized `getSession()` and lazy `getDatabase()`. Authenticated
+middleware resolves session, attaches database, then preserves workspace/permission
+gates. `auth.status` explicitly resolves session. `config.public` has no caller
+input and returns only strict `{ realtimeUrl }` without calling either accessor.
+Every tRPC HTTP response is no-store, including batches and early errors; preserve
+context cookies/headers. Query failures must not expose config diagnostics/values.
+Browser config is cached in memory for the current page lifecycle, not storage.
+
 Before data-bearing UI/stories, inspect the Prisma schema and relevant runtime
 implementation. Map display values, filters, sorts, and aggregates to available
 data. Preserve enums, nullability, tenant scoping, and authorization. Report

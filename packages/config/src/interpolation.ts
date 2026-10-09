@@ -11,7 +11,7 @@ function scan(value: string, environment: Environment | undefined, diagnostic: D
 		const end = value.indexOf("}", i + 2);
 		if (end < 0) throw configError(diagnostic, path, "malformed template");
 		const body = value.slice(i + 2, end);
-		const match = /^([A-Z][A-Z0-9_]*)(?::-(.*))?$/s.exec(body);
+		const match = /^([A-Z_][A-Z0-9_]*)(?::-(.*))?$/s.exec(body);
 		if (!match || body.includes("${") || body.includes("{")) throw configError(diagnostic, path, "malformed template");
 		const name = match[1];
 		if (!name) throw configError(diagnostic, path, "malformed template");

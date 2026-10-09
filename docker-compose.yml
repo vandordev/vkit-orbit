@@ -52,7 +52,6 @@ services:
       dockerfile: Dockerfile.migrate
     environment:
       DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
-      REDIS_URL: redis://redis:6379
     depends_on:
       db:
         condition: service_healthy
@@ -61,18 +60,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.web
-      args:
-        DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
     env_file: [.env]
     environment:
       NODE_ENV: production
-      PORT: 4100
-      HOSTNAME: 0.0.0.0
+      WEB_PORT: 4100
+      WEB_HOST: 0.0.0.0
       DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
       WORKER_NOTIFICATION_API_KEY: ${WORKER_NOTIFICATION_API_KEY:-local-worker-key}
       REALTIME_INTERNAL_URL: http://realtime:4102
       REALTIME_PUBLISH_API_KEY: ${REALTIME_PUBLISH_API_KEY:-local-realtime-key}
-      VITE_REALTIME_URL: ${VITE_REALTIME_URL:-http://localhost:4102}
+      REALTIME_URL: ${REALTIME_URL:-http://localhost:4102}
+      REALTIME_TICKET_SECRET: ${REALTIME_TICKET_SECRET:-local-ticket-secret}
       S3_BUCKET: documents
       S3_REGION: us-east-1
       S3_ACCESS_KEY_ID: minio
@@ -106,7 +104,7 @@ services:
     env_file: [.env]
     environment:
       NODE_ENV: production
-      PORT: 4101
+      API_PORT: 4101
       DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
       REALTIME_INTERNAL_URL: http://realtime:4102
       REALTIME_PUBLISH_API_KEY: ${REALTIME_PUBLISH_API_KEY:-local-realtime-key}
@@ -163,11 +161,8 @@ services:
       dockerfile: Dockerfile.scheduler
     env_file: [.env]
     environment:
-      DATABASE_URL: postgresql://boilerplate:boilerplate@db:5432/boilerplate
       REDIS_URL: redis://redis:6379
     depends_on:
-      migrate:
-        condition: service_completed_successfully
       redis:
         condition: service_healthy
 

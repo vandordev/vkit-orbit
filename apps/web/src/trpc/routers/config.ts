@@ -3,8 +3,9 @@ import { z } from "zod";
 import { publicWebConfigSchema } from "@repo/config/public";
 import { getPublicConfig } from "../../server/public-config";
 import { publicProcedure, router } from "../init";
-export const configRouter = router({
+export const createConfigRouter = (resolveConfig = getPublicConfig) => router({
 	public: publicProcedure.input(z.undefined()).output(publicWebConfigSchema).query(() => {
-		try { return getPublicConfig(); } catch { throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Runtime configuration unavailable" }); }
+		try { return resolveConfig(); } catch { throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Runtime configuration unavailable" }); }
 	}),
 });
+export const configRouter = createConfigRouter();

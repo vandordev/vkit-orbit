@@ -18,3 +18,12 @@ test("preserves storage, publisher, numeric and Redis constraints", () => {
 	expect(() => loadRuntimeConfig("api", { environment: { ...environment, WORKER_NOTIFICATION_API_KEY: "partial" } })).toThrow();
 	expect(() => loadRuntimeConfig("scheduler", { environment: { NODE_ENV: "test" } })).toThrow("isolated");
 });
+
+test("safe errors identify field without resolved secret or URL", () => {
+	const secret = "sensitive-value-not-to-log";
+	try { loadRuntimeConfig("api", { environment: { DATABASE_URL: secret } }); throw new Error("expected config failure"); }
+	catch (error) {
+		expect(error).toBeInstanceOf(Error);
+		if (error instanceof Error) { expect(error.message).toContain("database.url"); expect(error.message).not.toContain(secret); }
+	}
+});

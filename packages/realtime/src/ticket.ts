@@ -1,10 +1,11 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 import { z } from "zod";
+import { wireDatetimeSchema } from "./wire-datetime";
 
 export const realtimeClaimsSchema = z.object({
 	subjectId: z.string().min(1),
-	expiresAt: z.string().datetime(),
+	expiresAt: wireDatetimeSchema,
 });
 
 export type RealtimeClaims = z.infer<typeof realtimeClaimsSchema>;

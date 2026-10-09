@@ -1,8 +1,6 @@
 import { describe, expect, test } from "bun:test";
 
-import { resolvedConfigEnvironment } from "../../../../../packages/config/src/run";
 
-Object.assign(process.env, resolvedConfigEnvironment(["base", "api"], { DATABASE_URL: "postgresql://db", NODE_ENV: "test" }));
 
 describe("embedded Elysia health route", () => {
 	test("serves Elysia health through TanStack Start", async () => {

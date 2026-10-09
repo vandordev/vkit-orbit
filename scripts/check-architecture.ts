@@ -27,12 +27,17 @@ export function checkArchitecture(root = process.cwd()): string[] {
 		...sourceFiles(root, "apps/scheduler/src"),
 		...sourceFiles(root, "apps/realtime/src"),
 		...sourceFiles(root, "apps/web/src"),
+		...(existsSync(join(root, "apps/web/vite.config.ts")) ? [join(root, "apps/web/vite.config.ts")] : []),
 		...sourceFiles(root, "packages"),
 	];
 
 	for (const file of files) {
 		const content = readFileSync(file, "utf8");
 		const label = relative(root, file).replaceAll("\\", "/");
+		if (/zod\/v3|zod@3\.|ZodTypeAny/.test(content)) violations.push(`${label}: Zod 3 contracts are forbidden`);
+		if (label.startsWith("apps/web/") && /(?:import\.meta\.env|process\.env)\s*(?:\.\s*(?:VITE_|PUBLIC_)|\[\s*["'](?:VITE_|PUBLIC_))/.test(content)) violations.push(`${label}: browser deployment environment is forbidden`);
+		else if (label.startsWith("apps/web/") && /import\.meta\.env(?!\.(?:DEV|SSR|PROD|MODE|BASE_URL)\b)/.test(content)) violations.push(`${label}: browser deployment environment is forbidden`);
+		if (label === "apps/web/vite.config.ts" && /\bdefine\s*:/.test(content)) violations.push(`${label}: browser build injection is forbidden`);
 		if (label === "apps/api/src/app.ts" && content.includes("@repo/application")) {
 			violations.push(`${label}: API composition root must not import @repo/application`);
 		}
@@ -55,7 +60,9 @@ export function checkArchitecture(root = process.cwd()): string[] {
 			if (!serverModule && content.includes("@repo/application"))
 				violations.push(`${label}: browser code must not import @repo/application`);
 			if (/fetch\s*\(\s*["'`]\/v1\//.test(content)) violations.push(`${label}: browser code must use same-origin tRPC, not /v1`);
-			if (!serverModule && /@repo\/(?:config|storage|queue)|process\.env|@prisma\/|\b(?:bullmq|ioredis)\b/.test(content)) {
+			const valueImports = content.replace(/(?:import|export)\s+type\b[^;]*?from\s*["'][^"']+["'];?/g, "");
+			const serverConfigImport = /["']@repo\/config(?:["']|\/(?!public["']))/.test(valueImports);
+			if (!serverModule && (serverConfigImport || /@repo\/(?:storage|queue)|process\.env|@prisma\/|\b(?:bullmq|ioredis)\b/.test(content))) {
 				violations.push(`${label}: browser code must not import server-only modules`);
 			}
 		}

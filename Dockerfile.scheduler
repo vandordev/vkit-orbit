@@ -11,7 +11,6 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=prune /app/out/full/ ./
 COPY config ./config
-RUN bun run --cwd packages/db db:generate
 RUN bun run --cwd apps/scheduler build
 FROM oven/bun:1.4.2-alpine AS runner
 WORKDIR /app
@@ -21,4 +20,4 @@ COPY --from=builder /app/apps/scheduler ./apps/scheduler
 COPY --from=builder /app/packages ./packages
 COPY --from=builder /app/config ./config
 COPY --from=builder /app/package.json ./package.json
-CMD ["bun", "run", "packages/config/src/run.ts", "--modules", "base,scheduler", "--", "bun", "apps/scheduler/dist/main.js"]
+CMD ["bun", "--no-env-file", "run", "packages/config/src/run.ts", "--runtime", "scheduler", "--root", "/app", "--", "bun", "apps/scheduler/dist/main.js"]

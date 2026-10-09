@@ -5,9 +5,9 @@
   "packageManager": "bun@1.4.2",
   "private": true,
   "scripts": {
-    "dev": "bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun run vite --port 4100",
-    "build": "NODE_ENV=production bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun run vite build",
-    "start": "bun --env-file=../../.env run ../../packages/config/src/run.ts --modules base,web,api,storage -- bun .output/server/index.mjs",
+    "dev": "bun --env-file=../../.env run ../../packages/config/src/run.ts --runtime web --root ../.. --tool vite -- bun run vite",
+    "build": "NODE_ENV=production bun --no-env-file run vite build",
+    "start": "bun --no-env-file run ../../packages/config/src/run.ts --runtime web --root ../.. -- bun .output/server/index.mjs",
     "lint": "eslint",
     "check-types": "tsc --noEmit",
     "clean": "rm -rf .output .vite src/routeTree.gen.ts"

@@ -1,22 +1,8 @@
 import { expect, test } from "bun:test";
-
-import { createRealtimeConfig } from "./realtime";
-import { loadConfig } from "./loader";
-
-const configDirectory = new URL("../../../config", import.meta.url).pathname;
-
-test("creates a scoped realtime runtime configuration", () => {
-	expect(
-		createRealtimeConfig(
-			loadConfig({
-				configDirectory,
-				modules: ["base", "realtime"],
-				environment: {
-					DATABASE_URL: "postgresql://db",
-					REALTIME_TICKET_SECRET: "ticket-secret",
-					REALTIME_PUBLISH_API_KEY: "publisher-key",
-				},
-			}) as Record<string, string | undefined>,
-		),
-	).toMatchObject({ port: 4102 });
+import { loadRuntimeConfig } from "./runtime";
+test("realtime requires listener credentials but not database or browser URL", () => {
+	const config = loadRuntimeConfig("realtime", { environment: { REALTIME_TICKET_SECRET: "ticket", REALTIME_PUBLISH_API_KEY: "publisher" } });
+	expect(config.realtime.port).toBe(4102);
+	expect(config).not.toHaveProperty("database");
+	expect(config.realtime).not.toHaveProperty("publicUrl");
 });

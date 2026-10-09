@@ -5,6 +5,6 @@ COPY apps apps
 COPY packages packages
 COPY config config
 RUN bun install --ignore-scripts
-RUN bun run --cwd packages/db db:generate
+RUN DATABASE_URL=postgresql://tooling:tooling@localhost:5432/tooling bun --no-env-file run --cwd packages/db db:generate
 EXPOSE 4101
-CMD ["bun", "run", "packages/config/src/run.ts", "--modules", "base,api,storage", "--", "bun", "apps/api/src/server.ts"]
+CMD ["bun", "--no-env-file", "run", "packages/config/src/run.ts", "--runtime", "api", "--root", "/app", "--", "bun", "apps/api/src/server.ts"]

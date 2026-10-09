@@ -4,14 +4,15 @@
 plugins, operational health routes, internal routes, and public version
 collections; it must not contain domain/provider wiring.
 
-Public API routes are grouped under `/api/vN`. `createRoutes(version: number)`
+Public API routes are grouped under `/vN`. `createRoutes(version: number)`
 creates the version group, and v1/v2 coexist independently. A new version does
-not automatically deprecate an older one. `/api/docs` and
-`/api/openapi.json` are one aggregate documentation surface for all mounted
+not automatically deprecate an older one. `/docs` and
+`/openapi.json` are one aggregate documentation surface for all mounted
 public versions.
 
-The web adapter calls `app.fetch` directly; it is not a network proxy. The
-standalone Bun entrypoint is optional and is not part of default Compose.
+The guarded standalone Bun entrypoint is part of default Compose. Web owns
+same-origin tRPC, not embedded Elysia or a network proxy. `createApp()` creates
+one API instance at bootstrap without import-time config/resource initialization.
 
 Runtime collaborators are module singletons created once per JavaScript
 process. Do not add a production DI container or an expanding

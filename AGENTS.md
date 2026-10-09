@@ -38,6 +38,13 @@ Only `packages/db` creates Prisma clients. Do not expose `DATABASE_URL`
 or other credentials to browser code. Use the YAML/config loaders rather than
 reading `process.env` in feature code.
 
+Runtime configuration uses only `config/config.yaml` and lazy typed
+`@repo/config/server` getters with explicit field isolation and Zod 4. Browser
+imports are limited to `@repo/config/public`; deployment values arrive through
+same-origin `config.public`, never Vite/public env or build injection. Prisma is
+lazy and receives an explicit URL. Only narrow bootstrap/tool child-environment
+adapters may emit environment settings; see `.agent/config.md`.
+
 BullMQ job names and JSON payloads are cross-runtime contracts. Breaking
 changes use a new versioned kind. Workers notify Elysia only after successful
 job completion; Elysia alone talks to Socket.IO.

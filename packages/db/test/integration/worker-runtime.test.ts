@@ -4,7 +4,7 @@ import { createRuntimeHandlers } from "../../../../apps/worker/src/main";
 import { createWorkerRuntime } from "../../../../apps/worker/src/runtime";
 import { runOutboxRelay } from "../../../../apps/worker/src/relay/relay";
 import { createQueue, type QueueName } from "@repo/queue";
-import { createRedisConfig } from "@repo/config";
+import { loadRuntimeConfig } from "@repo/config/server";
 import { prepareDelivery, prepareWebhookEnvelope, enqueueIntent } from "@repo/application";
 
 test("real BullMQ workers consume routed webhook and notification intents", async () => {
@@ -18,11 +18,11 @@ test("real BullMQ workers consume routed webhook and notification intents", asyn
 			.split(":")
 			.at(-1);
 		if (!port) throw new Error("Disposable Redis port missing");
-		const config = createRedisConfig({
+		const config = loadRuntimeConfig("scheduler", { environment: {
 			NODE_ENV: "test",
 			REDIS_URL: `redis://127.0.0.1:${port}`,
 			REDIS_KEY_PREFIX: `orbit:test:${crypto.randomUUID()}`,
-		});
+		} }).redis;
 		await withPostgres(async (db) => {
 			await db.workspace.create({ data: { id: "ws_one", name: "One", slug: "one" } });
 			await db.webhookEndpoint.create({

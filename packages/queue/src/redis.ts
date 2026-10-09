@@ -1,4 +1,4 @@
-import type { RedisConfig } from "@repo/config";
+import type { RedisConfig } from "@repo/config/server";
 import type { Queue } from "bullmq";
 import { Queue as BullQueue } from "bullmq";
 import type { RedisOptions } from "ioredis";
@@ -6,7 +6,7 @@ import { queueDefaults } from "./defaults";
 import type { QueueName } from "./queues";
 
 export function createWorkerConnection(
-	config: RedisConfig = { url: "redis://localhost:6379", keyPrefix: "dph:", connectTimeoutMs: 5_000, maxRetriesPerRequest: null },
+	config: RedisConfig,
 ): RedisOptions {
 	const url = new URL(config.url);
 	return {
@@ -21,10 +21,10 @@ export function createWorkerConnection(
 	};
 }
 
-export function createQueue(name: QueueName, config?: RedisConfig): Queue {
+export function createQueue(name: QueueName, config: RedisConfig): Queue {
 	return new BullQueue(name, {
 		connection: createWorkerConnection(config),
-		prefix: config?.keyPrefix ?? "dph:",
+		prefix: config.keyPrefix,
 		defaultJobOptions: queueDefaults,
 	});
 }

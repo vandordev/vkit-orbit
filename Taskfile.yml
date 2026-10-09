@@ -51,7 +51,7 @@ tasks:
     cmds: [bun run start:migrate]
   migrate:
     desc: Apply Prisma migrations
-    cmds: [bun run start:migrate]
+    cmds: [bun --no-env-file run --cwd apps/migrate dev]
   test:
     desc: Run TypeScript tests
     env:

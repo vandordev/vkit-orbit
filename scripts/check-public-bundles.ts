@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const forbidden =
-	/@repo\/(?:application|config|db|storage|queue)|@prisma\/|\b(?:bullmq|ioredis|node:(?:fs|net|tls|child_process))\b|\b(?:DATABASE_URL|REDIS_URL|WEBHOOK_SECRET_ENCRYPTION_KEY|S3_SECRET_ACCESS_KEY|WORKER_NOTIFICATION_API_KEY|REALTIME_PUBLISH_API_KEY|REALTIME_TICKET_SECRET)\b\s*[:=]|-----BEGIN [A-Z ]+PRIVATE KEY-----/;
+	/@repo\/(?:application|db|storage|queue)|@repo\/config(?!\/public(?:["'\s;]|$))|@prisma\/|\b(?:bullmq|ioredis|node:(?:fs|net|tls|child_process))\b|\b(?:DATABASE_URL|REDIS_URL|WEBHOOK_SECRET_ENCRYPTION_KEY|S3_SECRET_ACCESS_KEY|WORKER_NOTIFICATION_API_KEY|REALTIME_PUBLISH_API_KEY|REALTIME_TICKET_SECRET)\b\s*[:=]|-----BEGIN [A-Z ]+PRIVATE KEY-----/;
 function files(root: string): string[] {
 	return readdirSync(root, { withFileTypes: true }).flatMap((entry) =>
 		entry.isDirectory()

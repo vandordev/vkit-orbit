@@ -12,7 +12,6 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@t3-oss/env-core": "^0.13.8",
     "yaml": "^2.9.0",
     "zod": "^4.6.5"
   },

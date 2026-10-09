@@ -2,6 +2,6 @@
 
 The Bun scheduler creates BullMQ producers and owns only schedules.
 It does not perform domain mutations or import application usecases. Its queue
-client and runtime resources are created once per scheduler process. The example
-schedule is disabled unless `ENABLE_EXAMPLE_SCHEDULE=true`; schedules return
-cleanup functions and handle SIGINT/SIGTERM.
+client and runtime resources are created once per scheduler process from typed
+app/Redis config only. No database dependency or example-schedule flag is active;
+installed schedules handle lifecycle cleanup and SIGINT/SIGTERM.

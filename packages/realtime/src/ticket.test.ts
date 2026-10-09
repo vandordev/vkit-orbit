@@ -2,6 +2,11 @@ import { expect, test } from "bun:test";
 
 import { signRealtimeTicket, verifyRealtimeTicket } from "./ticket";
 
+test("preserves UTC minute precision and calendar validation", () => {
+	expect(verifyRealtimeTicket(signRealtimeTicket({ subjectId: "user", expiresAt: "2099-01-01T00:00Z" }, "secret"), "secret").expiresAt).toBe("2099-01-01T00:00Z");
+	expect(() => signRealtimeTicket({ subjectId: "user", expiresAt: "2099-02-29T00:00Z" }, "secret")).toThrow();
+});
+
 test("rejects corrupted signatures and invalid claim dates", () => {
 	const ticket = signRealtimeTicket({ subjectId: "user", expiresAt: "2099-01-01T00:00:00.000Z" }, "secret");
 	expect(() => verifyRealtimeTicket(`${ticket}x`, "secret")).toThrow("Invalid realtime ticket");

@@ -10,7 +10,49 @@
 
 **Approved spec:** `docs/superpowers/specs/2026-10-10-unified-runtime-config-design.md`, approved by the user after commit `4b34aac`.
 
-**Status:** Approved by the user; executing inline in this session on existing local `main`, without orchestration, subagents, worktrees, or Goal Mode. Progress and evidence are recorded in the execution ledger.
+**Status:** Approved by the user; all 13 tasks implemented inline on existing local `main`, without orchestration, subagents, worktrees, or Goal Mode. Authorized gates and final commit are recorded in the execution ledger. Detailed steps below retain the original approved checklist; the completed task register and ledger record execution status, including supporting revisions. Runtime integrations remain unverified.
+
+## Completed task register
+
+- [x] Task 1 — Zod 4 graph (Batch 1).
+- [x] Task 2 — Queue/realtime/recipe contracts (Batch 1; final datetime reconciliation in Batch 5).
+- [x] Task 3 — Config/API/web schemas (Batch 1).
+- [x] Task 4 — Strict YAML and interpolation (Batch 2).
+- [x] Task 5 — Canonical YAML and isolated schemas (Batch 2).
+- [x] Task 6 — Lazy getters, paths and tooling (Batch 2).
+- [x] Task 7 — Lazy Prisma and server consumers (Batch 3).
+- [x] Task 8 — Lazy session and auth context (Batch 4).
+- [x] Task 9 — Public query and no-store boundary (Batch 4).
+- [x] Task 10 — Runtime browser URL and socket lifecycle (Batch 4).
+- [x] Task 11 — Guards and fixture sources (Batch 5).
+- [x] Task 12 — Launcher/deployment cutover (Batch 5).
+- [x] Task 13 — Documentation and sole final integrated audit (Batch 5).
+
+### Execution revisions (spec-preserving)
+
+- Tasks 4–6: cohesive `schemas.ts` owns pure value schemas; old adapter owners
+  become typed reexports at Task 12. Task/batch ownership and isolation unchanged.
+- Task 7: migrate adopts Bun/bundler source resolution after NodeNext typecheck
+  failure; API application/OpenAPI construction deferred to bootstrap factories
+  to remove import-time config reads. Explicit Prisma ownership unchanged.
+- Tasks 9–11: extracted `trpc/handler.ts` and `startRealtimeBridge` for fixtures
+  against actual adapter/lifecycle logic; no route-tree or presentation changes.
+- Tasks 11–13 audit: installed Zod 4.6.5 requires seconds in UTC datetime, unlike
+  prior minute precision acceptance. Pure Zod 4 `wire-datetime.ts` preserves v1
+  timestamps; UUID-shaped acceptance similarly preserved. Invalidated Batch 1
+  schema evidence is superseded by final integrated typecheck and source audit.
+- Task 12: migration image uses Turbo prune for complete db/config/tooling
+  dependency closure; runtime db dependency moved from application devDependencies
+  to dependencies. Realtime imports pure `application/observability` to avoid the
+  database usecase import closure. Trusted `--root` propagates bootstrap-only
+  `ORBIT_APPLICATION_ROOT` to bundled children. Tool adapters use explicit-input
+  pure loaders rather than process singleton to honor launcher environment fixtures.
+  No product requirement, verification gate, batch mapping, or authority changed.
+- Final audit: the production web launcher validates full web config before Nitro
+  opens resources; Vite tools use listener-only config. YAML document directives
+  cannot opt back into 1.1. `parseAllDocuments` replaces `parseDocument` to enforce
+  exactly one document before conversion. Final source/typecheck evidence below
+  supersedes earlier affected gates; no requirements or execution batches dropped.
 
 ## Discovery Evidence
 

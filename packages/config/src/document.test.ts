@@ -8,7 +8,7 @@ test("rejects forbidden YAML features and unknown keys", () => {
 	try {
 		const filePath = join(directory, "config.yaml");
 		const original = readFileSync(configFilePath(), "utf8");
-		for (const source of ["app: []", "app: {}\napp: {}", "---\napp: {}\n---\napp: {}", "app: &app {}", "app: *app", "app: !execute {}", `${original}\ntypo: true`, original.replace("logLevel:", "logLevell:")]) {
+		for (const source of ["%YAML 1.1\n---\n" + original, "app: []", "app: {}\napp: {}", "---\napp: {}\n---\napp: {}", "app: &app {}", "app: *app", "app: !execute {}", `${original}\ntypo: true`, original.replace("logLevel:", "logLevell:")]) {
 			writeFileSync(filePath, source);
 			expect(() => loadConfigDocument(filePath)).toThrow("Configuration");
 		}

@@ -71,10 +71,29 @@ jobs; the scheduler periodically enqueues recovery and expired-upload scans.
 
 ## Configuration
 
-Configuration is YAML-first and loaded per runtime from `config/`. Secrets are
-server-only: `DATABASE_URL`, worker keys, realtime internal URLs, and publisher
-keys never enter browser code. The only browser-visible origin is
-`VITE_REALTIME_URL`, consumed through Vite `import.meta.env`.
+`config/config.yaml` is the sole YAML 1.2 runtime document. Zod 4 validates strict
+known keys and each process's explicit typed subset after parse-first, one-pass
+environment interpolation. `${NAME}` requires a nonempty value;
+`${NAME:-fallback}` uses its declared YAML fallback; `$${` escapes literal `${`.
+Aliases, anchors, tags, merge keys, includes and multiple documents are forbidden.
+Config is cached on first use; restart/redeploy applies changes.
+
+Server consumers use `@repo/config/server`; browser code may import only the
+client-safe `@repo/config/public` schema/types. Secrets never enter browser code.
+Same-origin tRPC `config.public` returns only `{ realtimeUrl }`, without session
+or database lookup, with `Cache-Control: no-store` (including batches/errors).
+The browser fetches this value once per page lifecycle and obtains the separate
+authenticated ticket before connecting. There is no browser env or URL fallback.
+`REALTIME_URL` must be explicitly nonempty in production and is distinct from
+the container-network publisher URL. `WEB_PORT` and `API_PORT` configure listeners.
+
+Development launchers explicitly load repository-root `.env`; deployed launchers
+use injected environment, not env-file discovery. Trusted launcher roots locate
+the same YAML at `/app/config/config.yaml` in images. Build scripts do not resolve
+runtime config or need real credentials. Narrow child-tool adapters emit only
+listener settings or Prisma CLI database URL/environment, not flattened config.
+`packages/db` constructs Prisma lazily with an explicit resolved URL; scheduler
+and realtime never initialize it. Do not modify real local secrets automatically.
 
 Realtime credentials are paired across the boundaries:
 
@@ -82,7 +101,7 @@ Realtime credentials are paired across the boundaries:
   `REALTIME_PUBLISH_API_KEY`;
 - worker: `WORKER_NOTIFICATION_URL`, `WORKER_NOTIFICATION_API_KEY`;
 - realtime: `REALTIME_PUBLISH_API_KEY`, `REALTIME_CORS_ORIGIN`, and ticket secret;
-- web: public `VITE_REALTIME_URL` only.
+- web: `REALTIME_URL` for public projection and `REALTIME_TICKET_SECRET` for tickets.
 
 Webhook creation requires `WEBHOOK_SECRET_ENCRYPTION_KEY` (64 hexadecimal
 characters, shared by web/API/worker, stored outside source control). Signing

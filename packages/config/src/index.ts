@@ -1,19 +1,2 @@
-export { createApiConfig } from "./api";
+// Server-only. Browser consumers may import @repo/config/public only.
 export * from "./server";
-export { createWebhookConfig } from "./webhook";
-export type { ApiConfig } from "./api";
-export { createCommonConfig } from "./common";
-export type { CommonConfig } from "./common";
-export { createSchedulerConfig } from "./scheduler";
-export type { SchedulerConfig } from "./scheduler";
-export { createRealtimeConfig } from "./realtime";
-export type { RealtimeConfig } from "./realtime";
-export { createWorkerConfig } from "./worker";
-export type { WorkerConfig } from "./worker";
-export { createRedisConfig } from "./redis";
-export type { RedisConfig } from "./redis";
-export { createStorageConfig, storageServer } from "./storage";
-export { loadConfig } from "./loader";
-export type { LoadConfigOptions } from "./loader";
-export { publicConfigEnvironment, resolvedConfigEnvironment, runConfiguredCommand } from "./run";
-export type { ConfiguredCommandResult, RunConfiguredCommandOptions } from "./run";

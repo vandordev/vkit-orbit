@@ -1,12 +1,14 @@
-FROM oven/bun:1.4.2-alpine
+# syntax=docker/dockerfile:1.11
+FROM oven/bun:1.4.2-alpine AS base
 WORKDIR /app
-COPY package.json bun.lock ./
-COPY apps/migrate/package.json apps/migrate/package.json
-COPY packages/db/package.json packages/db/package.json
-COPY packages/typescript-config/package.json packages/typescript-config/package.json
-RUN bun install --ignore-scripts --filter @repo/migrate
-COPY apps/migrate apps/migrate
-COPY packages/db packages/db
+FROM base AS prune
+COPY . .
+RUN bunx turbo@2.10.4 prune @repo/migrate --docker
+FROM base AS deps
+COPY --from=prune /app/out/json/ ./
+RUN bun install --ignore-scripts
+FROM base AS runner
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=prune /app/out/full/ ./
 COPY config /app/config
-RUN bun install --ignore-scripts --filter @repo/db
-CMD ["bun", "run", "apps/migrate/src/main.ts"]
+CMD ["bun", "--no-env-file", "run", "packages/config/src/run.ts", "--runtime", "migrate", "--root", "/app", "--", "bun", "apps/migrate/src/main.ts"]

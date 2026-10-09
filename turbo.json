@@ -1,12 +1,6 @@
 {
 	"$schema": "https://turborepo.dev/schema.json",
 	"ui": "tui",
-	"globalEnv": [
-		"NODE_ENV",
-		"LOG_LEVEL",
-		"VITE_REALTIME_URL",
-		"DATABASE_URL"
-	],
 	"tasks": {
 		"@repo/storybook#build": {
 			"cache": false,
@@ -35,6 +29,7 @@
 			"outputs": []
 		},
 		"dev": {
+			"passThroughEnv": ["NODE_ENV", "LOG_LEVEL", "DATABASE_URL", "WEB_*", "API_*", "CORS_ORIGIN", "OPENAPI_*", "REDIS_*", "S3_*", "REALTIME_*", "WORKER_NOTIFICATION_*", "WEBHOOK_SECRET_ENCRYPTION_KEY"],
 			"cache": false,
 			"persistent": true
 		},
