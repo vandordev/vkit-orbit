@@ -66,6 +66,29 @@ not-found boundaries now import this shared Button. All new small UI primitives
 must live in this package, not application-local duplicates; install missing
 primitives here before use. Other local presentation remains outside this migration.
 
+## AppShell contract
+
+`@repo/components/app-shell` is a presentation-only adaptation of Universe's
+shared shell (originally based on `@7ovr/app-shell-3`). It accepts consumer-owned
+navigation links, workspace/account slots, header content, and brand/actions.
+Router links retain native browser semantics through Button `asChild`; disabled
+destinations render disabled buttons, not disabled anchors. Collapse supports
+controlled and uncontrolled state without width animation. Search, notifications,
+contextual navigation animation, and fetching are not installed.
+
+The shell uses shared `@repo/components/drawer` and `@repo/components/tooltip`.
+Drawer is a deliberately scoped left-navigation adaptation of Vandor Drawer:
+controlled state, title, trigger, close button, swipe dismissal and scrollable body.
+It does not expose upstream imperative handles, snap points, or nested stack APIs.
+Tooltip is a thin Base UI wrapper. Both use existing brand semantic utilities and
+dependencies; no duplicate palette or application-local primitives are added.
+
+Stories live under `Vandor UI/AppShell`; the integrated presentation is previewed
+under `Web/Layouts/Workspace`. The explicitly invoked UI probe
+`bun --no-env-file run scripts/check-app-shell.ts` uses an already-authorized
+Storybook on port 6006 and never starts a backend. Typechecks and Storybook evidence
+do not prove production authentication, persistence, realtime or redirect behavior.
+
 ## Loading contract
 
 ```tsx

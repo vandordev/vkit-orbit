@@ -15,7 +15,10 @@ test("processes the exact Quarterly Notes fixture and downloads its report", asy
 	await page.getByLabel("Password").fill("correct horse battery staple");
 	await page.getByLabel("Your name").fill("Document User");
 	await page.getByRole("button", { name: "Create account" }).click();
-	await page.waitForURL(/\/app\/documents\/new\?workspaceId=ws_/);
+	await page.waitForURL(/\/\?workspaceId=ws_/);
+	await page.getByRole("link", { name: "Documents", exact: true }).click();
+	await page.getByRole("link", { name: "Upload document", exact: true }).click();
+	await page.waitForURL(/\/documents\/new\?workspaceId=ws_/);
 	await page
 		.getByLabel("Choose a .txt or .md document")
 		.setInputFiles({ name: "quarterly-notes.md", mimeType: "text/markdown", buffer: Buffer.from(quarterlyNotes) });

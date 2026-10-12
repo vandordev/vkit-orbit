@@ -5,6 +5,22 @@ Prisma, BullMQ/Redis workers, MinIO, and Socket.IO invalidation events.
 
 ## Runtime topology
 
+The authenticated dashboard uses root-level URLs: `/` (Overview), `/documents`,
+`/activity`, `/developers/api-keys`, and `/settings/workspace`. Sign-in and
+registration remain public at `/sign-in` and `/register`; the former landing
+page is no longer installed. The pathless `_authenticated/_dashboard` layout
+hosts the shared AppShell. Browser authentication runs before dashboard rendering;
+dashboard SSR is disabled because the existing guard uses same-origin browser tRPC.
+The `/trpc` and `/health` adapters remain outside that layout.
+
+Successful authentication opens Overview with a validated `workspaceId` query
+parameter. Sidebar and document links retain this context. The existing
+`workspace.current` and `auth.me` contracts provide identity, with pending/error
+states. No workspace-list/switching API or logout menu is introduced; without a
+workspace ID, the shell explicitly shows no selection rather than inventing one.
+Legacy `/app` and `/app/...` addresses redirect to the new paths, preserving query
+and hash. `/app/overview` redirects to `/`.
+
 `apps/web` serves the dashboard and same-origin tRPC. `apps/api` is the
 standalone public Elysia `/v1` server, not a browser proxy. Web uses Tailwind
 CSS and shadcn/ui primitives.

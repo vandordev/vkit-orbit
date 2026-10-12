@@ -11,22 +11,23 @@
 import { Route as rootRouteImport } from './app/__root'
 import { Route as AuthenticatedRouteRouteImport } from './app/_authenticated/route'
 import { Route as PublicRouteRouteImport } from './app/_public/route'
-import { Route as AuthenticatedAppRouteRouteImport } from './app/_authenticated/app/route'
-import { Route as PublicIndexRouteImport } from './app/_public/index'
+import { Route as AuthenticatedDashboardRouteRouteImport } from './app/_authenticated/_dashboard/route'
+import { Route as AppIndexRouteImport } from './app/app/index'
+import { Route as AppSplatRouteImport } from './app/app/$'
 import { Route as HealthIndexRouteImport } from './app/health/index'
 import { Route as TrpcSplatRouteImport } from './app/trpc/$'
+import { Route as AuthenticatedDashboardIndexRouteImport } from './app/_authenticated/_dashboard/index'
 import { Route as PublicRegisterIndexRouteImport } from './app/_public/register/index'
 import { Route as PublicSignInIndexRouteImport } from './app/_public/sign-in/index'
-import { Route as AuthenticatedAppActivityIndexRouteImport } from './app/_authenticated/app/activity/index'
-import { Route as AuthenticatedAppDocumentsIndexRouteImport } from './app/_authenticated/app/documents/index'
-import { Route as AuthenticatedAppOverviewIndexRouteImport } from './app/_authenticated/app/overview/index'
-import { Route as AuthenticatedAppDevelopersApiKeysIndexRouteImport } from './app/_authenticated/app/developers/api-keys/index'
-import { Route as AuthenticatedAppDevelopersWebhooksIndexRouteImport } from './app/_authenticated/app/developers/webhooks/index'
-import { Route as AuthenticatedAppDocumentsDocumentIdIndexRouteImport } from './app/_authenticated/app/documents/$documentId/index'
-import { Route as AuthenticatedAppDocumentsNewIndexRouteImport } from './app/_authenticated/app/documents/new/index'
-import { Route as AuthenticatedAppSettingsMembersIndexRouteImport } from './app/_authenticated/app/settings/members/index'
-import { Route as AuthenticatedAppSettingsWorkspaceIndexRouteImport } from './app/_authenticated/app/settings/workspace/index'
-import { Route as AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRouteImport } from './app/_authenticated/app/documents/$documentId/runs/$runId/index'
+import { Route as AuthenticatedDashboardActivityIndexRouteImport } from './app/_authenticated/_dashboard/activity/index'
+import { Route as AuthenticatedDashboardDocumentsIndexRouteImport } from './app/_authenticated/_dashboard/documents/index'
+import { Route as AuthenticatedDashboardDevelopersApiKeysIndexRouteImport } from './app/_authenticated/_dashboard/developers/api-keys/index'
+import { Route as AuthenticatedDashboardDevelopersWebhooksIndexRouteImport } from './app/_authenticated/_dashboard/developers/webhooks/index'
+import { Route as AuthenticatedDashboardDocumentsDocumentIdIndexRouteImport } from './app/_authenticated/_dashboard/documents/$documentId/index'
+import { Route as AuthenticatedDashboardDocumentsNewIndexRouteImport } from './app/_authenticated/_dashboard/documents/new/index'
+import { Route as AuthenticatedDashboardSettingsMembersIndexRouteImport } from './app/_authenticated/_dashboard/settings/members/index'
+import { Route as AuthenticatedDashboardSettingsWorkspaceIndexRouteImport } from './app/_authenticated/_dashboard/settings/workspace/index'
+import { Route as AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRouteImport } from './app/_authenticated/_dashboard/documents/$documentId/runs/$runId/index'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -36,15 +37,20 @@ const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAppRouteRoute = AuthenticatedAppRouteRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const AuthenticatedDashboardRouteRoute =
+  AuthenticatedDashboardRouteRouteImport.update({
+    id: '/_dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/app/',
+  path: '/app/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const PublicIndexRoute = PublicIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PublicRouteRoute,
+const AppSplatRoute = AppSplatRouteImport.update({
+  id: '/app/$',
+  path: '/app/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const HealthIndexRoute = HealthIndexRouteImport.update({
   id: '/health/',
@@ -56,6 +62,12 @@ const TrpcSplatRoute = TrpcSplatRouteImport.update({
   path: '/trpc/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardIndexRoute =
+  AuthenticatedDashboardIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
+  } as any)
 const PublicRegisterIndexRoute = PublicRegisterIndexRouteImport.update({
   id: '/register/',
   path: '/register/',
@@ -66,187 +78,185 @@ const PublicSignInIndexRoute = PublicSignInIndexRouteImport.update({
   path: '/sign-in/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
-const AuthenticatedAppActivityIndexRoute =
-  AuthenticatedAppActivityIndexRouteImport.update({
+const AuthenticatedDashboardActivityIndexRoute =
+  AuthenticatedDashboardActivityIndexRouteImport.update({
     id: '/activity/',
     path: '/activity/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
-const AuthenticatedAppDocumentsIndexRoute =
-  AuthenticatedAppDocumentsIndexRouteImport.update({
+const AuthenticatedDashboardDocumentsIndexRoute =
+  AuthenticatedDashboardDocumentsIndexRouteImport.update({
     id: '/documents/',
     path: '/documents/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
-const AuthenticatedAppOverviewIndexRoute =
-  AuthenticatedAppOverviewIndexRouteImport.update({
-    id: '/overview/',
-    path: '/overview/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
-  } as any)
-const AuthenticatedAppDevelopersApiKeysIndexRoute =
-  AuthenticatedAppDevelopersApiKeysIndexRouteImport.update({
+const AuthenticatedDashboardDevelopersApiKeysIndexRoute =
+  AuthenticatedDashboardDevelopersApiKeysIndexRouteImport.update({
     id: '/developers/api-keys/',
     path: '/developers/api-keys/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
-const AuthenticatedAppDevelopersWebhooksIndexRoute =
-  AuthenticatedAppDevelopersWebhooksIndexRouteImport.update({
+const AuthenticatedDashboardDevelopersWebhooksIndexRoute =
+  AuthenticatedDashboardDevelopersWebhooksIndexRouteImport.update({
     id: '/developers/webhooks/',
     path: '/developers/webhooks/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
-const AuthenticatedAppDocumentsDocumentIdIndexRoute =
-  AuthenticatedAppDocumentsDocumentIdIndexRouteImport.update({
+const AuthenticatedDashboardDocumentsDocumentIdIndexRoute =
+  AuthenticatedDashboardDocumentsDocumentIdIndexRouteImport.update({
     id: '/documents/$documentId/',
     path: '/documents/$documentId/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
-const AuthenticatedAppDocumentsNewIndexRoute =
-  AuthenticatedAppDocumentsNewIndexRouteImport.update({
+const AuthenticatedDashboardDocumentsNewIndexRoute =
+  AuthenticatedDashboardDocumentsNewIndexRouteImport.update({
     id: '/documents/new/',
     path: '/documents/new/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
-const AuthenticatedAppSettingsMembersIndexRoute =
-  AuthenticatedAppSettingsMembersIndexRouteImport.update({
+const AuthenticatedDashboardSettingsMembersIndexRoute =
+  AuthenticatedDashboardSettingsMembersIndexRouteImport.update({
     id: '/settings/members/',
     path: '/settings/members/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
-const AuthenticatedAppSettingsWorkspaceIndexRoute =
-  AuthenticatedAppSettingsWorkspaceIndexRouteImport.update({
+const AuthenticatedDashboardSettingsWorkspaceIndexRoute =
+  AuthenticatedDashboardSettingsWorkspaceIndexRouteImport.update({
     id: '/settings/workspace/',
     path: '/settings/workspace/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
-const AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute =
-  AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRouteImport.update({
+const AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRoute =
+  AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRouteImport.update({
     id: '/documents/$documentId/runs/$runId/',
     path: '/documents/$documentId/runs/$runId/',
-    getParentRoute: () => AuthenticatedAppRouteRoute,
+    getParentRoute: () => AuthenticatedDashboardRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof PublicIndexRoute
-  '/app': typeof AuthenticatedAppRouteRouteWithChildren
+  '/': typeof AuthenticatedDashboardIndexRoute
+  '/app/$': typeof AppSplatRoute
   '/trpc/$': typeof TrpcSplatRoute
+  '/app/': typeof AppIndexRoute
   '/health/': typeof HealthIndexRoute
   '/register/': typeof PublicRegisterIndexRoute
   '/sign-in/': typeof PublicSignInIndexRoute
-  '/app/activity/': typeof AuthenticatedAppActivityIndexRoute
-  '/app/documents/': typeof AuthenticatedAppDocumentsIndexRoute
-  '/app/overview/': typeof AuthenticatedAppOverviewIndexRoute
-  '/app/developers/api-keys/': typeof AuthenticatedAppDevelopersApiKeysIndexRoute
-  '/app/developers/webhooks/': typeof AuthenticatedAppDevelopersWebhooksIndexRoute
-  '/app/documents/$documentId/': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
-  '/app/documents/new/': typeof AuthenticatedAppDocumentsNewIndexRoute
-  '/app/settings/members/': typeof AuthenticatedAppSettingsMembersIndexRoute
-  '/app/settings/workspace/': typeof AuthenticatedAppSettingsWorkspaceIndexRoute
-  '/app/documents/$documentId/runs/$runId/': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
+  '/activity/': typeof AuthenticatedDashboardActivityIndexRoute
+  '/documents/': typeof AuthenticatedDashboardDocumentsIndexRoute
+  '/developers/api-keys/': typeof AuthenticatedDashboardDevelopersApiKeysIndexRoute
+  '/developers/webhooks/': typeof AuthenticatedDashboardDevelopersWebhooksIndexRoute
+  '/documents/$documentId/': typeof AuthenticatedDashboardDocumentsDocumentIdIndexRoute
+  '/documents/new/': typeof AuthenticatedDashboardDocumentsNewIndexRoute
+  '/settings/members/': typeof AuthenticatedDashboardSettingsMembersIndexRoute
+  '/settings/workspace/': typeof AuthenticatedDashboardSettingsWorkspaceIndexRoute
+  '/documents/$documentId/runs/$runId/': typeof AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PublicIndexRoute
-  '/app': typeof AuthenticatedAppRouteRouteWithChildren
+  '/': typeof AuthenticatedDashboardIndexRoute
+  '/app/$': typeof AppSplatRoute
   '/trpc/$': typeof TrpcSplatRoute
+  '/app': typeof AppIndexRoute
   '/health': typeof HealthIndexRoute
   '/register': typeof PublicRegisterIndexRoute
   '/sign-in': typeof PublicSignInIndexRoute
-  '/app/activity': typeof AuthenticatedAppActivityIndexRoute
-  '/app/documents': typeof AuthenticatedAppDocumentsIndexRoute
-  '/app/overview': typeof AuthenticatedAppOverviewIndexRoute
-  '/app/developers/api-keys': typeof AuthenticatedAppDevelopersApiKeysIndexRoute
-  '/app/developers/webhooks': typeof AuthenticatedAppDevelopersWebhooksIndexRoute
-  '/app/documents/$documentId': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
-  '/app/documents/new': typeof AuthenticatedAppDocumentsNewIndexRoute
-  '/app/settings/members': typeof AuthenticatedAppSettingsMembersIndexRoute
-  '/app/settings/workspace': typeof AuthenticatedAppSettingsWorkspaceIndexRoute
-  '/app/documents/$documentId/runs/$runId': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
+  '/activity': typeof AuthenticatedDashboardActivityIndexRoute
+  '/documents': typeof AuthenticatedDashboardDocumentsIndexRoute
+  '/developers/api-keys': typeof AuthenticatedDashboardDevelopersApiKeysIndexRoute
+  '/developers/webhooks': typeof AuthenticatedDashboardDevelopersWebhooksIndexRoute
+  '/documents/$documentId': typeof AuthenticatedDashboardDocumentsDocumentIdIndexRoute
+  '/documents/new': typeof AuthenticatedDashboardDocumentsNewIndexRoute
+  '/settings/members': typeof AuthenticatedDashboardSettingsMembersIndexRoute
+  '/settings/workspace': typeof AuthenticatedDashboardSettingsWorkspaceIndexRoute
+  '/documents/$documentId/runs/$runId': typeof AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_public': typeof PublicRouteRouteWithChildren
-  '/_authenticated/app': typeof AuthenticatedAppRouteRouteWithChildren
+  '/_authenticated/_dashboard': typeof AuthenticatedDashboardRouteRouteWithChildren
+  '/app/$': typeof AppSplatRoute
   '/trpc/$': typeof TrpcSplatRoute
-  '/_public/': typeof PublicIndexRoute
+  '/app/': typeof AppIndexRoute
   '/health/': typeof HealthIndexRoute
+  '/_authenticated/_dashboard/': typeof AuthenticatedDashboardIndexRoute
   '/_public/register/': typeof PublicRegisterIndexRoute
   '/_public/sign-in/': typeof PublicSignInIndexRoute
-  '/_authenticated/app/activity/': typeof AuthenticatedAppActivityIndexRoute
-  '/_authenticated/app/documents/': typeof AuthenticatedAppDocumentsIndexRoute
-  '/_authenticated/app/overview/': typeof AuthenticatedAppOverviewIndexRoute
-  '/_authenticated/app/developers/api-keys/': typeof AuthenticatedAppDevelopersApiKeysIndexRoute
-  '/_authenticated/app/developers/webhooks/': typeof AuthenticatedAppDevelopersWebhooksIndexRoute
-  '/_authenticated/app/documents/$documentId/': typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
-  '/_authenticated/app/documents/new/': typeof AuthenticatedAppDocumentsNewIndexRoute
-  '/_authenticated/app/settings/members/': typeof AuthenticatedAppSettingsMembersIndexRoute
-  '/_authenticated/app/settings/workspace/': typeof AuthenticatedAppSettingsWorkspaceIndexRoute
-  '/_authenticated/app/documents/$documentId/runs/$runId/': typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
+  '/_authenticated/_dashboard/activity/': typeof AuthenticatedDashboardActivityIndexRoute
+  '/_authenticated/_dashboard/documents/': typeof AuthenticatedDashboardDocumentsIndexRoute
+  '/_authenticated/_dashboard/developers/api-keys/': typeof AuthenticatedDashboardDevelopersApiKeysIndexRoute
+  '/_authenticated/_dashboard/developers/webhooks/': typeof AuthenticatedDashboardDevelopersWebhooksIndexRoute
+  '/_authenticated/_dashboard/documents/$documentId/': typeof AuthenticatedDashboardDocumentsDocumentIdIndexRoute
+  '/_authenticated/_dashboard/documents/new/': typeof AuthenticatedDashboardDocumentsNewIndexRoute
+  '/_authenticated/_dashboard/settings/members/': typeof AuthenticatedDashboardSettingsMembersIndexRoute
+  '/_authenticated/_dashboard/settings/workspace/': typeof AuthenticatedDashboardSettingsWorkspaceIndexRoute
+  '/_authenticated/_dashboard/documents/$documentId/runs/$runId/': typeof AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/app'
+    | '/app/$'
     | '/trpc/$'
+    | '/app/'
     | '/health/'
     | '/register/'
     | '/sign-in/'
-    | '/app/activity/'
-    | '/app/documents/'
-    | '/app/overview/'
-    | '/app/developers/api-keys/'
-    | '/app/developers/webhooks/'
-    | '/app/documents/$documentId/'
-    | '/app/documents/new/'
-    | '/app/settings/members/'
-    | '/app/settings/workspace/'
-    | '/app/documents/$documentId/runs/$runId/'
+    | '/activity/'
+    | '/documents/'
+    | '/developers/api-keys/'
+    | '/developers/webhooks/'
+    | '/documents/$documentId/'
+    | '/documents/new/'
+    | '/settings/members/'
+    | '/settings/workspace/'
+    | '/documents/$documentId/runs/$runId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/app'
+    | '/app/$'
     | '/trpc/$'
+    | '/app'
     | '/health'
     | '/register'
     | '/sign-in'
-    | '/app/activity'
-    | '/app/documents'
-    | '/app/overview'
-    | '/app/developers/api-keys'
-    | '/app/developers/webhooks'
-    | '/app/documents/$documentId'
-    | '/app/documents/new'
-    | '/app/settings/members'
-    | '/app/settings/workspace'
-    | '/app/documents/$documentId/runs/$runId'
+    | '/activity'
+    | '/documents'
+    | '/developers/api-keys'
+    | '/developers/webhooks'
+    | '/documents/$documentId'
+    | '/documents/new'
+    | '/settings/members'
+    | '/settings/workspace'
+    | '/documents/$documentId/runs/$runId'
   id:
     | '__root__'
     | '/_authenticated'
     | '/_public'
-    | '/_authenticated/app'
+    | '/_authenticated/_dashboard'
+    | '/app/$'
     | '/trpc/$'
-    | '/_public/'
+    | '/app/'
     | '/health/'
+    | '/_authenticated/_dashboard/'
     | '/_public/register/'
     | '/_public/sign-in/'
-    | '/_authenticated/app/activity/'
-    | '/_authenticated/app/documents/'
-    | '/_authenticated/app/overview/'
-    | '/_authenticated/app/developers/api-keys/'
-    | '/_authenticated/app/developers/webhooks/'
-    | '/_authenticated/app/documents/$documentId/'
-    | '/_authenticated/app/documents/new/'
-    | '/_authenticated/app/settings/members/'
-    | '/_authenticated/app/settings/workspace/'
-    | '/_authenticated/app/documents/$documentId/runs/$runId/'
+    | '/_authenticated/_dashboard/activity/'
+    | '/_authenticated/_dashboard/documents/'
+    | '/_authenticated/_dashboard/developers/api-keys/'
+    | '/_authenticated/_dashboard/developers/webhooks/'
+    | '/_authenticated/_dashboard/documents/$documentId/'
+    | '/_authenticated/_dashboard/documents/new/'
+    | '/_authenticated/_dashboard/settings/members/'
+    | '/_authenticated/_dashboard/settings/workspace/'
+    | '/_authenticated/_dashboard/documents/$documentId/runs/$runId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  AppSplatRoute: typeof AppSplatRoute
   TrpcSplatRoute: typeof TrpcSplatRoute
+  AppIndexRoute: typeof AppIndexRoute
   HealthIndexRoute: typeof HealthIndexRoute
 }
 
@@ -266,19 +276,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/app': {
-      id: '/_authenticated/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AuthenticatedAppRouteRouteImport
+    '/_authenticated/_dashboard': {
+      id: '/_authenticated/_dashboard'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_public/': {
-      id: '/_public/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof PublicIndexRouteImport
-      parentRoute: typeof PublicRouteRoute
+    '/app/': {
+      id: '/app/'
+      path: '/app'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/$': {
+      id: '/app/$'
+      path: '/app/$'
+      fullPath: '/app/$'
+      preLoaderRoute: typeof AppSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/health/': {
       id: '/health/'
@@ -294,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrpcSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/_dashboard/': {
+      id: '/_authenticated/_dashboard/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedDashboardIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
+    }
     '/_public/register/': {
       id: '/_public/register/'
       path: '/register'
@@ -308,136 +332,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicSignInIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
-    '/_authenticated/app/activity/': {
-      id: '/_authenticated/app/activity/'
+    '/_authenticated/_dashboard/activity/': {
+      id: '/_authenticated/_dashboard/activity/'
       path: '/activity'
-      fullPath: '/app/activity/'
-      preLoaderRoute: typeof AuthenticatedAppActivityIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/activity/'
+      preLoaderRoute: typeof AuthenticatedDashboardActivityIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
-    '/_authenticated/app/documents/': {
-      id: '/_authenticated/app/documents/'
+    '/_authenticated/_dashboard/documents/': {
+      id: '/_authenticated/_dashboard/documents/'
       path: '/documents'
-      fullPath: '/app/documents/'
-      preLoaderRoute: typeof AuthenticatedAppDocumentsIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/documents/'
+      preLoaderRoute: typeof AuthenticatedDashboardDocumentsIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
-    '/_authenticated/app/overview/': {
-      id: '/_authenticated/app/overview/'
-      path: '/overview'
-      fullPath: '/app/overview/'
-      preLoaderRoute: typeof AuthenticatedAppOverviewIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
-    }
-    '/_authenticated/app/developers/api-keys/': {
-      id: '/_authenticated/app/developers/api-keys/'
+    '/_authenticated/_dashboard/developers/api-keys/': {
+      id: '/_authenticated/_dashboard/developers/api-keys/'
       path: '/developers/api-keys'
-      fullPath: '/app/developers/api-keys/'
-      preLoaderRoute: typeof AuthenticatedAppDevelopersApiKeysIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/developers/api-keys/'
+      preLoaderRoute: typeof AuthenticatedDashboardDevelopersApiKeysIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
-    '/_authenticated/app/developers/webhooks/': {
-      id: '/_authenticated/app/developers/webhooks/'
+    '/_authenticated/_dashboard/developers/webhooks/': {
+      id: '/_authenticated/_dashboard/developers/webhooks/'
       path: '/developers/webhooks'
-      fullPath: '/app/developers/webhooks/'
-      preLoaderRoute: typeof AuthenticatedAppDevelopersWebhooksIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/developers/webhooks/'
+      preLoaderRoute: typeof AuthenticatedDashboardDevelopersWebhooksIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
-    '/_authenticated/app/documents/$documentId/': {
-      id: '/_authenticated/app/documents/$documentId/'
+    '/_authenticated/_dashboard/documents/$documentId/': {
+      id: '/_authenticated/_dashboard/documents/$documentId/'
       path: '/documents/$documentId'
-      fullPath: '/app/documents/$documentId/'
-      preLoaderRoute: typeof AuthenticatedAppDocumentsDocumentIdIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/documents/$documentId/'
+      preLoaderRoute: typeof AuthenticatedDashboardDocumentsDocumentIdIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
-    '/_authenticated/app/documents/new/': {
-      id: '/_authenticated/app/documents/new/'
+    '/_authenticated/_dashboard/documents/new/': {
+      id: '/_authenticated/_dashboard/documents/new/'
       path: '/documents/new'
-      fullPath: '/app/documents/new/'
-      preLoaderRoute: typeof AuthenticatedAppDocumentsNewIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/documents/new/'
+      preLoaderRoute: typeof AuthenticatedDashboardDocumentsNewIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
-    '/_authenticated/app/settings/members/': {
-      id: '/_authenticated/app/settings/members/'
+    '/_authenticated/_dashboard/settings/members/': {
+      id: '/_authenticated/_dashboard/settings/members/'
       path: '/settings/members'
-      fullPath: '/app/settings/members/'
-      preLoaderRoute: typeof AuthenticatedAppSettingsMembersIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/settings/members/'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsMembersIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
-    '/_authenticated/app/settings/workspace/': {
-      id: '/_authenticated/app/settings/workspace/'
+    '/_authenticated/_dashboard/settings/workspace/': {
+      id: '/_authenticated/_dashboard/settings/workspace/'
       path: '/settings/workspace'
-      fullPath: '/app/settings/workspace/'
-      preLoaderRoute: typeof AuthenticatedAppSettingsWorkspaceIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/settings/workspace/'
+      preLoaderRoute: typeof AuthenticatedDashboardSettingsWorkspaceIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
-    '/_authenticated/app/documents/$documentId/runs/$runId/': {
-      id: '/_authenticated/app/documents/$documentId/runs/$runId/'
+    '/_authenticated/_dashboard/documents/$documentId/runs/$runId/': {
+      id: '/_authenticated/_dashboard/documents/$documentId/runs/$runId/'
       path: '/documents/$documentId/runs/$runId'
-      fullPath: '/app/documents/$documentId/runs/$runId/'
-      preLoaderRoute: typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRouteImport
-      parentRoute: typeof AuthenticatedAppRouteRoute
+      fullPath: '/documents/$documentId/runs/$runId/'
+      preLoaderRoute: typeof AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRouteImport
+      parentRoute: typeof AuthenticatedDashboardRouteRoute
     }
   }
 }
 
-interface AuthenticatedAppRouteRouteChildren {
-  AuthenticatedAppActivityIndexRoute: typeof AuthenticatedAppActivityIndexRoute
-  AuthenticatedAppDocumentsIndexRoute: typeof AuthenticatedAppDocumentsIndexRoute
-  AuthenticatedAppOverviewIndexRoute: typeof AuthenticatedAppOverviewIndexRoute
-  AuthenticatedAppDevelopersApiKeysIndexRoute: typeof AuthenticatedAppDevelopersApiKeysIndexRoute
-  AuthenticatedAppDevelopersWebhooksIndexRoute: typeof AuthenticatedAppDevelopersWebhooksIndexRoute
-  AuthenticatedAppDocumentsDocumentIdIndexRoute: typeof AuthenticatedAppDocumentsDocumentIdIndexRoute
-  AuthenticatedAppDocumentsNewIndexRoute: typeof AuthenticatedAppDocumentsNewIndexRoute
-  AuthenticatedAppSettingsMembersIndexRoute: typeof AuthenticatedAppSettingsMembersIndexRoute
-  AuthenticatedAppSettingsWorkspaceIndexRoute: typeof AuthenticatedAppSettingsWorkspaceIndexRoute
-  AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute: typeof AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute
+interface AuthenticatedDashboardRouteRouteChildren {
+  AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedDashboardActivityIndexRoute: typeof AuthenticatedDashboardActivityIndexRoute
+  AuthenticatedDashboardDocumentsIndexRoute: typeof AuthenticatedDashboardDocumentsIndexRoute
+  AuthenticatedDashboardDevelopersApiKeysIndexRoute: typeof AuthenticatedDashboardDevelopersApiKeysIndexRoute
+  AuthenticatedDashboardDevelopersWebhooksIndexRoute: typeof AuthenticatedDashboardDevelopersWebhooksIndexRoute
+  AuthenticatedDashboardDocumentsDocumentIdIndexRoute: typeof AuthenticatedDashboardDocumentsDocumentIdIndexRoute
+  AuthenticatedDashboardDocumentsNewIndexRoute: typeof AuthenticatedDashboardDocumentsNewIndexRoute
+  AuthenticatedDashboardSettingsMembersIndexRoute: typeof AuthenticatedDashboardSettingsMembersIndexRoute
+  AuthenticatedDashboardSettingsWorkspaceIndexRoute: typeof AuthenticatedDashboardSettingsWorkspaceIndexRoute
+  AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRoute: typeof AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRoute
 }
 
-const AuthenticatedAppRouteRouteChildren: AuthenticatedAppRouteRouteChildren = {
-  AuthenticatedAppActivityIndexRoute: AuthenticatedAppActivityIndexRoute,
-  AuthenticatedAppDocumentsIndexRoute: AuthenticatedAppDocumentsIndexRoute,
-  AuthenticatedAppOverviewIndexRoute: AuthenticatedAppOverviewIndexRoute,
-  AuthenticatedAppDevelopersApiKeysIndexRoute:
-    AuthenticatedAppDevelopersApiKeysIndexRoute,
-  AuthenticatedAppDevelopersWebhooksIndexRoute:
-    AuthenticatedAppDevelopersWebhooksIndexRoute,
-  AuthenticatedAppDocumentsDocumentIdIndexRoute:
-    AuthenticatedAppDocumentsDocumentIdIndexRoute,
-  AuthenticatedAppDocumentsNewIndexRoute:
-    AuthenticatedAppDocumentsNewIndexRoute,
-  AuthenticatedAppSettingsMembersIndexRoute:
-    AuthenticatedAppSettingsMembersIndexRoute,
-  AuthenticatedAppSettingsWorkspaceIndexRoute:
-    AuthenticatedAppSettingsWorkspaceIndexRoute,
-  AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute:
-    AuthenticatedAppDocumentsDocumentIdRunsRunIdIndexRoute,
-}
+const AuthenticatedDashboardRouteRouteChildren: AuthenticatedDashboardRouteRouteChildren =
+  {
+    AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+    AuthenticatedDashboardActivityIndexRoute:
+      AuthenticatedDashboardActivityIndexRoute,
+    AuthenticatedDashboardDocumentsIndexRoute:
+      AuthenticatedDashboardDocumentsIndexRoute,
+    AuthenticatedDashboardDevelopersApiKeysIndexRoute:
+      AuthenticatedDashboardDevelopersApiKeysIndexRoute,
+    AuthenticatedDashboardDevelopersWebhooksIndexRoute:
+      AuthenticatedDashboardDevelopersWebhooksIndexRoute,
+    AuthenticatedDashboardDocumentsDocumentIdIndexRoute:
+      AuthenticatedDashboardDocumentsDocumentIdIndexRoute,
+    AuthenticatedDashboardDocumentsNewIndexRoute:
+      AuthenticatedDashboardDocumentsNewIndexRoute,
+    AuthenticatedDashboardSettingsMembersIndexRoute:
+      AuthenticatedDashboardSettingsMembersIndexRoute,
+    AuthenticatedDashboardSettingsWorkspaceIndexRoute:
+      AuthenticatedDashboardSettingsWorkspaceIndexRoute,
+    AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRoute:
+      AuthenticatedDashboardDocumentsDocumentIdRunsRunIdIndexRoute,
+  }
 
-const AuthenticatedAppRouteRouteWithChildren =
-  AuthenticatedAppRouteRoute._addFileChildren(
-    AuthenticatedAppRouteRouteChildren,
+const AuthenticatedDashboardRouteRouteWithChildren =
+  AuthenticatedDashboardRouteRoute._addFileChildren(
+    AuthenticatedDashboardRouteRouteChildren,
   )
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAppRouteRoute: typeof AuthenticatedAppRouteRouteWithChildren
+  AuthenticatedDashboardRouteRoute: typeof AuthenticatedDashboardRouteRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAppRouteRoute: AuthenticatedAppRouteRouteWithChildren,
+  AuthenticatedDashboardRouteRoute:
+    AuthenticatedDashboardRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface PublicRouteRouteChildren {
-  PublicIndexRoute: typeof PublicIndexRoute
   PublicRegisterIndexRoute: typeof PublicRegisterIndexRoute
   PublicSignInIndexRoute: typeof PublicSignInIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
-  PublicIndexRoute: PublicIndexRoute,
   PublicRegisterIndexRoute: PublicRegisterIndexRoute,
   PublicSignInIndexRoute: PublicSignInIndexRoute,
 }
@@ -449,7 +468,9 @@ const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
+  AppSplatRoute: AppSplatRoute,
   TrpcSplatRoute: TrpcSplatRoute,
+  AppIndexRoute: AppIndexRoute,
   HealthIndexRoute: HealthIndexRoute,
 }
 export const routeTree = rootRouteImport

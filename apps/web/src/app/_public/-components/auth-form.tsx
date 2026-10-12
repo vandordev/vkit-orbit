@@ -15,7 +15,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "register" }) {
 				? trpc.auth.signIn.mutate({ email: String(values.email), password: String(values.password) })
 				: trpc.auth.register.mutate({ email: String(values.email), password: String(values.password), name: String(values.name) })
 		)
-			.then((result) => navigate({ to: "/app/documents/new", search: { workspaceId: result.workspaceId } }))
+			.then((result) => navigate({ to: "/", search: { workspaceId: result.workspaceId } }))
 			.catch(() => document.querySelector('[role="alert"]')?.classList.remove("hidden"));
 	}
 	return (

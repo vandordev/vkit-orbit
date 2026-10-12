@@ -11,7 +11,7 @@ describe("authentication workspace shell contract", () => {
 
 	test("guards the application and exposes permission-aware navigation", async () => {
 		const route = await Bun.file(new URL("../_authenticated/route.tsx", import.meta.url)).text();
-		const shell = await Bun.file(new URL("../_authenticated/app/-components/app-shell.tsx", import.meta.url)).text();
+		const shell = await Bun.file(new URL("../_authenticated/_dashboard/-components/app-shell.tsx", import.meta.url)).text();
 		expect(route).toContain("beforeLoad");
 		expect(route).toContain("redirect");
 		expect(shell).toContain("Documents");
