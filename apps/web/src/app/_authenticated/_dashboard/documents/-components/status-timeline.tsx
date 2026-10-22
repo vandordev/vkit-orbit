@@ -1,3 +1,5 @@
+import { Button } from "@repo/components/button";
+
 export function StatusTimeline({ status = "QUEUED" }: { status?: string }) {
 	const steps = ["Uploaded", "Validated", "Analyzed", "Completed"];
 	return (
@@ -7,9 +9,9 @@ export function StatusTimeline({ status = "QUEUED" }: { status?: string }) {
 					<span className="grid size-7 place-items-center rounded-full bg-muted text-xs">{index + 1}</span>
 					<span>{step}</span>
 					{status === "FAILED" && index === 2 && (
-						<button type="button" className="ml-auto text-sm font-medium text-primary underline focus-visible:ring-2">
+						<Button type="button" variant="link" size="sm" className="ml-auto">
 							Retry
-						</button>
+						</Button>
 					)}
 				</li>
 			))}

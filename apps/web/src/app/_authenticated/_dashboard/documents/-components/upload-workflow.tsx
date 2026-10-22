@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { trpc } from "../../../../../trpc/client";
+import { UploadWorkflowView, type UploadReport } from "./upload-workflow-view";
 const documentApi = trpc;
 export function UploadWorkflow() {
 	const workspaceId =
 		typeof window === "undefined" ? undefined : (new URLSearchParams(window.location.search).get("workspaceId") ?? undefined);
 	const [stage, setStage] = useState<"idle" | "uploading" | "analyzing">("idle");
-	const [report, setReport] = useState<{ title: string; headings: string[]; words: number; lines: number; sha256: string; json: string }>();
+	const [report, setReport] = useState<UploadReport>();
 	async function confirm() {
 		const input = document.querySelector<HTMLInputElement>('input[type="file"]');
 		const file = input?.files?.[0];
@@ -48,48 +49,5 @@ export function UploadWorkflow() {
 		}
 		throw new Error("processing timeout");
 	}
-	return (
-		<section className="rounded-xl border border-border bg-white p-6">
-			<h2 className="text-lg font-semibold">Upload a document</h2>
-			<p className="mt-1 text-sm text-muted-foreground">Only .txt and .md files are supported.</p>
-			<input
-				aria-label="Choose a .txt or .md document"
-				type="file"
-				accept=".txt,.md,text/plain,text/markdown"
-				onChange={() => setStage("uploading")}
-				className="mt-5 block w-full text-sm"
-			/>
-			{stage === "uploading" && (
-				<p className="mt-4 text-sm font-medium text-primary" aria-live="polite">
-					Uploading document
-				</p>
-			)}
-			{stage === "analyzing" && (
-				<p className="mt-4 text-sm font-medium text-primary" aria-live="polite">
-					Analyzing document
-				</p>
-			)}
-			{stage === "uploading" && (
-				<button
-					type="button"
-					onClick={() => void confirm()}
-					className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground focus-visible:ring-2"
-				>
-					Confirm upload
-				</button>
-			)}
-			{report && (
-				<section aria-label="Processing report" className="mt-5 space-y-2">
-					<h3>{report.title}</h3>
-					<p>{report.headings.join(" · ")}</p>
-					<p data-word-count>{report.words} words</p>
-					<p data-line-count>{report.lines} lines</p>
-					<p data-sha256>{report.sha256}</p>
-					<a download="result.json" href={`data:application/json,${encodeURIComponent(report.json)}`}>
-						Download result JSON
-					</a>
-				</section>
-			)}
-		</section>
-	);
+	return <UploadWorkflowView stage={stage} report={report} onFileChange={() => setStage("uploading")} onConfirm={() => void confirm()} />;
 }

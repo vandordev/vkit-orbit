@@ -25,10 +25,13 @@ and hash. `/app/overview` redirects to `/`.
 standalone public Elysia `/v1` server, not a browser proxy. Web uses Tailwind
 CSS and shadcn/ui primitives.
 
-New shared UI lives in [`packages/components`](packages/components/README.md),
-installed from Vandor UI and imported via `@repo/components/<name>`. Button is the
-initial example and all Button usage now uses this package. New small UI primitives
-must be installed here, not duplicated in web. Other local presentation is retained.
+All application controls, including existing UI and stories, use shared React
+primitives from [`packages/components`](packages/components/README.md), imported
+directly via `@repo/components/<name>`. Native controls, application-local primitive
+copies, and direct Base UI/Radix imports are forbidden in applications. Implement
+or install missing primitives in the shared package first; native implementations
+belong only there. Structural HTML, forms, links, and SVG remain allowed.
+`task check:ui-primitives` enforces common violations and runs with root/web typechecks.
 See [component ownership and installation rules](.agent/components.md).
 
 [`apps/storybook`](apps/storybook/README.md) hosts repository-wide component
@@ -147,6 +150,7 @@ task dev:scheduler                        Enqueue-only maintenance schedules
 task dev:realtime                         Socket.IO runtime
 task dev:storybook                        Shared component previews on port 6006
 task build:storybook                      Static Storybook build
+task check:ui-primitives                  Check shared-control ownership in apps/stories
 task quality                             TypeScript tests/lint/types
 task build                               TypeScript builds
 task compose:up:detached                  Full installed runtime stack

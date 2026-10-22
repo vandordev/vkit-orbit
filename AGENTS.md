@@ -13,7 +13,8 @@ changed, the plan/spec, and run
   with their owning components. Development tooling only, not a deployed runtime.
 - `packages/components`: shared Vandor UI source, imported through explicit
   `@repo/components/<name>` entrypoints. All new small UI primitives belong here,
-  never in application-local copies. Unmigrated existing presentation stays intact.
+  never in application-local copies. This includes existing application controls
+  and Storybook fixtures; structural/feature presentation stays application-owned.
 - `packages/brand`: source of truth for brand name, logo, and color tokens.
   Consumers use `@repo/brand` entrypoints; do not duplicate identity or palette.
 - `apps/api`: Elysia factory, validation, envelopes, usecase transport, and the
@@ -29,6 +30,27 @@ changed, the plan/spec, and run
 - `apps/migrate`: Prisma deploy first.
 
 ## Architecture rules
+
+### React UI primitives
+
+Application controls must import shared React primitives directly from
+`@repo/components/<component>`, including existing UI and Storybook fixtures.
+Do not render native `button`, `input`, `select`/`option`/`optgroup`, `textarea`,
+`label`, `dialog`, `details`/`summary`, table elements (including `caption`),
+or `progress`/`meter` in applications. Do not bypass this with intrinsic aliases,
+motion wrappers, `createElement`/JSX factories, application-local primitive copies,
+or direct Base UI/Radix imports. Native implementations belong only in
+`packages/components`. If a primitive is missing, implement or install it there
+and expose its public entrypoint before consuming it. Do not install an entire
+catalog merely to satisfy the rule.
+
+Structural/semantic HTML (containers, headings, forms, lists, navigation links)
+and SVG remain allowed. Router links are not primitive violations.
+Run `task check:ui-primitives` (or `bun run check:ui-primitives`); the static checker
+also runs with root and web typechecks. It scans `apps`, including stories and
+legacy UI, excluding test/spec files and generated/dependency outputs. It detects
+common bypasses, not every possible dynamic expression; the policy still applies.
+See `.agent/components.md` for ownership and `.agent/verification.md` for gates.
 
 The web process hosts the dashboard and same-origin tRPC. `apps/api` is the
 standalone public Elysia `/v1` server, not a proxy. Process health is exposed

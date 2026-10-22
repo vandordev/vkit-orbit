@@ -9,7 +9,7 @@
     "build": "NODE_ENV=production bun --no-env-file run vite build",
     "start": "bun --no-env-file run ../../packages/config/src/run.ts --runtime web --root ../.. -- bun .output/server/index.mjs",
     "lint": "eslint",
-    "check-types": "tsc --noEmit",
+    "check-types": "bun --no-env-file run ../../scripts/check-ui-primitives.ts && tsc --noEmit",
     "clean": "rm -rf .output .vite src/routeTree.gen.ts"
   },
   "dependencies": {

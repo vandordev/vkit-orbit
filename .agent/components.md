@@ -10,9 +10,10 @@ promote feature compositions only when genuinely reusable. Small UI primitives
 
 ## Installation and imports
 
-- All new primitive UI uses explicit `@repo/components/<name>` entrypoints. Check the
-  installed exports first; the catalog contains Button and Loading, plus internal
-  loading visuals, not all Vandor components.
+- All application primitive UI, including existing controls and stories, uses direct
+  `@repo/components/<name>` entrypoints. Check installed exports first: Button,
+  Input, Table, Loading, AppShell, Drawer and Tooltip are available, not the entire
+  Vandor catalog. Input/Table have deliberately scoped APIs documented in the README.
 - Run registry commands inside `packages/components`, using its `components.json`.
   Install only needed components and dependencies. Consult Vandor documentation
   for the actual API; generic shadcn guidance does not override registry contracts.
@@ -26,10 +27,17 @@ promote feature compositions only when genuinely reusable. Small UI primitives
 - If a needed primitive is not installed, install it into `packages/components`
   and expose its public entrypoint before use; do not create a web-local fallback
   or assume the full catalog is available.
-- The web-local Button and its stories have been removed; all Button usage imports
-  `@repo/components/button`. Other existing local presentation components are
-  retained until a scoped migration. Do not recreate a local Button, install new
-  primitives in `apps/web`, or mass-migrate unrelated existing components.
+- Do not render native controls in applications, including legacy UI and stories:
+  buttons, inputs, selects/options/groups, textareas, labels, dialogs,
+  details/summary, table elements/captions, and progress/meter. Native implementations
+  belong only in `packages/components`. Intrinsic aliases, motion wrappers, JSX
+  factories, local copies/re-exports, and direct Base UI/Radix imports are not escapes.
+  Structural HTML, forms, headings, lists, links, and SVG remain allowed; feature
+  compositions and unrelated visual presentation remain application-owned.
+- Run `task check:ui-primitives`; root/web typechecks include this static source
+  policy check. It scans `apps` including stories, excluding test/spec files and
+  generated/dependency directories. It catches common static bypasses, not arbitrary
+  runtime indirection; source review must still uphold the policy.
 
 ## Styling and composition
 

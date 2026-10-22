@@ -47,6 +47,10 @@ including its full variant catalog, sizing, text, variant options, and Button us
 See [component ownership rules](../../.agent/components.md).
 
 Fixtures are deterministic and local, respecting actual schema/runtime contracts.
+All fixture controls must use direct `@repo/components/<name>` imports, just like
+application controls; no native controls, local copies or direct Base UI/Radix
+imports in `apps`. Native implementations belong in `packages/components` only.
+`task check:ui-primitives` scans application stories as part of root/web typechecks.
 Stories compose their own providers when needed, never production credentials
 or real authenticated APIs. Review relevant states, copy, keyboard/focus,
 interactions, and mobile overflow. Build/typecheck alone are not visual acceptance.

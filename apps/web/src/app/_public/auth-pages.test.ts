@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 describe("authentication workspace shell contract", () => {
 	test("provides public sign-in and registration routes", async () => {
-		const signIn = await Bun.file(new URL("./-components/auth-form.tsx", import.meta.url)).text();
+		const signIn = await Bun.file(new URL("./-components/auth-form-view.tsx", import.meta.url)).text();
 		const register = await Bun.file(new URL("./register/index.tsx", import.meta.url)).text();
 		expect(signIn).toContain('autoComplete="email"');
 		expect(signIn).toContain('autoComplete={isSignIn ? "current-password"');

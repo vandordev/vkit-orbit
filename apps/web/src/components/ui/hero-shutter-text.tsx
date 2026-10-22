@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@repo/components/button";
 
 import { cn } from "@/lib/utils";
 
@@ -78,7 +79,7 @@ export function HeroText({ text = "VKIT-ORBIT", className = "" }: HeroTextProps)
 			</div>
 
 			<div className="absolute bottom-12 z-20 flex flex-col items-center gap-6">
-				<motion.button
+				<Button
 					type="button"
 					aria-label="Replay text shutter"
 					whileHover={{ scale: 1.1, rotate: 180 }}
@@ -87,7 +88,7 @@ export function HeroText({ text = "VKIT-ORBIT", className = "" }: HeroTextProps)
 					className="rounded-full bg-zinc-900 p-4 text-white shadow-2xl transition-colors duration-300 dark:bg-white dark:text-black"
 				>
 					<RefreshCw size={24} aria-hidden="true" />
-				</motion.button>
+				</Button>
 				<p className="text-[10px] font-bold uppercase tracking-[0.5em] text-zinc-400 dark:text-zinc-500">Click to re-shutter</p>
 			</div>
 

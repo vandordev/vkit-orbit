@@ -15,12 +15,16 @@ same-origin tRPC. Elysia is standalone `/v1`, not embedded or proxied by web.
 Realtime events only invalidate/refetch authoritative data.
 
 Use TanStack Start with Tailwind CSS and shared Vandor UI primitives as the UI
-baseline. Small UI primitives must import `@repo/components/<name>`, not local
-`@/components/ui` copies; install missing primitives in the shared package first.
-Button and Loading are installed. Read [component rules](../components.md) and
-[package guidance](../../packages/components/README.md). The local Button and its
-stories are removed; remaining local presentation stays intact until explicitly
-migrated. Keep accessible labels, focus states, responsive layouts, and typed
+baseline. All application controls, including existing UI and stories, must import
+`@repo/components/<name>` directly, not local `@/components/ui` copies or Base UI/Radix.
+Do not render native controls or bypass the policy with intrinsic aliases, motion
+wrappers, or JSX factories. Implement/install missing primitives in the shared
+package first; native implementations belong only there. Structural HTML, forms,
+headings, lists, links, and SVG remain allowed. Feature compositions stay local.
+Run `task check:ui-primitives`; root and web typechecks run it too.
+Read [component rules](../components.md) and
+[package guidance](../../packages/components/README.md) for actual installed APIs.
+Keep accessible labels, focus states, responsive layouts, and typed
 same-origin tRPC calls. Do not reintroduce Next.js or Mantine as defaults.
 
 See [routing.md](routing.md) for the complete directory-first route

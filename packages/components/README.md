@@ -61,10 +61,44 @@ This preserves link semantics. `variant="link"` alone is a visual button variant
 Native `disabled` does not disable links; do not promise otherwise. Inspect the
 actual primitive semantics before migrating Radix or `render` call sites.
 
-The web-local Radix Button and its stories have been removed. Global error and
-not-found boundaries now import this shared Button. All new small UI primitives
-must live in this package, not application-local duplicates; install missing
-primitives here before use. Other local presentation remains outside this migration.
+All application controls, including existing UI and stories, must use direct
+`@repo/components/<name>` imports. Native controls, local primitive copies, and
+direct Base UI/Radix imports belong only in this package. Structural HTML, forms,
+links, SVG, and application feature compositions remain allowed outside it.
+Missing primitives must be implemented/installed here first. Run
+`task check:ui-primitives`; root/web typechecks include the static policy check.
+
+## Input and Table contracts
+
+`@repo/components/input` is a local static-label primitive informed by the inspected
+Vandor Input API, not a full registry install or floating-label/icon implementation. It accepts native
+input props, including React 19 `ref`, file selection, validation, autocomplete,
+controlled/uncontrolled values and native change events. Optional `label` renders
+an associated label, generating an ID when needed; `containerClassName` styles the
+field wrapper. File inputs stay uncontrolled. Existing forms retain their IDs,
+names, validation constraints and submission paths.
+
+`@repo/components/table` provides small local semantic wrappers: `Table`,
+`TableCaption`, `TableHeader`, `TableBody`, `TableFooter`, `TableRow`, `TableHead`,
+and `TableCell`. They accept their native element props; `TableHead` defaults to
+`scope="col"`. Consumers own overflow containers, data, and navigation links.
+This is not Vandor DataGrid and installs no sorting, pagination, Query or Zod
+dependencies. Both primitives reuse the existing brand tokens without a new palette.
+
+Colocated Input/Table stories cover field semantics, file selection, disabled/error
+states, form submission, captions and long-content overflow. Application document
+table/timeline stories exercise their migrated shared controls with local fixtures.
+The explicit UI-only probe `bun --no-env-file run scripts/check-ui-primitive-stories.ts`
+uses the permission-managed Storybook at port 6006; it never starts a service.
+
+Primitive policy adoption (2026-10-23): component, web and Storybook typechecks
+passed; the source checker found no application violations. Chromium inspected
+21 affected stories at 1280px and 390px, with no document overflow or page errors.
+Local form submission, ref/focus, disabled/error fields, file selection, upload
+presentation stages, authentication constraints, and table/link semantics passed.
+These are presentation fixtures, not proof of live authentication, upload/processing,
+API-key management or settings persistence. Existing placeholder actions remain
+placeholders; no backend capability was added.
 
 ## AppShell contract
 

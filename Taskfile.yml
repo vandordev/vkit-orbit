@@ -82,6 +82,9 @@ tasks:
   check-types:
     desc: Typecheck TypeScript
     cmds: [bun run check-types]
+  check:ui-primitives:
+    desc: Enforce shared React primitives in applications and stories
+    cmds: [bun --no-env-file run check:ui-primitives]
   db:generate:
     desc: Generate Prisma client
     dir: packages/db

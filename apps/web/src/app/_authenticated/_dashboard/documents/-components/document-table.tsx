@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@repo/components/table";
 export function DocumentTable({ documents = [] }: { documents?: Array<{ id: string; name: string; status: string }> }) {
 	if (!documents.length)
 		return (
@@ -9,21 +10,21 @@ export function DocumentTable({ documents = [] }: { documents?: Array<{ id: stri
 		);
 	return (
 		<div className="overflow-x-auto rounded-xl border border-border bg-white">
-			<table className="w-full min-w-[560px] text-left text-sm">
-				<caption className="sr-only">Documents</caption>
-				<thead className="border-b border-border text-muted-foreground">
-					<tr>
-						<th className="p-4">Name</th>
-						<th className="p-4">Status</th>
-						<th className="p-4">Open</th>
-					</tr>
-				</thead>
-				<tbody>
+			<Table className="min-w-[560px]">
+				<TableCaption className="sr-only">Documents</TableCaption>
+				<TableHeader>
+					<TableRow>
+						<TableHead>Name</TableHead>
+						<TableHead>Status</TableHead>
+						<TableHead>Open</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
 					{documents.map((doc) => (
-						<tr key={doc.id} className="border-b border-border last:border-0">
-							<td className="p-4 font-medium">{doc.name}</td>
-							<td className="p-4">{doc.status}</td>
-							<td className="p-4">
+						<TableRow key={doc.id}>
+							<TableCell className="font-medium">{doc.name}</TableCell>
+							<TableCell>{doc.status}</TableCell>
+							<TableCell>
 								<Link
 									className="text-primary underline"
 									to="/documents/$documentId"
@@ -32,11 +33,11 @@ export function DocumentTable({ documents = [] }: { documents?: Array<{ id: stri
 								>
 									View
 								</Link>
-							</td>
-						</tr>
+							</TableCell>
+						</TableRow>
 					))}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 		</div>
 	);
 }
