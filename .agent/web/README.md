@@ -1,5 +1,12 @@
 # Web
 
+Before broad UI/UX changes, read [design direction](../../docs/frontend/DESIGN.md)
+and [the UX contract](../../docs/frontend/FRONTEND_CONTRACT.md), including the
+drawer/dialog/page decision rules. For new or substantially refactored surfaces,
+use [the page brief](../../docs/frontend/PAGE_BRIEF.md) and
+[review checklist](../../docs/frontend/FRONTEND_REVIEW.md). These are design norms,
+not evidence that every existing screen already complies or new verification authority.
+
 Follow [verification.md](../verification.md): UI uses Storybook plus typecheck;
 server-side tRPC/adapters and all service work use typecheck only. Do not start
 the product stack, run system tests, or add lint/build/full-repository gates.

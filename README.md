@@ -41,6 +41,13 @@ component-driven design: check data feasibility, develop typed components and
 stories, verify in Storybook, then integrate routes/tRPC. See the active
 [verification policy](.agent/verification.md).
 
+Frontend UX guidance lives in [design direction](docs/frontend/DESIGN.md) and
+[the interaction contract](docs/frontend/FRONTEND_CONTRACT.md): choose contextual
+drawers for suitable compact details, dedicated pages for substantial tasks, and
+dialogs for focused decisions. The [page brief](docs/frontend/PAGE_BRIEF.md) and
+[review checklist](docs/frontend/FRONTEND_REVIEW.md) guide future changes; this
+documentation does not retrofit or certify the existing example screens.
+
 Web routing is directory-first under `apps/web/src/app`; see
 [.agent/web/routing.md](.agent/web/routing.md) for native TanStack tokens,
 generated-tree ownership, and adapter isolation rules.

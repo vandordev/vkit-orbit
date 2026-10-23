@@ -41,6 +41,9 @@ promote feature compositions only when genuinely reusable. Small UI primitives
 
 ## Styling and composition
 
+- Choose interaction containers using [the UX contract](../docs/frontend/FRONTEND_CONTRACT.md).
+  The installed navigation Drawer is not automatically a general detail/edit drawer;
+  inspect its API and extend/install the shared owner before adopting that pattern.
 - Import `@repo/components/styles.css` after Tailwind in the consumer stylesheet.
   It registers shared source and extra semantic utilities. Brand color values come
   from `@repo/brand/tokens.css`; consumers own utility mappings, not duplicate
